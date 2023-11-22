@@ -1,4 +1,13 @@
-### Hi there 👋
+# Squishy 6094
+I'm a Super Mario 64 EX-Coop Lua Modder mainly practiced in HUD Modifications
+
+## Lua Mods for sm64ex-coop
+All of the mod I've worked on thus far, some links may require you to join the [sm64ex-coop discord server](https://discord.gg/G2zMwjbxdh) to be viewed.
+
+ - [Squishy's Server](https://discord.gg/2bg2FnFp6f)
+ - [Character Select Coop](https://github.com/Squishy6094/character-select-coop)
+ - [Compass Mod](https://discord.com/channels/752682015614173235/755907254318006362/1134180456804405400)
+ - [Pizza Tower Combo Meter - Visual Update](https://discord.com/channels/752682015614173235/755907254318006362/1131380674998304858)
 
 <!--
 **Squishy6094/Squishy6094** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
