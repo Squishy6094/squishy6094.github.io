@@ -1,5 +1,5 @@
 # Squishy 6094
-I'm a Mod Developer for [SM64CoopDX](https://sm64coopdx.com), working closly with the DX Team to get the best mods out there!
+I'm a Mod Developer for [SM64CoopDX](https://sm64coopdx.com), working closely with the DX Team to get the best mods out there!
 
 Links:
 - [Twitter](https://twitter.com/6094Squishy)
