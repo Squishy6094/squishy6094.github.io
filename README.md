@@ -1,4 +1,4 @@
-# Squishy 6094
+# <p align=center> Squishy 6094 </p>
 I'm a Mod Developer for [SM64CoopDX](https://sm64coopdx.com), working closely with the DX Team to get the best mods out there!
 
 Links:
