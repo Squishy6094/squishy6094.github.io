@@ -6,10 +6,6 @@ Links:
 - [Discord](https://discord.gg/2bg2FnFp6f)
 - [Youtube](https://www.youtube.com/@Squishy6094)
 
-## Projects for SM64CoopDX
-- [Character Select](https://github.com/Squishy6094/character-select-coop)
-  - [Azumanga Daioh 64: The Knuckleheads Pack!](https://github.com/LukasATBK/char-select-azumanga-pack)
-
 <!-- ### [Sonic Robo Blast 2 Titlecards](https://github.com/Squishy6094/srb2-titlecards-coop) -->
 
 <!--
