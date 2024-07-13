@@ -1,12 +1,7 @@
 # <p align=center> Squishy 6094 </p>
 I'm a Mod Developer for [SM64CoopDX](https://sm64coopdx.com), working closely with the DX Team to get the best mods out there!
 
-Links:
-- [Twitter](https://twitter.com/6094Squishy)
-- [Discord](https://discord.gg/2bg2FnFp6f)
-- [Youtube](https://www.youtube.com/@Squishy6094)
-
-<!-- ### [Sonic Robo Blast 2 Titlecards](https://github.com/Squishy6094/srb2-titlecards-coop) -->
+https://squishy6094.github.io/Squishy6094/
 
 <!--
 **Squishy6094/Squishy6094** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
