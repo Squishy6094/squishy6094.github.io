@@ -1,10 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <!-- Embed -->
     <meta property="og:title" content="Squishy Site >.<">
     <meta property="og:description" content="woahhh custom embed o.o">
     <meta property="og:image" content="https://squishy6094.github.io/Squishy6094/sketchy-trans.png">
+    
+    <script>
+        // Get Birthday
+        const d = new Date();
+        const b = new Date("April 3, 2007 2:00:00");
+        let birth = b.getFullYear()
+        let year = d.getFullYear()
+        var age = year - birth;
+        
+        // Get Birthday
+        var date = new Date();
+    </script>
 </head>
+
 
 <style>
     @font-face { font-family: NDSBios; src: url('fonts/Nintendo-DS-BIOS.ttf'); } 
@@ -21,14 +35,20 @@
         font-family: SM64
     }
     h2 {
-        font-family: NDSBios
+        /*font-family: NDSBios*/
+        line-height: 0.1;
     }
     footer {
-        text-align: center;
+        position: fixed;
+        bottom: 0;
+        /* Scroll Footer
         position: sticky;
+        bottom: 0;
+        margin-top: 50px;
+        text-align: center;
+        */
         padding: 15px;
-        width: 100% - 15px;
-        margin-top: auto;
+        width: calc(100% - 50px);
         background-color: rgb(0, 0, 130);
         color: rgb(255, 255, 255);
         font-family: SM64
@@ -36,10 +56,11 @@
     .text-box {
         margin-left: auto;
         margin-right: auto;
-        max-width: 600px;
         background-color: rgba(0, 0, 0, 0.4);
         outline-width: 10px;
         padding: 20px;
+        background-clip: padding-box;
+        font-size: 150%
     }
 
     <!--Link Recoloring-->
@@ -73,11 +94,26 @@
 
     <h1 style="font-size:400%;" class="text-box">Squishy 6094</h1>
 
-    <div style="font-size:150%;" class="text-box">
-        Hi!! I'm a developer modder for Super Mario 64 Coop Deluxe! <br>
-        I've primarily work on Character Select but I'm work on pleanty of other mods too! <br>
-        This website is still a huge work in progress so bare with me!! >.<'<br>
+    <div style="text-align: center; max-width: 600px;" class="text-box">
+        <p>
+            Hi!! I'm a developer modder for Super Mario 64 Coop Deluxe! <br>
+            I've primarily work on Character Select but I'm work on pleanty of other mods too! <br>
+            This website is still a huge work in progress so bare with me!! >.<'<br>
+        </p>
         <div style="text-align: right;"><a href="test.html">Test Page</a></div>
+    </div>
+
+    <hr>
+
+    <div style="text-align: left; width: 500px;" class="text-box">
+        <span style="float:left;">
+            <h2>About Me:</h2>
+            She/Her - Transgender<br>
+            Age: <script type="text/javascript">document.write(age)</script> (April 3rd)<br>
+        </span>
+        <span style="float:right;">
+            <img src="sketchy-trans.png" alt="I'm trans btw!!" style="height:150px;"><br>
+        </span>
     </div>
 
 </body>
