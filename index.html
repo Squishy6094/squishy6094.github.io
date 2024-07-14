@@ -22,7 +22,8 @@
 
 <style>
     @font-face { font-family: NDSBios; src: url('fonts/Nintendo-DS-BIOS.ttf'); } 
-    @font-face { font-family: SM64; src: url('fonts/sm64coopdx-normal-font.ttf'); } 
+    @font-face { font-family: FONT_NORMAL; src: url('fonts/sm64coopdx-normal-font.ttf'); } 
+    @font-face { font-family: FONT_ALIASED; src: url('fonts/sm64coopdx-aliased-font.ttf'); } 
 
     body {
         background-image: url('backgrounds/smw-type-vibes.png');
@@ -32,10 +33,13 @@
         flex-direction: column;
         overflow: hidden; /* Hide scrollbars */
         color: rgb(255, 255, 255);
-        font-family: SM64
+        font-family: FONT_NORMAL
+    }
+    h1 {
+        font-family: FONT_ALIASED;
     }
     h2 {
-        /*font-family: NDSBios*/
+        font-family: FONT_ALIASED;
         line-height: 0.1;
     }
     footer {
@@ -51,7 +55,7 @@
         width: calc(100% - 50px);
         background-color: rgb(0, 0, 130);
         color: rgb(255, 255, 255);
-        font-family: SM64
+        font-family: FONT_NORMAL
     }
     .text-box {
         margin-left: auto;
