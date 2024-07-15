@@ -15,7 +15,27 @@
         let birth = b.getFullYear()
         let year = d.getFullYear()
         var age = year - birth;
+
+        // Snackbar/Popups
+        const pageUnavailable = {
+            text: "This page is currently Unavailable\nCome back another time!",
+            duration: 5000,
+            gravity: "top", // `top` or `bottom`
+            position: "right", // `left`, `center` or `right`
+            stopOnFocus: true, // Prevents dismissing of toast on hover
+            style: {
+                background: "#00000077",
+                fontSize: "150%",
+                padding: "20px",
+                paddingTop: "30px",
+                paddingBottom: "30px",
+            },
+            onClick: function(){} // Callback after click
+        }
     </script>
+    
+    <!-- Toastify JS by apvarun -->
+    <link rel="stylesheet" type="text/css" href="scripts/toastify-js/toastify.css">
 </head>
 
 
@@ -118,31 +138,36 @@
     .subpage-button:hover {
         color: rgba(255, 255, 255, 1);
     }
+    .photo-list {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+    }
 
     <!--Link Recoloring-->
-    
+    a {
+        color: rgb(255, 255, 255);
+        text-decoration: none;
+    }
+
     a:link {
         color: rgb(255, 255, 255);
-        background-color: transparent;
         text-decoration: none;
     }
 
     a:visited {
         color: rgb(255, 255, 255);
-        background-color: transparent;
         text-decoration: none;
     }
 
     a:hover {
         color: rgb(200, 200, 255);
-        background-color: transparent;
-        text-decoration: underline;
+        text-decoration: none;
     }
 
     a:active {
         color: rgb(100, 100, 255);
-        background-color: transparent;
-        text-decoration: underline;
+        text-decoration: none;
     }
 </style> 
 
@@ -164,7 +189,6 @@
                 I've primarily work on Character Select but I'm work on pleanty of other mods too! <br>
                 This website is still a huge work in progress so bare with me!! >.<'<br>
             </p>
-            <div style="text-align: right;"><a href="test.html">Test Page</a></div>
         </div>
 
         <hr style="color: #00000000">
@@ -182,16 +206,27 @@
                 <img src="sketchy-trans.png" alt="I'm trans btw!!" style="height:150px;"><br>
             </span>
         </div>
-        <!--
+        
         <hr style="color: #00000000">
 
-        <div style="text-align: left; width: 500px; height: 150px;" class="text-box">
-            <a href="test.html">
-                <img src="icons/coopdx.png" alt="Squishy6094" style="width:100px;height:100px;"><br>
-                Test Page
-            </a>
+        <div style="width: 300px; height: 220px;" class="text-box">
+            <h2>Navigation</h2>
+            <span class="photo-list">
+                <div>
+                    <a href="test.html">
+                        <img src="icons/hat-logo.png" alt="Squishy6094" style="width:100px;height:100px;">
+                        <div>Test Page</div>
+                    </a>
+                </div>
+
+                <div>
+                    <a onclick='Toastify(pageUnavailable).showToast();'>
+                        <img src="icons/coopdx.png" alt="Squishy6094" style="width:100px;height:100px;">
+                        <div>CoopDX Mods</div>
+                    </a>
+                </div>
+            </span>
         </div>
-        -->
     </div>
 
 </body>
@@ -209,5 +244,7 @@
     </span>
     <br>
 </footer> 
+
+<script type="text/javascript" src="scripts/toastify-js/toastify.js"></script>
 
 </html> 
