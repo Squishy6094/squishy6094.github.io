@@ -16,7 +16,7 @@
         
         // Get Timezone
         let timezoneRaw = d.getTimezoneOffset() - 7*60;
-        let format1 = (n) => `${(n / 60 ^ 0)%12}:` + n % 60
+        let format1 = (n) => `${(n / 60 ^ 0)%12}:` + ("0" + (n % 60)).slice(-2);
         var timezone = format1((d.getHours() + Math.floor(timezoneRaw / 60))*60 + d.getMinutes() + (timezoneRaw % 60))
     </script>
 </head>
