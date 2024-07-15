@@ -2,7 +2,9 @@
 <html>
 <head>
     <!-- Embed -->
+    <title>Squishy Site >.<</title>
     <meta property="og:title" content="Squishy Site >.<">
+    <link rel="icon" type="image/x-icon" href="icons/hat-logo.png">
     <meta property="og:description" content="woahhh custom embed o.o">
     <meta property="og:image" content="https://squishy6094.github.io/Squishy6094/sketchy-trans.png">
     
@@ -13,24 +15,6 @@
         let birth = b.getFullYear()
         let year = d.getFullYear()
         var age = year - birth;
-        
-        // Get Timezone
-        let timezoneRaw = d.getTimezoneOffset() - 7*60; //7 hours behind GMT
-        function format1(n) {
-            let format1Hour = 0
-            if (`${(n / 60 ^ 0)%12}` == '0') {
-                format1Hour = '12:'
-            } else {
-                format1Hour = `${(n / 60 ^ 0)%12}:`
-            }
-            return format1Hour + ("0" + (n % 60)).slice(-2);
-        }
-        var timezone = format1((d.getHours() + Math.floor(timezoneRaw / 60))*60 + d.getMinutes() + (timezoneRaw % 60))
-        if ((d.getHours() + Math.floor(timezoneRaw / 60))%24 < 12) {
-            timezone = timezone + "AM"
-        } else {
-            timezone = timezone + "PM"
-        }
     </script>
 </head>
 
@@ -76,19 +60,23 @@
         outline-width: 5px;
     }
     footer {
+        /* Non Scroll Footer
         position: fixed;
         bottom: 0;
-        /* Scroll Footer
+        */
+
+        /* Scroll Footer */
         position: sticky;
         bottom: 0;
         margin-top: 50px;
+
         text-align: center;
-        */
         padding: 15px;
-        width: calc(100% - 46px);
+        width: calc(100% - 30px);
         background-color: rgb(0, 0, 130);
         color: rgb(255, 255, 255);
         font-family: FONT_NORMAL;
+        height: 40px;
 
         border: 1px;
         outline-style: solid;
@@ -110,7 +98,7 @@
         top: 15px;
         display: block;
         width: 200px;
-        height: 100vh;
+        height: 100%;
         background-color: rgba(35, 35, 35, 1);
         background-image: url('backgrounds/side-scroll.gif');
         background-size: 200px auto;
@@ -172,7 +160,7 @@
 
         <div style="text-align: center; width: 600px;" class="text-box">
             <p>
-                Hi!! I'm a developer modder for Super Mario 64 Coop Deluxe! <br>
+                Haii!! I'm a developer modder for Super Mario 64 Coop Deluxe! <br>
                 I've primarily work on Character Select but I'm work on pleanty of other mods too! <br>
                 This website is still a huge work in progress so bare with me!! >.<'<br>
             </p>
@@ -186,7 +174,9 @@
                 <h2>About Me:</h2>
                 She/Her - Transgender<br>
                 Age: <script type="text/javascript">document.write(age)</script> (April 3rd)<br>
-                Time: <script type="text/javascript">document.write(timezone)</script> (GMT-7)
+                
+                Time: <span id="time">Loading...</span> (GMT-7)
+                <script type="text/javascript" src="scripts/timeUpdate.js"></script>
             </span>
             <span style="float:right;">
                 <img src="sketchy-trans.png" alt="I'm trans btw!!" style="height:150px;"><br>
@@ -211,12 +201,11 @@
         Copyright - Squishy Inc. 1996
     </span>
     <span style="float:right; text-align: center; line-height: 1.8;">
-        Links:<br>
-        <a href="https://mods.sm64coopdx.com/members/squishy6094.37"><img src="icons/coopdx.png" alt="Squishy6094" style="width:50px;height:50px;"></a>
-        <a href="https://twitter.com/Squishy6094"><img src="icons/twitter.png" alt="@Squishy6094" style="width:50px;height:50px;"></a>
-        <a href="https://discord.gg/2bg2FnFp6f"><img src="icons/discord.png" alt="Squishy Community Server" style="width:50px;height:50px;"></a>
-        <a href="https://www.youtube.com/@Squishy6094"><img src="icons/youtube.png" alt="@Squishy6094" style="width:50px;height:50px;"></a>
-        <a href="https://squishy6094.newgrounds.com"><img src="icons/newgrounds.png" alt="@Squishy6094" style="width:50px;height:50px;"></a>
+        <a href="https://mods.sm64coopdx.com/members/squishy6094.37"><img src="icons/coopdx.png" alt="Squishy6094" style="width:40px;height:40px;"></a>
+        <a href="https://twitter.com/Squishy6094"><img src="icons/twitter.png" alt="@Squishy6094" style="width:40px;height:40px;"></a>
+        <a href="https://discord.gg/2bg2FnFp6f"><img src="icons/discord.png" alt="Squishy Community Server" style="width:40px;height:40px;"></a>
+        <a href="https://www.youtube.com/@Squishy6094"><img src="icons/youtube.png" alt="@Squishy6094" style="width:40px;height:40px;"></a>
+        <a href="https://squishy6094.newgrounds.com"><img src="icons/newgrounds.png" alt="@Squishy6094" style="width:40px;height:40px;"></a>
     </span>
     <br>
 </footer> 
