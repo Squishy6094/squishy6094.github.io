@@ -14,8 +14,10 @@
         let year = d.getFullYear()
         var age = year - birth;
         
-        // Get Birthday
-        var date = new Date();
+        // Get Timezone
+        let timezoneRaw = d.getTimezoneOffset() - 7*60;
+        let format1 = (n) => `${(n / 60 ^ 0)%12}:` + n % 60
+        var timezone = format1((d.getHours() + (timezoneRaw % 60))*60 + d.getMinutes() + Math.floor(timezoneRaw / 60))
     </script>
 </head>
 
@@ -25,15 +27,20 @@
     @font-face { font-family: FONT_NORMAL; src: url('fonts/sm64coopdx-normal-font.ttf'); } 
     @font-face { font-family: FONT_ALIASED; src: url('fonts/sm64coopdx-aliased-font.ttf'); } 
 
+    ::-webkit-scrollbar {
+    width: 0px;
+    }
+
     body {
         background-image: url('backgrounds/back-black.png');
         background-attachment: scroll;
         min-height: 100vh;
         display: flex;
         flex-direction: column;
-        overflow: hidden; /* Hide scrollbars */
+        /*overflow: hidden; /* Hide scrollbars (No scroll)*/
+        overflow-x: hidden; /* Hide horizontal scrollbar */
         color: rgb(255, 255, 255);
-        font-family: FONT_NORMAL
+        font-family: FONT_NORMAL;
     }
     h1 {
         font-family: FONT_ALIASED;
@@ -104,6 +111,12 @@
         
         z-index: -1;
     }
+    .subpage-button {
+        color: rgba(255, 255, 255, 0.8);
+    }
+    .subpage-button:hover {
+        color: rgba(255, 255, 255, 1);
+    }
 
     <!--Link Recoloring-->
     
@@ -136,7 +149,7 @@
     <h1 style="font-size:400%;">Squishy 6094</h1>
 </header>
 
-<body style="text-align:center; display: flex;">
+<body style="text-align:center; display: flex; margin-bottom: auto;">
 
     <div style="margin-bottom: auto; flex: 1">
         <div>
@@ -160,11 +173,22 @@
                 <h2>About Me:</h2>
                 She/Her - Transgender<br>
                 Age: <script type="text/javascript">document.write(age)</script> (April 3rd)<br>
+                Time: <script type="text/javascript">document.write(timezone)</script> (GMT-7)
             </span>
             <span style="float:right;">
                 <img src="sketchy-trans.png" alt="I'm trans btw!!" style="height:150px;"><br>
             </span>
         </div>
+        <!--
+        <hr style="color: #00000000">
+
+        <div style="text-align: left; width: 500px; height: 150px;" class="text-box">
+            <a href="test.html">
+                <img src="icons/coopdx.png" alt="Squishy6094" style="width:100px;height:100px;"><br>
+                Test Page
+            </a>
+        </div>
+        -->
     </div>
 
 </body>
