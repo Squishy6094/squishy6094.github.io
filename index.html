@@ -44,10 +44,6 @@
     @font-face { font-family: FONT_NORMAL; src: url('fonts/sm64coopdx-normal-font.ttf'); } 
     @font-face { font-family: FONT_ALIASED; src: url('fonts/sm64coopdx-aliased-font.ttf'); } 
 
-    ::-webkit-scrollbar {
-    width: 0px;
-    }
-
     body {
         background-image: url('backgrounds/back-black.png');
         background-attachment: scroll;
@@ -61,6 +57,7 @@
     }
     h1 {
         font-family: FONT_ALIASED;
+        line-height: 0;
     }
     h2 {
         font-family: FONT_ALIASED;
@@ -105,6 +102,7 @@
 
     }
     .text-box {
+        margin-top: 20px;
         margin-left: auto;
         margin-right: auto;
         background-color: rgba(0, 0, 0, 0.4);
@@ -192,8 +190,6 @@
             </p>
         </div>
 
-        <hr style="color: #00000000">
-
         <div style="text-align: left; width: 500px; height: 150px;" class="text-box">
             <span style="float:left;">
                 <h2>About Me:</h2>
@@ -207,8 +203,6 @@
                 <img src="sketchy-trans.png" alt="I'm trans btw!!" style="height:150px;"><br>
             </span>
         </div>
-        
-        <hr style="color: #00000000">
 
         <div style="width: 300px; height: 220px;" class="text-box">
             <h2>Navigation</h2>
