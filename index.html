@@ -4,7 +4,7 @@
     <!-- Embed -->
     <title>Squishy Site >.<</title>
     <meta property="og:title" content="Squishy Site >.<">
-    <link rel="icon" type="image/x-icon" href="icons/hat-logo.png">
+    <link rel="icon" type="image/x-icon" href="images/icons/hat-logo.png">
     <meta property="og:description" content="woahhh custom embed o.o">
     <meta property="og:image" content="https://squishy6094.github.io/sketchy-trans.png">
     
@@ -44,8 +44,22 @@
     @font-face { font-family: FONT_NORMAL; src: url('fonts/sm64coopdx-normal-font.ttf'); } 
     @font-face { font-family: FONT_ALIASED; src: url('fonts/sm64coopdx-aliased-font.ttf'); } 
 
+    header {
+        padding: 15px;
+        margin-bottom: 50px;
+        background-position-x: -16px; 
+        background-image: url('images/backgrounds/back-green.png');
+        color: rgb(255, 255, 255);
+        font-family: FONT_NORMAL;
+        
+        border: 1px;
+        outline-style: solid;
+        outline-color: rgba(0, 0, 0, 1);
+        outline-width: 5px;
+        font-weight: normal;
+    }
     body {
-        background-image: url('backgrounds/back-black.png');
+        background-image: url('images/backgrounds/back-black.png');
         background-attachment: scroll;
         min-height: 100vh;
         display: flex;
@@ -58,23 +72,13 @@
     h1 {
         font-family: FONT_ALIASED;
         line-height: 0;
+        font-size: 400%;
+        font-weight: normal;
     }
     h2 {
         font-family: FONT_ALIASED;
         line-height: 0.1;
-    }
-    header {
-        padding: 15px;
-        margin-bottom: 50px;
-        background-position-x: -16px; 
-        background-image: url('backgrounds/back-green.png');
-        color: rgb(255, 255, 255);
-        font-family: FONT_NORMAL;
-        
-        border: 1px;
-        outline-style: solid;
-        outline-color: rgba(0, 0, 0, 1);
-        outline-width: 5px;
+        font-weight: normal;
     }
     footer {
         /* Non Scroll Footer
@@ -118,7 +122,7 @@
         width: 200px;
         height: 100%;
         background-color: rgba(35, 35, 35, 1);
-        background-image: url('backgrounds/side-scroll.gif');
+        background-image: url('images/backgrounds/side-scroll.gif');
         background-size: 200px auto;
         color: #fff;
         box-sizing: border-box;
@@ -130,16 +134,16 @@
         
         z-index: -1;
     }
-    .subpage-button {
-        color: rgba(255, 255, 255, 0.8);
-    }
-    .subpage-button:hover {
-        color: rgba(255, 255, 255, 1);
-    }
     .photo-list {
         display: flex;
         flex-direction: row;
         justify-content: space-evenly;
+    }
+    .squishy-run {
+        position: fixed;
+        bottom: 71px;
+        left: -100px;
+        height: 150px;
     }
 
     <!--Link Recoloring-->
@@ -170,7 +174,9 @@
 </style> 
 
 <header>
-    <h1 style="font-size:400%;">Squishy 6094</h1>
+    <span>
+        <h1>Squishy 6094</h1>
+    </span>
 </header>
 
 <body style="text-align:center; display: flex; margin-bottom: auto;">
@@ -197,10 +203,9 @@
                 Age: <script type="text/javascript">document.write(age)</script> (April 3rd)<br>
                 
                 Time: <span id="time">Loading...</span> (GMT-7)
-                <script type="text/javascript" src="scripts/timeUpdate.js"></script>
             </span>
             <span style="float:right;">
-                <img src="sketchy-trans.png" alt="I'm trans btw!!" style="height:150px;"><br>
+                <img src="images/sketchy-trans.png" alt="I'm trans btw!!" style="height:150px;"><br>
             </span>
         </div>
 
@@ -209,14 +214,14 @@
             <span class="photo-list">
                 <div>
                     <a href="test.html">
-                        <img src="icons/hat-logo.png" alt="Squishy6094" style="width:100px;height:100px;">
+                        <img src="images/icons/hat-logo.png" alt="Squishy6094" style="width:100px;height:100px;">
                         <div>Test Page</div>
                     </a>
                 </div>
 
                 <div>
                     <a onclick='Toastify(pageUnavailable).showToast();'>
-                        <img src="icons/coopdx.png" alt="Squishy6094" style="width:100px;height:100px;">
+                        <img src="images/icons/coopdx.png" alt="Squishy6094" style="width:100px;height:100px;">
                         <div>CoopDX Mods</div>
                     </a>
                 </div>
@@ -227,18 +232,22 @@
 </body>
 
 <footer style="font-size:150%;">
+    <a id ="runAnimLink"><img src="images/paper_squishy.png" alt="Squishy6094" class="squishy-run" id ="runAnim"></a>
     <span style="float:left;">
         Copyright - Squishy Inc. 1996
     </span>
     <span style="float:right; text-align: center; line-height: 1.8;">
-        <a href="https://mods.sm64coopdx.com/members/squishy6094.37"><img src="icons/coopdx.png" alt="Squishy6094" style="width:40px;height:40px;"></a>
-        <a href="https://twitter.com/Squishy6094"><img src="icons/twitter.png" alt="@Squishy6094" style="width:40px;height:40px;"></a>
-        <a href="https://discord.gg/2bg2FnFp6f"><img src="icons/discord.png" alt="Squishy Community Server" style="width:40px;height:40px;"></a>
-        <a href="https://www.youtube.com/@Squishy6094"><img src="icons/youtube.png" alt="@Squishy6094" style="width:40px;height:40px;"></a>
-        <a href="https://squishy6094.newgrounds.com"><img src="icons/newgrounds.png" alt="@Squishy6094" style="width:40px;height:40px;"></a>
+        <a href="https://mods.sm64coopdx.com/members/squishy6094.37"><img src="images/icons/coopdx.png" alt="Squishy6094" style="width:40px;height:40px;"></a>
+        <a href="https://twitter.com/Squishy6094"><img src="images/icons/twitter.png" alt="@Squishy6094" style="width:40px;height:40px;"></a>
+        <a href="https://discord.gg/2bg2FnFp6f"><img src="images/icons/discord.png" alt="Squishy Community Server" style="width:40px;height:40px;"></a>
+        <a href="https://www.youtube.com/@Squishy6094"><img src="images/icons/youtube.png" alt="@Squishy6094" style="width:40px;height:40px;"></a>
+        <a href="https://squishy6094.newgrounds.com"><img src="images/icons/newgrounds.png" alt="@Squishy6094" style="width:40px;height:40px;"></a>
     </span>
     <br>
 </footer> 
+
+<script type="text/javascript" src="scripts/squishyRun.js"></script>
+<script type="text/javascript" src="scripts/timeUpdate.js"></script>
 
 <script type="text/javascript" src="scripts/toastify-js/toastify.js"></script>
 
