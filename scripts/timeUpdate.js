@@ -1,7 +1,12 @@
 const text = document.getElementById("time");
 setInterval(function() {
     const d = new Date();
-    let timezoneOffset = d.getTimezoneOffset() - 7*60; //7 hours behind GMT
+    let timezoneOffset = 0
+    if (ShellSite) {
+        timezoneOffset = d.getTimezoneOffset() + 2*60; //2 hours ahead GMT
+    } else {
+        timezoneOffset = d.getTimezoneOffset() - 7*60; //7 hours behind GMT
+    }
     var timezone = '12'
     let minutes = (d.getHours() + Math.floor(timezoneOffset / 60))*60 + d.getMinutes() + (timezoneOffset % 60)
     

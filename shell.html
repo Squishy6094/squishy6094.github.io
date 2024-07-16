@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Embed -->
+    <title>Shell Site :3</title>
+    <meta property="og:title" content="Shell Site :3">
+    <link rel="icon" type="image/x-icon" href="images/shellSite/shell-icon.png">
+    <meta property="og:description" content="shhh don't tell squishy">
+    <meta property="og:image" content="images/sketchy-trans.png">
+    
+    <script>
+        // Get Birthday
+        const d = new Date();
+        const b = new Date("December 26, 2007 0:00:00");
+        let birth = b.getFullYear()
+        let year = d.getFullYear()
+        var age = year - birth;
+
+        // Snackbar/Popups
+        const pageUnavailable = {
+            text: "This page is currently Unavailable\nCome back another time!",
+            duration: 5000,
+            gravity: "top", // `top` or `bottom`
+            position: "right", // `left`, `center` or `right`
+            stopOnFocus: true, // Prevents dismissing of toast on hover
+            style: {
+                background: "#00000077",
+                fontSize: "150%",
+                padding: "20px",
+                paddingTop: "30px",
+                paddingBottom: "30px",
+            },
+            onClick: function(){} // Callback after click
+        }
+    </script>
+    
+    <!-- Toastify JS by apvarun -->
+    <link rel="stylesheet" type="text/css" href="scripts/toastify-js/toastify.css">
+</head>
+
+
+<style>
+    @font-face { font-family: NDSBios; src: url('fonts/Nintendo-DS-BIOS.ttf'); } 
+    @font-face { font-family: FONT_NORMAL; src: url('fonts/sm64coopdx-normal-font.ttf'); } 
+    @font-face { font-family: FONT_ALIASED; src: url('fonts/sm64coopdx-aliased-font.ttf'); } 
+
+    header {
+        padding: -2px;
+        margin-bottom: 50px;
+        background-position-x: -16px; 
+        background-image: url('images/shellSite/backgrounds/back-violet.png');
+        color: rgb(255, 255, 255);
+        font-family: FONT_NORMAL;
+        
+        border: 1px;
+        outline-style: solid;
+        outline-color: rgba(0, 0, 0, 1);
+        outline-width: 5px;
+        font-weight: normal;
+    }
+    body {
+        background-image: url('images/shellSite/backgrounds/back-purple.png');
+        background-attachment: scroll;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        /*overflow: hidden; /* Hide scrollbars (No scroll)*/
+        overflow-x: hidden; /* Hide horizontal scrollbar */
+        color: rgb(255, 255, 255);
+        font-family: FONT_NORMAL;
+        padding-bottom: 100px;
+    }
+    h1 {
+        font-family: FONT_ALIASED;
+        line-height: 0;
+        font-size: 400%;
+        font-weight: normal;
+    }
+    h2 {
+        font-family: FONT_ALIASED;
+        font-weight: normal;
+    }
+    footer {
+        /* Non Scroll Footer
+        position: fixed;
+        bottom: 0;
+        */
+
+        /* Scroll Footer */
+        position: fixed;
+        bottom: 0;
+        margin-top: 50px;
+
+        text-align: center;
+        padding: 15px;
+        width: calc(100% - 30px);
+        background-color: rgb(0, 0, 130);
+        color: rgb(255, 255, 255);
+        font-family: FONT_NORMAL;
+        height: 40px;
+
+        border: 1px;
+        outline-style: solid;
+        outline-color: rgba(0, 0, 0, 1);
+        outline-width: 5px;
+
+    }
+    .text-box {
+        margin-top: 20px;
+        margin-left: auto;
+        margin-right: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+        padding: 20px;
+        background-clip: padding-box;
+        font-size: 150%;
+        height: auto;
+    }
+    .side-design {
+        position: fixed;
+        top: 15px;
+        display: block;
+        width: 200px;
+        height: 100%;
+        background-color: rgba(11, 8, 22, 1);
+        background-image: url('images/shellSite/backgrounds/side-shells.gif');
+        background-size: 200px auto;
+        color: #fff;
+        box-sizing: border-box;
+        
+        border: 1px;
+        outline-style: solid;
+        outline-color: rgba(0, 0, 0, 1);
+        outline-width: 5px;
+        
+        z-index: -1;
+    }
+    .photo-list {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+    }
+    .squishy-run {
+        position: fixed;
+        bottom: 71px;
+        left: -100px;
+        height: 150px;
+    }
+    .links {
+        float:right;
+        text-align: center;
+        line-height: 1.8;
+        position: absolute;
+        right: 10px;
+    }
+
+    <!--Link Recoloring-->
+    a {
+        color: rgb(255, 255, 255);
+        text-decoration: none;
+    }
+
+    a:link {
+        color: rgb(255, 255, 255);
+        text-decoration: none;
+    }
+
+    a:visited {
+        color: rgb(255, 255, 255);
+        text-decoration: none;
+    }
+
+    a:hover {
+        color: rgb(200, 200, 255);
+        text-decoration: none;
+    }
+
+    a:active {
+        color: rgb(100, 100, 255);
+        text-decoration: none;
+    }
+</style> 
+
+<header>
+    <img src="images/shellSite/header.gif" alt="so no head?" style="height:150px; display: fixed; bottom: 0px;"><br>
+</header>
+
+<body style="text-align:center; display: flex; margin-bottom: auto;">
+
+    <div style="margin-bottom: auto; flex: 1">
+        <div>
+            <span style="left: 8px;" class="side-design"></span>
+            <span style="left: calc(100% - 208px);" class="side-design"></span>
+        </div>
+
+        <div style="text-align: center; width: 500px; height: 100px;" class="text-box">
+            <span style="float:right;">
+                haiii welcome to my lil page :3<br>
+                i took this from squishy dont let  her<br>
+                know about my lil hidey hole...
+            </span>
+            <span style="display: absolute; float:left;">
+                <img src="images/shellSite/smug.png" alt="I'm trans btw!!" style="height:100px;"><br>
+            </span>
+        </div>
+
+        <div style="text-align: left; width: 600px; height: 300px;" class="text-box">
+            <span style="float:left;">
+                <h2>
+                    About the<br>
+                    silly ole me:
+                </h2>
+                She/Her - Tranny<br>
+                Age: <script type="text/javascript">document.write(age)</script> (December 26th)<br>
+                Time: <span id="time">Loading...</span> (GMT+2)<br>
+                I'm an artist and animator,<br>
+                multi fandom, extreamly silly,<br>
+                biggest faggot.
+            </span>
+            <span style="display: absolute; float:right;">
+                <img src="images/shellSite/tranny.png" alt="I'm trans btw!!" style="width:300px;"><br>
+            </span>
+        </div>
+
+        <div style="margin-top: 50;">
+            <img src="images/shellSite/have-fisb.png" alt="fisb">
+        </div>
+        <div style="width: 300px; margin-top: 0;" class="text-box">
+            <img id="fish" src="" alt="fisb" style="width: 280px;">
+            <script>
+                const fishGifs = [
+                    "benefishial-beneficial.gif",
+                    "closejoel-joel.gif",
+                    "fish-gas-station.gif",
+                    "talk-fish.gif"
+                ];
+                var fishGen = fishGifs[Math.floor(Math.random()*fishGifs.length)]
+                console.warn(fishGen)
+                document.getElementById("fish").src = 'images/shellSite/fish/' + fishGen
+            </script>
+        </div>
+    </div>
+
+</body>
+
+<footer style="font-size:150%;">
+    <a id ="runAnimLink"><img src="images/paper_squishy.png" alt="Squishy6094" class="squishy-run" id ="runAnim"></a>
+    <div style="position: absolute; left: 10px;">
+        Copyright - Squishy Inc. 1996
+    </div>
+    <div style = "position: absolute; left: 120px; top: 3px">
+        <img src="images/shellSite/sticky-notes/shell.png" alt="@Squishy6094" style="height:50px;">
+    </div>
+    <div class = "links">
+        <img src="images/icons/coopdx.png" alt="Squishy6094" style="width:40px;height:40px;">
+        <img src="images/icons/twitter.png" alt="@Squishy6094" style="width:40px;height:40px;">
+        <img src="images/icons/discord.png" alt="Squishy Community Server" style="width:40px;height:40px;">
+        <img src="images/icons/youtube.png" alt="@Squishy6094" style="width:40px;height:40px;">
+        <img src="images/icons/newgrounds.png" alt="@Squishy6094" style="width:40px;height:40px;">
+    </div>
+    <div class = "links">
+        <a href="https://mods.sm64coopdx.com/members/squishy6094.37"><img src="images/shellSite/sticky-notes/coopdx.png" alt="Squishy6094" style="width:50px;height:50px;"></a>
+        <a href="https://twitter.com/Squishy6094"><img src="images/shellSite/sticky-notes/twitter.png" alt="@Squishy6094" style="width:50px;height:50px;"></a>
+        <a href="https://discord.gg/2bg2FnFp6f"><img src="images/shellSite/sticky-notes/art-fight.png" alt="Squishy Community Server" style="width:50px;height:50px;"></a>
+        <img src="images/shellSite/sticky-notes/ignore.png" alt="@Squishy6094" style="height:50px;">
+    </div>
+    <br>
+</footer> 
+
+<script type="text/javascript" src="scripts/squishyRun.js"></script>
+<script type="text/javascript" src="scripts/timeUpdate.js"></script>
+
+<script>
+    ShellSite = true;
+</script>
+
+<script type="text/javascript" src="scripts/toastify-js/toastify.js"></script>
+
+</html> 

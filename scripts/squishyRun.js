@@ -1,3 +1,4 @@
+var ShellSite = false
 
 var id = null;
 var startPos = -150
@@ -12,20 +13,35 @@ var runAnim = "images/paper_squishy.png"
 var jumpAnim = "images/icons/coopdx.png"
 setInterval(function() {
     var elem = document.getElementById("runAnim");
+    var elemLink = document.getElementById("runAnimLink")
     const d = new Date();
     const rng = Math.floor(Math.random()*100)
     if (d.getSeconds() % 60 == 0 && posX == startPos ) {
         squishedPhys = false
+        elemLink.removeAttribute("href");
         if (rng == 69) { // squished,,
             runAnim = "images/runAnims/squished.png"
             squishedPhys = true
-        } else if (rng <= 10) { // Shell Easter Egg
-            runAnim = "images/runAnims/shell-run.gif"
-            jumpAnim = "images/runAnims/shell-jump.png"
-        } else { // Squishy Anims
-            runAnim = "images/runAnims/squishy-run.gif"
-            jumpAnim = "images/runAnims/squishy-jump.png"
+        } else if (ShellSite) {
+            if (rng <= 10) { // Shell Anims
+                elemLink.href = "index.html"
+                runAnim = "images/runAnims/squishy-run.gif"
+                jumpAnim = "images/runAnims/squishy-jump.png"
+            } else { // Squishy Easter Egg
+                runAnim = "images/runAnims/shell-run.gif"
+                jumpAnim = "images/runAnims/shell-jump.png"
+            }
+        } else {
+            if (rng <= 10) { // Shell Easter Egg
+                runAnim = "images/runAnims/shell-run.gif"
+                jumpAnim = "images/runAnims/shell-jump.png"
+                elemLink.href = "shell.html"
+            } else { // Squishy Anims
+                runAnim = "images/runAnims/squishy-run.gif"
+                jumpAnim = "images/runAnims/squishy-jump.png"
+            }
         }
+        
         elem.src = runAnim
         clearInterval(id);
         id = setInterval(frame, 10);
