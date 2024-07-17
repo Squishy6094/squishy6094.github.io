@@ -23,13 +23,6 @@
             gravity: "top", // `top` or `bottom`
             position: "right", // `left`, `center` or `right`
             stopOnFocus: true, // Prevents dismissing of toast on hover
-            style: {
-                background: "#00000077",
-                fontSize: "150%",
-                padding: "20px",
-                paddingTop: "30px",
-                paddingBottom: "30px",
-            },
             onClick: function(){} // Callback after click
         }
     </script>
@@ -134,10 +127,17 @@
         
         z-index: -1;
     }
-    .photo-list {
+    .navigation {
         display: flex;
         flex-direction: row;
         justify-content: space-evenly;
+        cursor: pointer;
+    }
+    .navigation-images {
+        width: 100px;
+        height: 100px;
+        padding-left: 20px;
+        padding-right: 20px;
     }
     .squishy-run {
         position: fixed;
@@ -146,7 +146,11 @@
         height: 150px;
     }
     .links {
-        float:right; text-align: center; line-height: 1.8; position: absolute; right: 10px;
+        float:right;
+        text-align: center;
+        line-height: 1.8;
+        position: absolute;
+        right: 10px;
     }
 
     <!--Link Recoloring-->
@@ -212,19 +216,26 @@
             </span>
         </div>
 
-        <div style="width: 300px; height: 220px;" class="text-box">
+        <div style="width: 400px; height: 220px;" class="text-box">
             <h2>Navigation</h2>
-            <span class="photo-list">
+            <span class="navigation">
                 <div>
                     <a href="test.html">
-                        <img src="images/icons/hat-logo.png" alt="Squishy6094" style="width:100px;height:100px;">
+                        <img src="images/icons/hat-logo.png" alt="Squishy6094" class="navigation-images">
                         <div>Test Page</div>
                     </a>
                 </div>
 
                 <div>
+                    <a href="gallery.html">
+                        <img src="images/icons/gallery.png" alt="Squishy6094" class="navigation-images">
+                        <div>Art Gallery</div>
+                    </a>
+                </div>
+
+                <div>
                     <a onclick='Toastify(pageUnavailable).showToast();'>
-                        <img src="images/icons/coopdx.png" alt="Squishy6094" style="width:100px;height:100px;">
+                        <img src="images/icons/coopdx.png" alt="Squishy6094" class="navigation-images">
                         <div>CoopDX Mods</div>
                     </a>
                 </div>
