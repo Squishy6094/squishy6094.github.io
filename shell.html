@@ -142,7 +142,7 @@
     .squishy-run {
         position: fixed;
         bottom: 71px;
-        left: -100px;
+        left: -150px;
         height: 150px;
     }
     .links {
@@ -153,7 +153,7 @@
         right: 10px;
     }
 
-    <!--Link Recoloring-->
+    /*Link Recoloring*/
     a {
         color: rgb(255, 255, 255);
         text-decoration: none;
@@ -239,11 +239,16 @@
             </script>
         </div>
     </div>
-
 </body>
 
 <footer style="font-size:150%;">
-    <a id ="runAnimLink"><img src="images/paper_squishy.png" alt="Squishy6094" class="squishy-run" id ="runAnim"></a>
+    <!--Preload Images-->
+    <img src="images/runAnims/squishy-jump.png" style = "position: absolute; left: -1000px">
+    <img src="images/runAnims/squishy-run.gif" style = "position: absolute; left: -1000px">
+    <img src="images/runAnims/shell-jump.png" style = "position: absolute; left: -1000px">
+    <img src="images/runAnims/shell-run.gif" style = "position: absolute; left: -1000px">
+
+    <a id ="runAnimLink"><img src="images/runAnims/shell-run.gif" alt="Squishy6094" class="squishy-run" id ="runAnim"></a>
     <div style="position: absolute; left: 10px;">
         Copyright - Squishy Inc. 1996
     </div>
