@@ -48,7 +48,7 @@ setInterval(function() {
         posX++
     }
     function frame() {
-        let width = screen.width;
+        let width = window.innerWidth;
         if (posX >= width && posX > startPos) {
             posX = startPos
             posY = 0;
