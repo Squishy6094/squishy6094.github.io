@@ -14,9 +14,13 @@ var jumpAnim = "images/icons/coopdx.png"
 setInterval(function() {
     var elem = document.getElementById("runAnim");
     var elemLink = document.getElementById("runAnimLink")
+    var spawnRate = 60
+    if (ShellSite) {
+        spawnRate = 30
+    }
     const d = new Date();
     const rng = Math.floor(Math.random()*100)
-    if (d.getSeconds() % 60 == 0 && posX == startPos ) {
+    if (d.getSeconds() % spawnRate == 0 && posX == startPos ) {
         squishedPhys = false
         elemLink.removeAttribute("href");
         if (rng == 69) { // squished,,

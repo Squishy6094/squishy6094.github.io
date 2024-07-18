@@ -220,24 +220,6 @@
                 <img src="images/shellSite/tranny.png" alt="I'm trans btw!!" style="width:300px;"><br>
             </span>
         </div>
-
-        <div style="margin-top: 50;">
-            <img src="images/shellSite/have-fisb.png" alt="fisb">
-        </div>
-        <div style="width: 300px; margin-top: 0;" class="text-box">
-            <img id="fish" src="" alt="fisb" style="width: 280px;">
-            <script>
-                const fishGifs = [
-                    "benefishial-beneficial.gif",
-                    "closejoel-joel.gif",
-                    "fish-gas-station.gif",
-                    "talk-fish.gif"
-                ];
-                var fishGen = fishGifs[Math.floor(Math.random()*fishGifs.length)]
-                console.warn(fishGen)
-                document.getElementById("fish").src = 'images/shellSite/fish/' + fishGen
-            </script>
-        </div>
     </div>
 </body>
 
@@ -247,6 +229,27 @@
     <img src="images/runAnims/squishy-run.gif" style = "position: absolute; left: -1000px">
     <img src="images/runAnims/shell-jump.png" style = "position: absolute; left: -1000px">
     <img src="images/runAnims/shell-run.gif" style = "position: absolute; left: -1000px">
+
+    <!-- Fish -->
+    <div style = "position: absolute; right: 30px; top: -400px; text-align: right; z-index: -1;">
+        <div style="margin-top: 50; text-align: center;">
+            <img src="images/shellSite/have-fisb.png" alt="fisb">
+        </div>
+        <div style="max-width: 200px; max-height: 150px; margin-top: 0;" class="text-box">
+            <img id="fish" src="" alt="fisb" style="max-width: 200px; max-height: 150px; padding-right: 25px;">
+            <script>
+                const fishGifs = [
+                    "benefishial-beneficial.gif",
+                    "closejoel-joel.gif",
+                    "fish-gas-station.gif",
+                    "talk-fish.gif"
+                ];
+                var fishGen = fishGifs[Math.floor(Math.random()*fishGifs.length)]
+                var fish = document.getElementById("fish")
+                fish.src = 'images/shellSite/fish/' + fishGen
+            </script>
+        </div>
+    </div>
 
     <a id ="runAnimLink"><img src="images/runAnims/shell-run.gif" alt="Squishy6094" class="squishy-run" id ="runAnim"></a>
     <div style="position: absolute; left: 10px;">
