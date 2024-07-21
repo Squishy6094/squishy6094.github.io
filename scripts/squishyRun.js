@@ -26,6 +26,7 @@ setInterval(function() {
         if (rng == 69) { // squished,,
             runAnim = "images/runAnims/squished.png"
             squishedPhys = true
+            elemLink.href = 'javascript:unlockSquished();'
         } else if (ShellSite) {
             if (rng <= 10) { // Shell Anims
                 elemLink.href = "index.html"
@@ -85,3 +86,8 @@ setInterval(function() {
         }
     }
 }, 1000)
+
+function unlockSquished() {
+    localStorage.setItem("squishedFound", "true")
+    document.getElementById('squishedBadge').style.visibility = 'visible';
+}
