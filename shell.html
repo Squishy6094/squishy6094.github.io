@@ -4,9 +4,9 @@
     <!-- Embed -->
     <title>Shell Site :3</title>
     <meta property="og:title" content="Shell Site :3">
-    <link rel="icon" type="image/x-icon" href="images/shellSite/shell-icon.png">
+    <link rel="icon" type="image/x-icon" href="images/shell-site/shell-icon.png">
     <meta property="og:description" content="shhh don't tell squishy">
-    <meta property="og:image" content="https://squishy6094.github.io/images/shellSite/shell-icon.png">
+    <meta property="og:image" content="https://squishy6094.github.io/images/shell-site/shell-icon.png">
     
     <script>
         // Get Birthday
@@ -48,7 +48,7 @@
         padding: -2px;
         margin-bottom: 50px;
         background-position-x: -16px; 
-        background-image: url('images/shellSite/backgrounds/back-violet.png');
+        background-image: url('images/shell-site/backgrounds/back-violet.png');
         color: rgb(255, 255, 255);
         font-family: FONT_NORMAL;
         
@@ -59,7 +59,7 @@
         font-weight: normal;
     }
     body {
-        background-image: url('images/shellSite/backgrounds/back-purple.png');
+        background-image: url('images/shell-site/backgrounds/back-purple.png');
         background-attachment: scroll;
         min-height: 100vh;
         display: flex;
@@ -122,7 +122,7 @@
         width: 200px;
         height: 100%;
         background-color: rgba(11, 8, 22, 1);
-        background-image: url('images/shellSite/backgrounds/side-shells.gif');
+        background-image: url('images/shell-site/backgrounds/side-shells.gif');
         background-size: 200px auto;
         color: #fff;
         box-sizing: border-box;
@@ -144,6 +144,10 @@
         bottom: 71px;
         left: -150px;
         height: 150px;
+    }
+    .shell-clicker {
+        position: fixed;
+        top: -50px
     }
     .links {
         float:right;
@@ -181,7 +185,7 @@
 </style> 
 
 <header>
-    <img src="images/shellSite/header.gif" alt="so no head?" style="height:150px; display: fixed; bottom: 0px;"><br>
+    <img src="images/shell-site/header.gif" alt="so no head?" style="height:150px; display: fixed; bottom: 0px;"><br>
 </header>
 
 <body style="text-align:center; display: flex; margin-bottom: auto;">
@@ -199,7 +203,7 @@
                 know about my lil hidey hole...
             </span>
             <span style="display: absolute; float:left;">
-                <img src="images/shellSite/smug.png" alt="I'm trans btw!!" style="height:100px;"><br>
+                <img src="images/shell-site/smug.png" alt="I'm trans btw!!" style="height:100px;"><br>
             </span>
         </div>
 
@@ -217,23 +221,32 @@
                 biggest faggot.
             </span>
             <span style="display: absolute; float:right;">
-                <img src="images/shellSite/tranny.png" alt="I'm trans btw!!" style="width:300px;"><br>
+                <img src="images/shell-site/tranny.png" alt="I'm trans btw!!" style="width:300px;"><br>
             </span>
         </div>
+    </div>
+    
+    <div style="width: 400px; height: 300px;" class="text-box">
+        <h2 id="navText">Navigation</h2>
+        <span class="navigation">
+            <div>
+                <a id ="shellClickerLink"><img src="images/shell-site/shell-clicker/shell-idle.png" alt="Squishy6094" id ="shellClicker"></a>
+            </div>
+        </span>
     </div>
 </body>
 
 <footer style="font-size:150%;">
     <!--Preload Images-->
-    <img src="images/runAnims/squishy-jump.png" style = "position: absolute; left: -1000px">
-    <img src="images/runAnims/squishy-run.gif" style = "position: absolute; left: -1000px">
-    <img src="images/runAnims/shell-jump.png" style = "position: absolute; left: -1000px">
-    <img src="images/runAnims/shell-run.gif" style = "position: absolute; left: -1000px">
+    <img src="images/run-anims/squishy-jump.png" style = "position: absolute; left: -1000px">
+    <img src="images/run-anims/squishy-run.gif" style = "position: absolute; left: -1000px">
+    <img src="images/run-anims/shell-jump.png" style = "position: absolute; left: -1000px">
+    <img src="images/run-anims/shell-run.gif" style = "position: absolute; left: -1000px">
 
     <!-- Fish -->
     <div style = "position: absolute; right: 30px; top: -400px; text-align: right; z-index: -1;">
         <div style="margin-top: 50; text-align: center;">
-            <img src="images/shellSite/have-fisb.png" alt="fisb">
+            <img src="images/shell-site/have-fisb.png" alt="fisb">
         </div>
         <div style="max-width: 200px; max-height: 150px; margin-top: 0;" class="text-box">
             <img id="fish" src="" alt="fisb" style="max-width: 200px; max-height: 150px; padding-right: 25px;">
@@ -246,17 +259,17 @@
                 ];
                 var fishGen = fishGifs[Math.floor(Math.random()*fishGifs.length)]
                 var fish = document.getElementById("fish")
-                fish.src = 'images/shellSite/fish/' + fishGen
+                fish.src = 'images/shell-site/fish/' + fishGen
             </script>
         </div>
     </div>
 
-    <a id ="runAnimLink"><img src="images/runAnims/shell-run.gif" alt="Squishy6094" class="squishy-run" id ="runAnim"></a>
+    <a id ="runAnimLink"><img src="images/run-anims/shell-run.gif" alt="Squishy6094" class="squishy-run" id ="runAnim"></a>
     <div style="position: absolute; left: 10px;">
         Copyright - Squishy Inc. 1996
     </div>
     <div style = "position: absolute; left: 120px; top: 3px">
-        <img src="images/shellSite/sticky-notes/shell.png" alt="@Squishy6094" style="height:50px;">
+        <img src="images/shell-site/sticky-notes/shell.png" alt="@Squishy6094" style="height:50px;">
     </div>
     <div class = "links">
         <img src="images/icons/coopdx.png" alt="Squishy6094" style="width:40px;height:40px;">
@@ -266,14 +279,14 @@
         <img src="images/icons/newgrounds.png" alt="@Squishy6094" style="width:40px;height:40px;">
     </div>
     <div class = "links">
-        <a href="https://mods.sm64coopdx.com/members/shellx3.1047/"><img src="images/shellSite/sticky-notes/coopdx.png" alt="Squishy6094" style="width:50px;height:50px;"></a>
-        <a href="https://twitter.com/Shell_x33"><img src="images/shellSite/sticky-notes/twitter.png" alt="@Squishy6094" style="width:50px;height:50px;"></a>
-        <a href="https://artfight.net/~Shell_x33"><img src="images/shellSite/sticky-notes/art-fight.png" alt="Squishy Community Server" style="width:50px;height:50px;"></a>
-        <img src="images/shellSite/sticky-notes/ignore.png" alt="@Squishy6094" style="height:50px;">
+        <a href="https://mods.sm64coopdx.com/members/shellx3.1047/"><img src="images/shell-site/sticky-notes/coopdx.png" alt="Squishy6094" style="width:50px;height:50px;"></a>
+        <a href="https://twitter.com/Shell_x33"><img src="images/shell-site/sticky-notes/twitter.png" alt="@Squishy6094" style="width:50px;height:50px;"></a>
+        <a href="https://artfight.net/~Shell_x33"><img src="images/shell-site/sticky-notes/art-fight.png" alt="Squishy Community Server" style="width:50px;height:50px;"></a>
+        <img src="images/shell-site/sticky-notes/ignore.png" alt="@Squishy6094" style="height:50px;">
     </div>
-    <br>
 </footer> 
 
+<script type="text/javascript" src="scripts/shellClicker.js"></script>
 <script type="text/javascript" src="scripts/squishyRun.js"></script>
 <script type="text/javascript" src="scripts/timeUpdate.js"></script>
 

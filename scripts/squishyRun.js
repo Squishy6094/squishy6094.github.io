@@ -24,26 +24,26 @@ setInterval(function() {
         squishedPhys = false
         elemLink.removeAttribute("href");
         if (rng == 69) { // squished,,
-            runAnim = "images/runAnims/squished.png"
+            runAnim = "images/run-anims/squished.png"
             squishedPhys = true
             elemLink.href = 'javascript:unlockSquished();'
         } else if (ShellSite) {
             if (rng <= 10) { // Shell Anims
                 elemLink.href = "index.html"
-                runAnim = "images/runAnims/squishy-run.gif"
-                jumpAnim = "images/runAnims/squishy-jump.png"
+                runAnim = "images/run-anims/squishy-run.gif"
+                jumpAnim = "images/run-anims/squishy-jump.png"
             } else { // Squishy Easter Egg
-                runAnim = "images/runAnims/shell-run.gif"
-                jumpAnim = "images/runAnims/shell-jump.png"
+                runAnim = "images/run-anims/shell-run.gif"
+                jumpAnim = "images/run-anims/shell-jump.png"
             }
         } else {
             if (rng <= 10) { // Shell Easter Egg
-                runAnim = "images/runAnims/shell-run.gif"
-                jumpAnim = "images/runAnims/shell-jump.png"
+                runAnim = "images/run-anims/shell-run.gif"
+                jumpAnim = "images/run-anims/shell-jump.png"
                 elemLink.href = "shell.html"
             } else { // Squishy Anims
-                runAnim = "images/runAnims/squishy-run.gif"
-                jumpAnim = "images/runAnims/squishy-jump.png"
+                runAnim = "images/run-anims/squishy-run.gif"
+                jumpAnim = "images/run-anims/squishy-jump.png"
             }
         }
         
@@ -81,8 +81,8 @@ setInterval(function() {
                 posY = Math.max(posY + jumpVel, 0)
                 posX = posX + 2; 
             }
-            elem.style.left = posX + 'px'; 
-            elem.style.bottom = (posFloor + posY) + 'px'; 
+            elem.style.left = posX + 'px';
+            elem.style.bottom = (posFloor + posY) + 'px';
         }
     }
 }, 1000)
