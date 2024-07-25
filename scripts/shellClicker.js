@@ -3,6 +3,26 @@ var owieAnim = owieAnimEnd
 var hitCount = 0
 var hitIntensity = 0
 
+// Preload Needed Assets - By Nanoo
+var cache = document.createElement("CACHE");
+cache.style = "position:absolute;z-index:-1000;opacity:0;";
+document.body.appendChild(cache);
+function preloadImage(url) {
+    var img = new Image();
+    img.src = url;
+    img.style = "position:absolute";
+    cache.appendChild(img);
+}
+
+preloadImage("images/shell-site/shell-clicker/shell-idle.gif");
+preloadImage("images/shell-site/shell-clicker/shell-ow.gif");
+// preloadImage("images/shell-site/shell-clicker/shell-hurt-1.gif");
+// preloadImage("images/shell-site/shell-clicker/shell-hurt-2.gif");
+// preloadImage("images/shell-site/shell-clicker/shell-hurt-3.gif");
+// preloadImage("images/shell-site/shell-clicker/shell-hurt-4.gif");
+// preloadImage("images/shell-site/shell-clicker/shell-hurt-5.gif");
+// preloadImage("images/shell-site/shell-clicker/shell-hurt-6.gif");
+
 const stupidBitch = document.getElementById("shellClicker")
 const navText = document.getElementById("navText")
 const hitAnims = [

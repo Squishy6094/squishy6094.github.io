@@ -1,5 +1,28 @@
 var ShellSite = false
 
+const animSquishyRun = "images/run-anims/squishy-run.gif"
+const animSquishyJump = "images/run-anims/squishy-jump.png"
+const animShellRun = "images/run-anims/shell-run.gif"
+const animShellJump = "images/run-anims/shell-jump.png"
+const animSquished = "images/run-anims/squished.png"
+
+// Preload Needed Assets - By Nanoo
+var cache = document.createElement("CACHE");
+cache.style = "position:absolute;z-index:-1000;opacity:0;";
+document.body.appendChild(cache);
+function preloadImage(url) {
+    var img = new Image();
+    img.src = url;
+    img.style = "position:absolute";
+    cache.appendChild(img);
+}
+
+preloadImage(animSquishyRun);
+preloadImage(animSquishyJump);
+preloadImage(animShellRun);
+preloadImage(animShellJump);
+preloadImage(animSquished);
+
 var id = null;
 var startPos = -150
 var posX = startPos;
@@ -9,8 +32,8 @@ var jumpVel = 0;
 var squishedPhys = false;
 const posFloor = 73
 
-var runAnim = "images/paper_squishy.png"
-var jumpAnim = "images/icons/coopdx.png"
+var runAnim = animSquishyRun
+var jumpAnim = animSquishyJump
 setInterval(function() {
     var elem = document.getElementById("runAnim");
     var elemLink = document.getElementById("runAnimLink")
@@ -24,26 +47,26 @@ setInterval(function() {
         squishedPhys = false
         elemLink.removeAttribute("href");
         if (rng == 69) { // squished,,
-            runAnim = "images/run-anims/squished.png"
+            runAnim = animSquished
             squishedPhys = true
             elemLink.href = 'javascript:unlockSquished();'
         } else if (ShellSite) {
-            if (rng <= 10) { // Shell Anims
+            if (rng <= 10) { // Squishy Easter Egg
                 elemLink.href = "index.html"
-                runAnim = "images/run-anims/squishy-run.gif"
-                jumpAnim = "images/run-anims/squishy-jump.png"
-            } else { // Squishy Easter Egg
-                runAnim = "images/run-anims/shell-run.gif"
-                jumpAnim = "images/run-anims/shell-jump.png"
+                runAnim = animSquishyRun
+                jumpAnim = animSquishyJump
+            } else { // Shell Anims
+                runAnim = animShellRun
+                jumpAnim = animShellJump
             }
         } else {
             if (rng <= 10) { // Shell Easter Egg
-                runAnim = "images/run-anims/shell-run.gif"
-                jumpAnim = "images/run-anims/shell-jump.png"
+                runAnim = animShellRun
+                jumpAnim = animShellJump
                 elemLink.href = "shell.html"
             } else { // Squishy Anims
-                runAnim = "images/run-anims/squishy-run.gif"
-                jumpAnim = "images/run-anims/squishy-jump.png"
+                runAnim = animSquishyRun
+                jumpAnim = animSquishyJump
             }
         }
         
