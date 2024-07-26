@@ -1,4 +1,5 @@
 var ShellSite = false
+var Cheater = false
 
 const animSquishyRun = "images/run-anims/squishy-run.gif"
 const animSquishyJump = "images/run-anims/squishy-jump.png"
@@ -24,19 +25,93 @@ preloadImage(animShellJump);
 preloadImage(animSquished);
 
 var id = null;
-var startPos = -150
+const startPos = -150
 var posX = startPos;
 var posY = 0;
 var prevPosY = posY;
 var jumpVel = 0;
 var squishedPhys = false;
 const posFloor = 73
-
 var runAnim = animSquishyRun
 var jumpAnim = animSquishyJump
+function creatureSpawn(rng) {
+    const elem = document.getElementById("runAnim");
+    const elemLink = document.getElementById("runAnimLink")
+    posX = startPos
+    squishedPhys = false
+    elemLink.removeEventListener("click", unlockSquished);
+    elem.style.cursor = 'auto'
+    if (rng == 69) { // squished,,
+        runAnim = animSquished
+        squishedPhys = true
+        elemLink.addEventListener("click", unlockSquished);
+        elem.style.cursor = 'pointer'
+    } else if (ShellSite) {
+        if (rng <= 10) { // Squishy Easter Egg
+            elemLink.href = "index.html"
+            runAnim = animSquishyRun
+            jumpAnim = animSquishyJump
+        } else { // Shell Anims
+            runAnim = animShellRun
+            jumpAnim = animShellJump
+        }
+    } else {
+        if (rng <= 10) { // Shell Easter Egg
+            runAnim = animShellRun
+            jumpAnim = animShellJump
+            elemLink.href = "shell.html"
+        } else { // Squishy Anims
+            runAnim = animSquishyRun
+            jumpAnim = animSquishyJump
+        }
+    }
+    
+    elem.src = runAnim
+    clearInterval(id);
+    id = setInterval(creatureUpdate, 10);
+    posX++
+}
+
+function creatureUpdate() {
+    const width = window.innerWidth;
+    const elem = document.getElementById("runAnim");
+    const elemLink = document.getElementById("runAnimLink")
+    if (posX >= width && posX > startPos) {
+        posX = startPos
+        posY = 0;
+        jumpVel = 0;
+        elem.style.left = startPos + 'px'; 
+        elem.style.bottom = posFloor + 'px'; 
+        clearInterval(id);
+    } else {
+        // Jumping
+        if (squishedPhys) {
+            posX = posX + 6; 
+        } else {
+            if (posY == 0) {
+                if (Math.floor(Math.random()*100) == 0){
+                    jumpVel = 10
+                }
+                if (prevPosY != posY){ // Prevent Anim Buffer
+                    elem.src = runAnim
+                }
+            } else {
+                elem.src = jumpAnim
+            }
+            prevPosY = posY
+            jumpVel = Math.max(jumpVel - 0.3, -20)
+            posY = Math.max(posY + jumpVel, 0)
+            posX = posX + 2; 
+        }
+        elem.style.left = posX + 'px';
+        elem.style.bottom = (posFloor + posY) + 'px';
+    }
+}
+
+// Creature Spawner
 setInterval(function() {
-    var elem = document.getElementById("runAnim");
-    var elemLink = document.getElementById("runAnimLink")
+    const elem = document.getElementById("runAnim");
+    const elemLink = document.getElementById("runAnimLink")
     var spawnRate = 60
     if (ShellSite) {
         spawnRate = 30
@@ -44,73 +119,24 @@ setInterval(function() {
     const d = new Date();
     const rng = Math.floor(Math.random()*100)
     if (d.getSeconds() % spawnRate == 0 && posX == startPos ) {
-        squishedPhys = false
-        elemLink.removeAttribute("href");
-        if (rng == 69) { // squished,,
-            runAnim = animSquished
-            squishedPhys = true
-            elemLink.href = 'javascript:unlockSquished();'
-        } else if (ShellSite) {
-            if (rng <= 10) { // Squishy Easter Egg
-                elemLink.href = "index.html"
-                runAnim = animSquishyRun
-                jumpAnim = animSquishyJump
-            } else { // Shell Anims
-                runAnim = animShellRun
-                jumpAnim = animShellJump
-            }
-        } else {
-            if (rng <= 10) { // Shell Easter Egg
-                runAnim = animShellRun
-                jumpAnim = animShellJump
-                elemLink.href = "shell.html"
-            } else { // Squishy Anims
-                runAnim = animSquishyRun
-                jumpAnim = animSquishyJump
-            }
-        }
-        
-        elem.src = runAnim
-        clearInterval(id);
-        id = setInterval(frame, 10);
-        posX++
-    }
-    function frame() {
-        let width = window.innerWidth;
-        if (posX >= width && posX > startPos) {
-            posX = startPos
-            posY = 0;
-            jumpVel = 0;
-            elem.style.left = startPos + 'px'; 
-            elem.style.bottom = posFloor + 'px'; 
-            clearInterval(id);
-        } else {
-            // Jumping
-            if (squishedPhys) {
-                posX = posX + 6; 
-            } else {
-                if (posY == 0) {
-                    if (Math.floor(Math.random()*100) == 0){
-                        jumpVel = 10
-                    }
-                    if (prevPosY != posY){ // Prevent Anim Buffer
-                        elem.src = runAnim
-                    }
-                } else {
-                    elem.src = jumpAnim
-                }
-                prevPosY = posY
-                jumpVel = Math.max(jumpVel - 0.3, -20)
-                posY = Math.max(posY + jumpVel, 0)
-                posX = posX + 2; 
-            }
-            elem.style.left = posX + 'px';
-            elem.style.bottom = (posFloor + posY) + 'px';
-        }
+        creatureSpawn(rng)
     }
 }, 1000)
 
+// Debug Functions
+const squishyRun = {
+    spawn(setRng) {
+        Cheater = true
+        creatureSpawn(setRng)
+    }
+}
+
+// Squished Achievement
 function unlockSquished() {
-    localStorage.setItem("squishedFound", "true")
-    document.getElementById('squishedBadge').style.visibility = 'visible';
+    if (!Cheater) {
+        localStorage.setItem("squishedFound", "true")
+        document.getElementById('squishedBadge').style.visibility = 'visible';
+    } else {
+        console.log("Hell no, Cheater!!!!")
+    }
 }

@@ -1,4 +1,4 @@
-const owieAnimEnd = -100
+const owieAnimEnd = -200
 var owieAnim = owieAnimEnd
 var hitCount = 0
 var hitIntensity = 0
@@ -24,6 +24,7 @@ preloadImage("images/shell-site/shell-clicker/shell-ow.gif");
 // preloadImage("images/shell-site/shell-clicker/shell-hurt-6.gif");
 
 const stupidBitch = document.getElementById("shellClicker")
+stupidBitch.style.cursor = 'pointer'
 const navText = document.getElementById("navText")
 const hitAnims = [
     "shell-hurt-1.gif",
