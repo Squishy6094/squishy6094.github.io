@@ -39,6 +39,9 @@ function creatureSpawn(rng) {
     const elemLink = document.getElementById("runAnimLink")
     posX = startPos
     squishedPhys = false
+
+    // Remove all previous click events
+    elemLink.removeAttribute("href");
     elemLink.removeEventListener("click", unlockSquished);
     elem.style.cursor = 'auto'
     if (rng == 69) { // squished,,
