@@ -7,6 +7,8 @@ const animShellRun = "images/run-anims/shell-run.gif"
 const animShellJump = "images/run-anims/shell-jump.png"
 const animSquished = "images/run-anims/squished.png"
 
+const tickSpeed = 1000/30 // 30fps
+
 // Preload Needed Assets - By Nanoo
 var cache = document.createElement("CACHE");
 cache.style = "position:absolute;z-index:-1000;opacity:0;";
@@ -71,7 +73,7 @@ function creatureSpawn(rng) {
     
     elem.src = runAnim
     clearInterval(id);
-    id = setInterval(creatureUpdate, 10);
+    id = setInterval(creatureUpdate, tickSpeed);
     posX++
 }
 
@@ -89,11 +91,11 @@ function creatureUpdate() {
     } else {
         // Jumping
         if (squishedPhys) {
-            posX = posX + 6; 
+            posX = posX + 12; 
         } else {
             if (posY == 0) {
                 if (Math.floor(Math.random()*100) == 0){
-                    jumpVel = 10
+                    jumpVel = 15
                 }
                 if (prevPosY != posY){ // Prevent Anim Buffer
                     elem.src = runAnim
@@ -102,9 +104,9 @@ function creatureUpdate() {
                 elem.src = jumpAnim
             }
             prevPosY = posY
-            jumpVel = Math.max(jumpVel - 0.3, -20)
+            jumpVel = Math.max(jumpVel - 1, -20)
             posY = Math.max(posY + jumpVel, 0)
-            posX = posX + 2; 
+            posX = posX + 4; 
         }
         elem.style.left = posX + 'px';
         elem.style.bottom = (posFloor + posY) + 'px';
