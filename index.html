@@ -208,21 +208,29 @@
         const seed = Math.round(d.getTime() / 86400000); // Seconds since epoch rounded to every day
         const rng = mulberry32(seed)
         const hangingCreatures = [
-                {name: "404", image:"404.png", link:"404.html"},
-                {name: "Lukas' Workshop", image:"geno.png", link:"https://lukasworkshop.nekoweb.org/"},
-                {name: "KF (Twitter)", image:"kf.gif", link:"https://x.com/KFIC_TSMK"},
-                {name: "Carl & John", image:"carlandjohn.png", link:"https://carlandjohn.neocities.org/"},
-                {name: "Garlicker/ChickenGunner (Youtube)", image:"garlicker.png", link:"https://www.youtube.com/@ssg-eggunner/"},
-                {name: "DM-Kun (Youtube)", image:"dm-kun.png", link:"https://youtube.com/@dm-kun"},
+            {name: "404", image:"404.png", link:"404.html"},
+            {name: "Lukas' Workshop", image:"geno.png", link:"https://lukasworkshop.nekoweb.org/"},
+            {name: "KF (Twitter)", image:"kf.gif", link:"https://x.com/KFIC_TSMK"},
+            {name: "Carl & John", image:"carlandjohn.png", link:"https://carlandjohn.neocities.org/"},
+            {name: "Garlicker/ChickenGunner (Youtube)", image:"garlicker.png", link:"https://www.youtube.com/@ssg-eggunner/"},
+            {name: "DM-Kun (Youtube)", image:"dm-kun.png", link:"https://www.youtube.com/@dm-kun"},
+            {name: "Jaytomz (Youtube)", image:"jaytomz.png", link:"https://www.youtube.com/@JayTomzMuzik"},
+            {name: "Liampy Strawpage", image:"liampy.png", link:"https://liampy.straw.page/"},
+            {name: "Mario 85", image:"mario85.png", link:"https://gamejolt.com/games/LUCAS/837168", artist: "5up34",},
         ];
         const tableLength = hangingCreatures.length
         const charRng = Math.round(rng()*tableLength)
-        // console.log(rng() + " | " + seed + " | " + charRng + " < " + tableLength); // (Debug)
+        console.log(rng() + " | " + seed + " | " + charRng + " < " + tableLength); // (Debug)
         if (charRng >= 0 && charRng < tableLength) {
             var siteGen = hangingCreatures[charRng]
             document.getElementById("hangingCrossover").src = 'images/hanging-crossover/' + siteGen.image
             document.getElementById("hangingCrossoverLink").href = siteGen.link
-            document.getElementById("hangingCrossoverLink").title= "Check out " + siteGen.name + "!"
+            if (siteGen.artist != null) {
+                siteGen.artist = "\nArt made by: " + siteGen.artist + "!"
+            } else {
+                siteGen.artist = ""
+            }
+            document.getElementById("hangingCrossoverLink").title= "Check out " + siteGen.name + "!" + siteGen.artist
         } else {
             document.getElementById("hangingCrossover").style.visibility = 'hidden'
         }
