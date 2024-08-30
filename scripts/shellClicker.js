@@ -82,8 +82,6 @@ const hitAnims = [
         } else {
             shellPetStatus = 0
         }
-        
-        console.log((event.pageX) + " | " + shellSize.left + " | " + event.pageY + " | " + shellPetStatus)
     }
 })();
 
