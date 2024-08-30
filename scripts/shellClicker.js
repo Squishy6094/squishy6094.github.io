@@ -71,7 +71,7 @@ const hitAnims = [
             }
             if (shellPetStatus == 1 && (event.pageX < shellSize.left || event.pageX > shellSize.right)) {
                 shellPetStatus = 0
-                petAnim = 100
+                petAnim = 50
                 hitCount = hitCount - 1
                 if (hitCount >= 0) {
                     navText.textContent = "Abuse: " + hitCount
