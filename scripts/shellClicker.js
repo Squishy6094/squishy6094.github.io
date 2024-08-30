@@ -16,7 +16,7 @@ function preloadImage(url) {
     cache.appendChild(img);
 }
 
-preloadImage("images/shell-site/shell-clicker/shell-idle.gif");
+preloadImage("images/shell-site/shell-clicker/shell-idle.png");
 preloadImage("images/shell-site/shell-clicker/shell-ow.gif");
 preloadImage("images/shell-site/shell-clicker/shell-pet.gif");
 // preloadImage("images/shell-site/shell-clicker/shell-hurt-1.gif");
