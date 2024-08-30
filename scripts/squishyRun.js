@@ -7,7 +7,7 @@ const animShellRun = "images/run-anims/shell-run.gif"
 const animShellJump = "images/run-anims/shell-jump.png"
 const animSquished = "images/run-anims/squished.png"
 
-const tickSpeed = 1000/30 // 30fps
+var tickSpeed = 1000/30 // 30fps
 
 // Preload Needed Assets - By Nanoo
 var cache = document.createElement("CACHE");
