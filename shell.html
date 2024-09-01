@@ -105,6 +105,16 @@
         outline-width: 5px;
 
     }
+    img { /* Remove Anti-Aliasing */
+        image-rendering: optimizeSpeed;             /* STOP SMOOTHING, GIVE ME SPEED  */
+        image-rendering: -moz-crisp-edges;          /* Firefox                        */
+        image-rendering: -o-crisp-edges;            /* Opera                          */
+        image-rendering: -webkit-optimize-contrast; /* Chrome (and eventually Safari) */
+        image-rendering: pixelated;                 /* Universal support since 2021   */
+        image-rendering: optimize-contrast;         /* CSS3 Proposed                  */
+        -ms-interpolation-mode: nearest-neighbor;   /* IE8+                           */
+
+    }
     .text-box {
         margin-top: 20px;
         margin-left: auto;
@@ -144,10 +154,6 @@
         bottom: 71px;
         left: -150px;
         height: 150px;
-    }
-    .shell-clicker {
-        position: fixed;
-        top: -50px
     }
     .links {
         float:right;
@@ -218,7 +224,7 @@
                 Age: <script type="text/javascript">document.write(age)</script> (December 26th)<br>
                 Time: <span id="time">Loading...</span> (GMT+2)<br>
                 I'm an artist and animator,<br>
-                multi fandom, extreamly silly,<br>
+                multi fandom, extremely silly,<br>
                 biggest faggot.
             </span>
             <span style="display: absolute; float:right;">
@@ -228,11 +234,9 @@
 
         <div style="width: 400px; height: 300px;" class="text-box">
             <h2 id="navText">Navigation</h2>
-            <span class="navigation">
-                <div>
-                    <a id ="shellClickerLink"><img src="images/shell-site/shell-clicker/shell-idle.png" alt="Squishy6094" id ="shellClicker"></a>
-                </div>
-            </span>
+            <div>
+                <a id ="shellClickerLink"><img src="images/shell-site/shell-clicker/shell-idle.png" alt="clickma" id ="shellClicker" style="height: 224px"></a>
+            </div>
         </div>
     </div>
 </body>

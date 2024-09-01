@@ -17,14 +17,18 @@ function preloadImage(url) {
 }
 
 preloadImage("images/shell-site/shell-clicker/shell-idle.png");
+preloadImage("images/shell-site/shell-clicker/shell-blush.png");
+preloadImage("images/shell-site/shell-clicker/shell-pain.gif");
 preloadImage("images/shell-site/shell-clicker/shell-ow.gif");
 preloadImage("images/shell-site/shell-clicker/shell-pet.gif");
+preloadImage("images/shell-site/shell-clicker/shell-pet-blush.gif");
 // preloadImage("images/shell-site/shell-clicker/shell-hurt-1.gif");
 // preloadImage("images/shell-site/shell-clicker/shell-hurt-2.gif");
 // preloadImage("images/shell-site/shell-clicker/shell-hurt-3.gif");
 // preloadImage("images/shell-site/shell-clicker/shell-hurt-4.gif");
 // preloadImage("images/shell-site/shell-clicker/shell-hurt-5.gif");
 // preloadImage("images/shell-site/shell-clicker/shell-hurt-6.gif");
+// preloadImage("images/shell-site/shell-clicker/shell-hurt-7.gif");
 
 const stupidBitch = document.getElementById("shellClicker")
 stupidBitch.style.cursor = 'pointer'
@@ -36,9 +40,11 @@ const hitAnims = [
     "shell-hurt-4.gif",
     "shell-hurt-5.gif",
     "shell-hurt-6.gif",
+    "shell-hurt-7.gif",
 ];
 
-// var shellPetStatus = 0
+var shellPetStatus = 0;
+var shellHeadpatCombo = 0;
 (function() {
     document.onmousemove = handleMouseMove;
     function handleMouseMove(event) {
@@ -65,13 +71,14 @@ const hitAnims = [
         // Use event.pageX / event.pageY here
         
         const shellSize = document.getElementById("shellClickerLink").getBoundingClientRect();
-        if (event.pageY > shellSize.top && event.pageY > shellSize.bottom && hasBeenHit && owieAnim <= owieAnimEnd){
+        if (event.pageY > shellSize.top && event.pageY < shellSize.top + 224 && hasBeenHit && owieAnim <= owieAnimEnd){
             if (shellPetStatus == 0 && event.pageX > shellSize.left && event.pageX < shellSize.right) {
                 shellPetStatus = 1
             }
             if (shellPetStatus == 1 && (event.pageX < shellSize.left || event.pageX > shellSize.right)) {
                 shellPetStatus = 0
                 petAnim = 50
+                shellHeadpatCombo = shellHeadpatCombo + 1
                 hitCount = hitCount - 1
                 if (hitCount >= 0) {
                     navText.textContent = "Abuse: " + hitCount
@@ -96,10 +103,21 @@ setInterval(function() {
     } else if (petAnim > 0) {
         petAnim = petAnim - 1
         if (petAnim > 0) {
-            stupidBitch.src = 'images/shell-site/shell-clicker/shell-pet.gif'
+            if (shellHeadpatCombo > 50) {
+                stupidBitch.src = 'images/shell-site/shell-clicker/shell-pet-blush.gif'
+            } else {
+                stupidBitch.src = 'images/shell-site/shell-clicker/shell-pet.gif'
+            }
         }
     } else {
-        stupidBitch.src = 'images/shell-site/shell-clicker/shell-idle.png'
+        if (hitCount >= 250) {
+            stupidBitch.src = 'images/shell-site/shell-clicker/shell-idle-pain.gif'
+        } else if (hitCount <= -250) {
+            stupidBitch.src = 'images/shell-site/shell-clicker/shell-idle-blush.png'
+        } else {
+            stupidBitch.src = 'images/shell-site/shell-clicker/shell-idle.png'
+        }
+        shellHeadpatCombo = 0
     }
     if (hitIntensity > 0) {
         hitIntensity = hitIntensity - 1
@@ -116,13 +134,10 @@ function shellOnClick() {
     }
     hitCount++
     hasBeenHit = true
+    petAnim = 0
     navText.textContent = "Abuse: " + hitCount
     var anim = hitAnims[Math.floor(Math.random()*hitAnims.length)]
     stupidBitch.src = 'images/shell-site/shell-clicker/' + anim
-}
-
-function shellOnPet() {
-
 }
 
 document.getElementById("shellClickerLink").addEventListener("click", shellOnClick); 
