@@ -7,6 +7,9 @@
     <link rel="icon" type="image/x-icon" href="images/icons/hat-logo.png">
     <meta property="og:description" content="woahhh custom embed o.o">
     <meta property="og:image" content="https://squishy6094.github.io/images/icons/hat-logo.png">
+
+    <!-- Page Style -->
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
     
     <script>
         // Get Birthday
@@ -31,172 +34,18 @@
     <link rel="stylesheet" type="text/css" href="scripts/toastify-js/toastify.css">
 </head>
 
-
 <style>
-    @font-face { font-family: NDSBios; src: url('fonts/Nintendo-DS-BIOS.ttf'); } 
-    @font-face { font-family: FONT_NORMAL; src: url('fonts/sm64coopdx-normal-font.ttf'); } 
-    @font-face { font-family: FONT_ALIASED; src: url('fonts/sm64coopdx-aliased-font.ttf'); } 
-
-    header {
-        padding: 15px;
-        margin-bottom: 50px;
-        background-position-x: -16px; 
-        background-image: url('images/backgrounds/back-green.png');
-        color: rgb(255, 255, 255);
-        font-family: FONT_NORMAL;
-        
-        border: 1px;
-        outline-style: solid;
-        outline-color: rgba(0, 0, 0, 1);
-        outline-width: 5px;
-        font-weight: normal;
-    }
-    body {
-        background-image: url('images/backgrounds/back-black.png');
-        background-attachment: scroll;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        /*overflow: hidden; /* Hide scrollbars (No scroll)*/
-        overflow-x: hidden; /* Hide horizontal scrollbar */
-        color: rgb(255, 255, 255);
-        font-family: FONT_NORMAL;
-        padding-bottom: 100px;
-    }
-    h1 {
-        font-family: FONT_ALIASED;
-        line-height: 0;
-        font-size: 400%;
-        font-weight: normal;
-    }
     h2 {
-        font-family: FONT_ALIASED;
         line-height: 0.1;
-        font-weight: normal;
     }
-    footer {
-        /* Non Scroll Footer
-        position: fixed;
-        bottom: 0;
-        */
-
-        /* Scroll Footer */
-        position: fixed;
-        bottom: 0;
-        margin-top: 50px;
-
-        text-align: center;
-        padding: 15px;
-        width: calc(100% - 30px);
-        background-color: rgb(0, 0, 130);
-        color: rgb(255, 255, 255);
-        font-family: FONT_NORMAL;
-        height: 40px;
-
-        border: 1px;
-        outline-style: solid;
-        outline-color: rgba(0, 0, 0, 1);
-        outline-width: 5px;
-
-    }
-    img { /* Remove Anti-Aliasing */
-        image-rendering: optimizeSpeed;             /* STOP SMOOTHING, GIVE ME SPEED  */
-        image-rendering: -moz-crisp-edges;          /* Firefox                        */
-        image-rendering: -o-crisp-edges;            /* Opera                          */
-        image-rendering: -webkit-optimize-contrast; /* Chrome (and eventually Safari) */
-        image-rendering: pixelated;                 /* Universal support since 2021   */
-        image-rendering: optimize-contrast;         /* CSS3 Proposed                  */
-        -ms-interpolation-mode: nearest-neighbor;   /* IE8+                           */
-
-    }
-    .text-box {
-        margin-top: 20px;
-        margin-left: auto;
-        margin-right: auto;
-        background-color: rgba(0, 0, 0, 0.4);
-        padding: 20px;
-        background-clip: padding-box;
-        font-size: 150%;
-        height: auto;
-    }
-    .side-design {
-        position: fixed;
-        top: 15px;
-        display: block;
-        width: 200px;
-        height: 100%;
-        background-color: rgba(35, 35, 35, 1);
-        background-image: url('images/backgrounds/side-scroll.gif');
-        background-size: 200px auto;
-        color: #fff;
-        box-sizing: border-box;
-        
-        border: 1px;
-        outline-style: solid;
-        outline-color: rgba(0, 0, 0, 1);
-        outline-width: 5px;
-        
-        z-index: -1;
-    }
-    .navigation {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-evenly;
-        cursor: pointer;
-    }
-    .navigation-images {
-        width: 100px;
-        height: 100px;
-        padding-left: 20px;
-        padding-right: 20px;
-    }
-    .squishy-run {
-        position: fixed;
-        bottom: 71px;
-        left: -150px;
-        height: 150px;
-    }
-    .links {
-        float:right;
-        text-align: center;
-        line-height: 1.8;
-        position: absolute;
-        right: 10px;
-    }
-
-    <!--Link Recoloring-->
-    a {
-        color: rgb(255, 255, 255);
-        text-decoration: none;
-    }
-
-    a:link {
-        color: rgb(255, 255, 255);
-        text-decoration: none;
-    }
-
-    a:visited {
-        color: rgb(255, 255, 255);
-        text-decoration: none;
-    }
-
-    a:hover {
-        color: rgb(200, 200, 255);
-        text-decoration: none;
-    }
-
-    a:active {
-        color: rgb(100, 100, 255);
-        text-decoration: none;
-    }
-</style> 
+</style>
 
 <header>
     <span>
         <h1>Squishy 6094</h1>
     </span>
     <!-- Achievments -->
-    <img id = "squishedBadge" src="images/badges/golden-squished.gif" style = "position: absolute; left: 10px; top: 40px; visibility: hidden;">
+    <img id = "squishedBadge" src="images/achievements/golden-squished.gif" style = "position: absolute; left: 10px; top: 40px; visibility: hidden;">
     <script>
         if (localStorage.getItem("squishedFound") == "true") {
             document.getElementById('squishedBadge').style.visibility = 'visible';
