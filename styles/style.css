@@ -89,6 +89,7 @@ img, .side-design, body, header { /* Remove Anti-Aliasing */
     background-clip: padding-box;
     font-size: 150%;
     height: auto;
+    text-align: center;
 }
 
 .side-design {
