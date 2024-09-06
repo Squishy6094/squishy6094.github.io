@@ -122,7 +122,7 @@ img, .side-design, body, header { /* Remove Anti-Aliasing */
 .navigation {
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: center;
     cursor: pointer;
 }
 .navigation-images {
