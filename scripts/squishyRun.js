@@ -33,7 +33,7 @@ var posY = 0;
 var prevPosY = posY;
 var jumpVel = 0;
 var squishedPhys = false;
-const posFloor = 73
+const posFloor = 80
 var runAnim = animSquishyRun
 var jumpAnim = animSquishyJump
 function creatureSpawn(rng) {
