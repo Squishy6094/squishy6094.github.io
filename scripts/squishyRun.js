@@ -138,10 +138,21 @@ const squishyRun = {
 
 // Squished Achievement
 function unlockSquished() {
+    // Snackbar/Popups
+    const squishedUnlocked = {
+        text: "Achievement Unlocked!\nSquished Found",
+        duration: 5000,
+        gravity: "top", // `top` or `bottom`
+        position: "right", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        onClick: function(){} // Callback after click
+    }
     if (!Cheater) {
         localStorage.setItem("squishedFound", "true")
         document.getElementById('squishedBadge').style.visibility = 'visible';
     } else {
         console.log("Hell no, Cheater!!!!")
+        squishedUnlocked.text = "No >:("
     }
+    Toastify(squishedUnlocked).showToast();
 }

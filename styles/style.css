@@ -144,7 +144,7 @@ img, .side-design, body, header { /* Remove Anti-Aliasing */
     height: 150px;
 }
 .links {
-    float:right;
+    float: right;
     text-align: center;
     line-height: 1.8;
     position: absolute;

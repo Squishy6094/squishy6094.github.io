@@ -45,6 +45,7 @@ const hitAnims = [
 
 var shellPetStatus = 0;
 var shellHeadpatCombo = 0;
+var loveAndWarStatus = 0;
 (function() {
     document.onmousemove = handleMouseMove;
     function handleMouseMove(event) {
@@ -84,6 +85,11 @@ var shellHeadpatCombo = 0;
                     navText.textContent = "Abuse: " + hitCount
                 } else {
                     navText.textContent = "Headpats: " + hitCount*-1
+                }
+
+                if (hitCount <= -1000 && loveAndWarStatus == 1) {
+                    loveAndWarStatus = 2
+                    unlockLoveAndWar()
                 }
             }
         } else {
@@ -133,6 +139,9 @@ function shellOnClick() {
         hitCount = 0
     }
     hitCount++
+    if (hitCount > 1000 && loveAndWarStatus == 0) {
+        loveAndWarStatus = 1
+    }
     hasBeenHit = true
     petAnim = 0
     navText.textContent = "Abuse: " + hitCount
@@ -141,3 +150,19 @@ function shellOnClick() {
 }
 
 document.getElementById("shellClickerLink").addEventListener("click", shellOnClick); 
+
+
+// Love and War Unlocked
+function unlockLoveAndWar() {
+    // Snackbar/Popups
+    const squishedUnlocked = {
+        text: "Achievement Unlocked!\nLove & War",
+        duration: 5000,
+        gravity: "top", // `top` or `bottom`
+        position: "right", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        onClick: function(){} // Callback after click
+    }
+    localStorage.setItem("loveAndWar", "true")
+    Toastify(squishedUnlocked).showToast();
+}

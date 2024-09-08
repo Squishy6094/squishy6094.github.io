@@ -2,11 +2,11 @@
 <html>
 <head>
     <!-- Embed -->
-    <title>Squishy Site >.< | Art Gallery</title>
-    <meta property="og:title" content="Squishy Site >.< | Art Gallery">
-    <link rel="icon" type="image/x-icon" href="images/icons/hat-logo.png">
+    <title>Squishy Site >.< | Achievements</title>
+    <meta property="og:title" content="Squishy Site >.< | Achievements">
+    <link rel="icon" type="image/x-icon" href="images/icons/achievements.png">
     <meta property="og:description" content="woahhh custom embed o.o">
-    <meta property="og:image" content="https://squishy6094.github.io/images/icons/gallery.png">
+    <meta property="og:image" content="https://squishy6094.github.io/images/icons/achievements.png">
 
     <!-- Page Style -->
     <link rel="stylesheet" type="text/css" href="styles/style.css">
@@ -16,6 +16,10 @@
 </head>
 
 <style>
+    body {
+        background-image: url('images/shell-site/backgrounds/back-purple.png');
+    }
+
     .squishy-half {
         position: absolute;
         top: 0px;
@@ -27,14 +31,84 @@
         background-image: url('images/backgrounds/back-black.png');
         background-size: 128px;
     }
-    body {
-        background-image: url('images/shell-site/backgrounds/back-purple.png');
+    .achievement-image {
+        position: absolute;
+        float: left;
+        left: 10px;
+        text-align: left;
     }
 </style>
 
 <body style="display: flex; margin-bottom: auto;">
     <!-- Squishy Half Background -->
-    <div class="squishy-half" src=></div>
+    <span class="squishy-half">
+        <span id="achievementsSquishy" style="text-align: center"></span>
+    </span>
+    
+    <span style="position: absolute; left: calc(75% - 200px); top: 0px;">
+        <span id="achievementsShell" style="text-align: center"></span>
+    </span>
+
+    
+    <script>
+        const squishySite = 0
+        const shellSite = 1
+        const achievementList = [
+                {
+                    flag: "squishedFound",
+                    site: "achievementsSquishy",
+                    name: "Found Squished",
+                    desc: "Find Squished sliding across the bottom of the main page and click it.",
+                    img:  "achieve-foundSquished.gif",
+                },
+                {
+                    flag: "loveAndWar",
+                    site: "achievementsShell",
+                    name: "Love & War",
+                    desc: "Abuse the Navigation Shell 1000 times, then pet her 2000 times.",
+                    img:  "achieve-loveAndWar.gif",
+                },
+        ]
+            
+        for (let i = 0; i < achievementList.length; i++) {
+            const currTable = achievementList[i]
+            const unlocked = localStorage.getItem(currTable.flag) == "true"
+
+            // Create Container
+            const container = document.createElement("div");
+            container.style = "text-align: left; width: 400px;" 
+            container.classList.add("text-box");
+
+            // Add Image
+            const img = document.createElement("img");
+            img.style = "margin-right: 10px; height: 50px"
+            if (unlocked) {
+                img.src = "images/achievements/" + currTable.img
+            } else {
+                img.src = "images/achievements/achieve-locked.gif"
+            }
+            container.appendChild(img);
+
+            // Add Name
+            const header = document.createElement("span");
+            header.style = "font-size: 175%; font-family: FONT_ALIASED;"
+            if (unlocked) {
+                header.appendChild(document.createTextNode(currTable.name));
+            } else {
+                header.appendChild(document.createTextNode("???"));
+            }
+            header.appendChild(document.createElement("br"));
+            // Add Description
+            const description = document.createElement("div");
+            description.style = "font-size: 60%; line-height: 1.1; font-family: FONT_NORMAL;"
+            description.appendChild(document.createTextNode(currTable.desc));
+            header.appendChild(description);
+            container.appendChild(header);
+
+
+            document.getElementById(currTable.site).appendChild(container)
+        }
+    </script>
 </body>
 
 <script type="text/javascript" src="scripts/toastify-js/toastify.js"></script>
