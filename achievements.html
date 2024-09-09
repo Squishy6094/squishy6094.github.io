@@ -19,6 +19,19 @@
     body {
         background-image: url('images/shell-site/backgrounds/back-purple.png');
     }
+    
+    .side-design {
+        width: 100px;
+        background-size: 100px auto;
+        
+        z-index: -1;
+        animation: scroll 20s linear infinite;
+    }
+
+    .shell-side-design {
+        background-color: rgba(11, 8, 22, 1);
+        background-image: url('images/shell-site/backgrounds/side-shells.png');
+    }
 
     .squishy-half {
         position: absolute;
@@ -30,6 +43,15 @@
         background-color: rgba(35, 35, 35, 1);
         background-image: url('images/backgrounds/back-black.png');
         background-size: 128px;
+        z-index: -1;
+    }
+    .shell-half {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        display: block;
+        width: 50%;
+        height: 100%;
     }
     .achievement-image {
         position: absolute;
@@ -37,22 +59,41 @@
         left: 10px;
         text-align: left;
     }
+    .trophy {
+        position: fixed;
+        left: calc(50% - 75px);
+        top: 25%;
+        width: 150px;
+        height: 150px;
+        visibility: hidden;
+    }
+    .middle-mask {
+        -webkit-mask-image: url(w3logo.png);
+        mask-image: url(w3logo.png);
+        mask-repeat: no-repeat; 
+    }
 </style>
 
 <body style="display: flex; margin-bottom: auto;">
     <!-- Squishy Half Background -->
     <span class="squishy-half">
-        <span id="achievementsSquishy" style="text-align: center"></span>
+        <span style="left: 5px;" class="side-design"></span>
+        <span style="right: calc(50% + 5px)" class="side-design"></span>
+        <span id="achievementsSquishy" style="text-align: center;"></span>
     </span>
     
-    <span style="position: absolute; left: calc(75% - 200px); top: 0px;">
-        <span id="achievementsShell" style="text-align: center"></span>
+    <span class="shell-half">
+        <span style="right: 5px;" class="side-design shell-side-design"></span>
+        <span style="left: calc(50% + 5px)" class="side-design shell-side-design"></span>
+        <span id="achievementsShell" style="text-align: center;"></span>
     </span>
 
     
+    <img src="images/backgrounds/achievements-split.gif" style="position: fixed; top: 0px; height: 100%; left: calc(50% - 160px);">
+    <img id = "trophy" src="images/icons/achievements.png" class="trophy">
+    
     <script>
-        const squishySite = 0
-        const shellSite = 1
+        var achieveCount = 0
         const achievementList = [
                 {
                     flag: "squishedFound",
@@ -76,7 +117,7 @@
 
             // Create Container
             const container = document.createElement("div");
-            container.style = "text-align: left; width: 400px;" 
+            container.style = "text-align: left; width: 410px; z-index: 2;" 
             container.classList.add("text-box");
 
             // Add Image
@@ -84,6 +125,7 @@
             img.style = "margin-right: 10px; height: 50px"
             if (unlocked) {
                 img.src = "images/achievements/" + currTable.img
+                achieveCount ++
             } else {
                 img.src = "images/achievements/achieve-locked.gif"
             }
@@ -107,6 +149,10 @@
 
 
             document.getElementById(currTable.site).appendChild(container)
+        }
+
+        if (achieveCount >= achievementList.length){
+            document.getElementById('trophy').style.visibility = 'visible';
         }
     </script>
 </body>
