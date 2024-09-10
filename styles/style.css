@@ -36,8 +36,6 @@ body {
     overflow-x: hidden; /* Hide horizontal scrollbar */
     color: rgb(255, 255, 255);
     font-family: FONT_NORMAL;
-    padding-top: 150px;
-    padding-bottom: 50px;
 }
 h1 {
     font-family: FONT_ALIASED;

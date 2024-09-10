@@ -28,6 +28,21 @@
             stopOnFocus: true, // Prevents dismissing of toast on hover
             onClick: function(){} // Callback after click
         }
+
+        // Get Status from Codist's cool and awesome thingy
+        fetch("https://savespace.imcodist.xyz/data/user/5d23caa3-70b6-4ed0-ba41-e0a0d30b0e11")
+            .then((response) => response.json()).then((json) => {
+                const status = document.getElementById("howImFeeling")
+                status.textContent = json.status.status
+                status.title = "Last Updated: " + Date(json.status.timestamp)
+                document.getElementById("howImFeelingDiscord").textContent = "Status - " + json.status.online
+
+                // console.log(json.status.status); // The status the user wrote.
+                // console.log(json.status.expression); // The expression to go with the written status.
+                // console.log(json.status.online); // The users online status (whether from discord or manually defined)
+                
+                // console.log(json.status.timestamp); // The timestamp when the status was changed last.
+            });
     </script>
     
     <!-- Toastify JS by apvarun -->
@@ -37,6 +52,11 @@
 <style>
     h2 {
         line-height: 0.1;
+    }
+
+    body {
+        padding-top: 150px;
+        padding-bottom: 50px;
     }
 </style>
 
@@ -79,7 +99,6 @@
         ];
         const tableLength = hangingCreatures.length
         const charRng = Math.round(rng()*tableLength)
-        console.log(rng() + " | " + seed + " | " + charRng + " < " + tableLength); // (Debug)
         if (charRng >= 0 && charRng < tableLength) {
             var siteGen = hangingCreatures[charRng]
             document.getElementById("hangingCrossover").src = 'images/hanging-crossover/' + siteGen.image
@@ -96,7 +115,7 @@
     </script>
 </header>
 
-<body style="text-align: center; display: flex; margin-bottom: auto;">
+<body style="text-align: center; display: flex; margin-bottom: 50px;">
 
     <div style="margin-bottom: auto; flex: 1">
         <div>
@@ -125,8 +144,21 @@
                 <img src="images/sketchy-trans.png" alt="I'm trans btw!!" style="height:150px;"><br>
             </span>
         </div>
+        
+        <div style="width: 550px; height: 160px;">
+            <span class="text-box" style = "text-align: center; position: absolute; right: calc(50% + 5px); font-size: 160%; width: 300px; font-family: FONT_ALIASED; height: 80px; padding: 30px 0;">
+                <span id = "howImFeelingDiscord">Status - Loading...</span><br>
+                <span id = "howImFeeling" style="font-size: 90%;">Loading...</span>
+            </span>
+            <a id = "latestBlog" href = "blog-posts/8-29-2024.html" class = "text-box" style = "text-align: center; position: absolute; left: calc(50% + 5px); font-size: 80%; width: 300px; height: 80px; padding: 30px 0;">
+                <span style="font-size: 200%; font-family: FONT_ALIASED;">Latest Blog:</span><br>
+        
+                <span style="font-size: 200%; font-family: FONT_ALIASED;">Apologize to the ladyy,,</span><br>
+                <span style="font-size: 100%;">(8/29/2024 - 10:27 PM)</span>
+            </a>
+        </div>
 
-        <div style="width: 550px; height: 220px;" class="text-box">
+        <div style="width: 550px; height: 230px;" class="text-box">
             <h2>Navigation</h2>
             <span class="navigation">
                 <div>
@@ -155,12 +187,6 @@
 
 <footer style="font-size:150%;">
     <!-- Newest Blog Post -->
-    <a id = "latestBlog" href = "blog-posts/8-29-2024.html" class = "text-box" style = "text-align: left; position: absolute; left: 5px; bottom: 80px; font-size: 50%;">
-        <span style="font-size: 200%; font-family: FONT_ALIASED;">Latest Blog:</span><br>
-
-        <span style="font-size: 200%; font-family: FONT_ALIASED;">Apologize to the ladyy,,</span><br>
-        <span style="font-size: 100%;">(8/29/2024 - 10:27 PM)</span>
-    </a>
     <a id ="runAnimLink"><img src="images/run-anims/squishy-run.gif" alt="Squishy6094" class="squishy-run" id ="runAnim"></a>
     <span style="float:left;">
         Copyright - Squishy Inc. 1996
