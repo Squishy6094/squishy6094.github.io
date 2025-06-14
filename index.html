@@ -58,11 +58,10 @@
         djui_hud_set_color(bgColor.r, bgColor.g, bgColor.b, 255)
         djui_hud_render_rect(0, 0, screenWidth, screenHeight)
         djui_hud_set_color(bgColor.r*0.5, bgColor.g*0.5, bgColor.b*0.5, 255)
-        const checkerWidth = Math.ceil(screenWidth / bgCheckerSize) + 2;
-        const checkerHeight = Math.ceil(screenWidth / bgCheckerSize) + 2;
+        checkerWidth = Math.ceil(screenWidth / bgCheckerSize) + 2;
+        checkerHeight = Math.ceil(screenHeight / bgCheckerSize) + 2;
         for (let w = 0; w < checkerWidth; w++) {
             for (let h = 0; h < checkerHeight; h++) {
-                console.log(w);
                 if ((w-1+(h%2)) % 2 == 0) {
                     djui_hud_render_rect((w - 1) * bgCheckerSize, (h - 1) * bgCheckerSize, bgCheckerSize, bgCheckerSize);
                 }
