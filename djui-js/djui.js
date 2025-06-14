@@ -66,40 +66,15 @@ function djui_hud_set_resolution(res) {
     currentResolution = res;
 }
 
-function resizeCanvas() {
-    const scale = get_res_scale();
-    const dpr = window.devicePixelRatio || 1;
-
-    // Set the style size (CSS pixels)
-    canvas.style.width = `${window.innerWidth}px`;
-    canvas.style.height = `${window.innerHeight}px`;
-
-    // Set the actual canvas pixel size (physical pixels)
-    canvas.width = window.innerWidth * dpr;
-    canvas.height = window.innerHeight * dpr;
-
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-        // Reset any transform before setting new one
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-        // Scale by device pixel ratio to match physical pixels
-        ctx.scale(dpr, dpr);
-    }
-}
-
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
-
 function djui_hud_get_screen_width() {
-    return canvas.width / get_res_scale() / (window.devicePixelRatio || 1);
+    return canvas.width / get_res_scale();
 }
 
 function djui_hud_get_screen_height() {
     if (currentResolution === RESOLUTION_DJUI) {
-        return canvas.height / resDJUIScale / (window.devicePixelRatio || 1);
+        return canvas.height / resDJUIScale;
     } else if (currentResolution === RESOLUTION_N64) {
-        return 240;
+        return 240; // N64 height is always 240 pixels
     }
 }
 
@@ -309,8 +284,19 @@ function hook_event(func) {
 
 function djui_on_render() {
     renderList.length = 0;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    // Set Canvas size accordingly
+    const dpr = window.devicePixelRatio || 1;
+    canvas.style.width = `${window.innerWidth}px`;
+    canvas.style.height = `${window.innerHeight}px`;
+    canvas.width = window.innerWidth * dpr;
+    canvas.height = window.innerHeight * dpr;
+
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr, dpr);
+    }
+
     resN64Math = window.innerHeight / 240;
     resDJUIScale = djui_gfx_get_scale();
     context.clearRect(0, 0, canvas.width, canvas.height);
