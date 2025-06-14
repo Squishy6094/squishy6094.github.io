@@ -84,39 +84,24 @@ function djui_hud_set_color(r, g, b, a) {
     context.fillStyle = `rgb(${r}, ${g}, ${b})`;
 }
 
+const renderList = [];
 
 let currentRotation = 0;
 let currentPivotX = 0;
 let currentPivotY = 0;
 
 function djui_hud_set_rotation(rotation, pivotX, pivotY) {
-    // Convert 16-bit integer to degrees
     currentRotation = (-rotation / 0x10000) * 360;
     currentPivotX = pivotX;
     currentPivotY = pivotY;
 }
-const renderList = [];
 
-function add_to_render_list(x, y, width, height) {
-    renderList.push({ x, y, width, height });
-}
-function apply_current_rotation() {
-    if (renderList.length > 0) {
-        const last = renderList[renderList.length - 1];
-        if (last) {
-            let pivotX = last.x + last.width * currentPivotX;
-            let pivotY = last.y + last.height * currentPivotY;
-            context.save();
-            context.translate(pivotX, pivotY);
-            context.rotate(currentRotation * Math.PI / 180); // Convert degrees to radians
-            context.translate(-pivotX, -pivotY);
-        }
-    }
-}
-
-// Restore context after drawing each object
-function restore_rotation() {
-    context.restore();
+function apply_rotation_context(x, y, width, height) {
+    const pivotX = x + width * currentPivotX;
+    const pivotY = y + height * currentPivotY;
+    context.translate(pivotX, pivotY);
+    context.rotate(currentRotation * Math.PI / 180);
+    context.translate(-pivotX, -pivotY);
 }
 
 let _djui_mouse_x = 0;
@@ -181,10 +166,14 @@ function djui_hud_get_mouse_buttons_released() {
 
 function djui_hud_render_rect(x, y, width, height) {
     const scale = get_res_scale();
-    add_to_render_list(x * scale, y * scale, width * scale, height * scale);
-    apply_current_rotation();
-    context.fillRect(x * scale, y * scale, width * scale, height * scale);
-    restore_rotation();
+    const sx = x * scale;
+    const sy = y * scale;
+    const sw = width * scale;
+    const sh = height * scale;
+    context.save();
+    apply_rotation_context(sx, sy, sw, sh);
+    context.fillRect(sx, sy, sw, sh);
+    context.restore();
 }
 
 const fontStyles = document.createElement('style');
@@ -235,44 +224,45 @@ function get_texture_info(texName) {
 }
 
 const gTextures = {
-    // mario: get_texture_info('djui-js/mario.png'),
     luigi: get_texture_info('djui-js/luigi.png'),
     toad: get_texture_info('djui-js/toad.png'),
     waluigi: get_texture_info('djui-js/waluigi.png'),
     wario: get_texture_info('djui-js/wario.png'),
 };
-function djui_hud_render_texture(texture, x, y, width, height) {
-    const scale = get_res_scale();
-    const imgWidth = width * texture.naturalWidth;
-    const imgHeight = height * texture.naturalHeight;
-    add_to_render_list(x * scale, y * scale, imgWidth * scale, imgHeight * scale);
-    apply_current_rotation();
-    if (texture instanceof HTMLImageElement) {
-        context.imageSmoothingEnabled = false;
-        context.drawImage(texture, x * scale, y * scale, imgWidth * scale, imgHeight * scale);
-    } else {
-        console.warn(`Texture '${texture}' not found.`);
+
+function djui_hud_render_texture(texture, x, y, scaleX, scaleY) {
+    if (!(texture instanceof HTMLImageElement) || !texture.complete || texture.naturalWidth === 0) {
+        return;
     }
-    restore_rotation();
+
+    const scale = get_res_scale();
+    const drawX = x * scale;
+    const drawY = y * scale;
+    const drawW = texture.naturalWidth * scaleX * scale;
+    const drawH = texture.naturalHeight * scaleY * scale;
+
+    context.save();
+    apply_rotation_context(drawX, drawY, drawW, drawH);
+    context.imageSmoothingEnabled = false;
+    context.drawImage(texture, drawX, drawY, drawW, drawH);
+    context.restore();
 }
 
+
+
 function djui_hud_render_texture_tile(texture, x, y, width, height, tileX, tileY, tileWidth, tileHeight) {
-    const imgWidth = (width * tileWidth * tileWidth / texture.naturalWidth);
-    const imgHeight = (height * tileHeight * tileHeight / texture.naturalHeight);
     const scale = get_res_scale();
-    add_to_render_list(x * scale, y * scale, imgWidth * scale, imgHeight * scale);
-    apply_current_rotation();
+    const sx = x * scale;
+    const sy = y * scale;
+    const sw = width * tileWidth * tileWidth / texture.naturalWidth;
+    const sh = height * tileHeight * tileHeight / texture.naturalHeight;
+    context.save();
+    apply_rotation_context(sx, sy, sw, sh);
     if (texture instanceof HTMLImageElement) {
         context.imageSmoothingEnabled = false;
-        context.drawImage(
-            texture,
-            tileX, tileY, tileWidth, tileHeight,
-            x * scale, y * scale, imgWidth * scale, imgHeight * scale
-        );
-    } else {
-        console.warn(`Texture '${texture}' not found.`);
+        context.drawImage(texture, tileX, tileY, tileWidth, tileHeight, sx, sy, sw * scale, sh * scale);
     }
-    restore_rotation();
+    context.restore();
 }
 
 const hookedFunctions = [];

@@ -68,13 +68,19 @@
     TEXT_WIP = "Nastywerkkk in Progress!!"
 
     // Music
-    MUSIC_TF2_UPGRADE = new Audio('sound/tf2-upgrade-station.mp3');
-    MUSIC_TF2_UPGRADE.loop = true
-    MUSIC_TF2_UPGRADE.volume=0.2
+    const musicTracks = [
+        {name: "Team Fortress 2 - Upgrade Station", audio: 'sound/tf2-upgrade-station.mp3'}
+    ]
+    currMusicTrack = clamp(Math.floor(Math.random()*musicTracks.length - 1), 0, musicTracks.length - 1)
+    SOUND_MUSIC = new Audio(musicTracks[currMusicTrack].audio);
+    console.log(currMusicTrack)
+    SOUND_MUSIC.loop = true
+    SOUND_MUSIC.volume=0.2
     // Sounds
     SOUND_CHECKPOINT = new Audio('sound/Checkpoint.ogg');
 
     TEX_LOGO = get_texture_info("textures/wip-logo.png")
+    TEX_MUSIC_RECORD = get_texture_info("textures/record.png")
     logoScale = 6
 
     socailScaleMax = 1.2
@@ -139,12 +145,13 @@
         if (djui_hud_get_mouse_buttons_released() && titleClick != true) {
             titleClick = true
             SOUND_CHECKPOINT.play()
-            MUSIC_TF2_UPGRADE.play()
+            SOUND_MUSIC.play()
             logoFlash = 150
         }
         djui_hud_set_color(255, 255, 255, 255)
         djui_hud_set_font(FONT_ALIASED)
         djui_hud_print_text(TEXT_WEBSITE, -titleOffset*2 + screenWidth*0.25 - djui_hud_measure_text(TEXT_WEBSITE)*1.5, screenHeight*0.5 - 250, 3)
+        djui_hud_set_font(FONT_NORMAL)
 
         mouseX = djui_hud_get_mouse_x()
         mouseY = djui_hud_get_mouse_y()
@@ -184,6 +191,12 @@
                 djui_hud_print_text("Click Anywhere", screenWidth*0.5 - djui_hud_measure_text("Click Anywhere"), screenHeight - 150, 2)
             }
         }
+
+        // Music Record
+        djui_hud_set_color(255, 255, 255, 255)
+        djui_hud_set_rotation(globalTimer*0x80, 0.5, 0.5);
+        djui_hud_render_texture(TEX_MUSIC_RECORD, screenWidth - TEX_MUSIC_RECORD.naturalWidth - 30, screenHeight - TEX_MUSIC_RECORD.naturalHeight - 30, 2, 2)
+        djui_hud_set_rotation(0, 0, 0)
     }
 
     hook_event(hud_render);   
