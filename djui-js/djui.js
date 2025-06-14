@@ -70,35 +70,40 @@ function resizeCanvas() {
     const scale = get_res_scale();
     const dpr = window.devicePixelRatio || 1;
 
+    // Set the style size (CSS pixels)
     canvas.style.width = `${window.innerWidth}px`;
     canvas.style.height = `${window.innerHeight}px`;
 
+    // Set the actual canvas pixel size (physical pixels)
     canvas.width = window.innerWidth * dpr;
     canvas.height = window.innerHeight * dpr;
 
-    // If using a rendering context that needs scaling (like 2D)
     const ctx = canvas.getContext('2d');
-    if (ctx) ctx.setTransform(dpr / scale, 0, 0, dpr / scale, 0, 0);
+    if (ctx) {
+        // Reset any transform before setting new one
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+        // Scale by device pixel ratio to match physical pixels
+        ctx.scale(dpr, dpr);
+    }
 }
 
-// Call on load and resize
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
 function djui_hud_get_screen_width() {
-    return canvas.width / (get_res_scale() * (window.devicePixelRatio || 1));
+    return window.innerWidth / get_res_scale();
 }
 
 function djui_hud_get_screen_height() {
     if (currentResolution === RESOLUTION_DJUI) {
-        return canvas.height / (resDJUIScale * (window.devicePixelRatio || 1));
+        return window.innerHeight / resDJUIScale;
     } else if (currentResolution === RESOLUTION_N64) {
         return 240;
     }
 }
 
 function djui_hud_set_color(r, g, b, a) {
-    // Clamp alpha to [0, 1] if it's in [0, 255]
     a = a / 255;
     context.globalAlpha = a;
     context.fillStyle = `rgb(${r}, ${g}, ${b})`;
