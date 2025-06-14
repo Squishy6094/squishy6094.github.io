@@ -11,27 +11,37 @@
     -->
     <style>
         body {
-            background-color: #333;
+            background-color: #000;
         }
     </style>
 </head>
 
 <script type="text/javascript" src="djui-js/djui.js"></script>
 <script type="text/javascript">
+    // Utilities
+    function lerp( a, b, alpha ) {
+        return a + alpha * ( b - a )
+    }
+
+    // Website
+    globalTimer = 0
 
     SOUND_CHECKPOINT = new Audio('sound/Checkpoint.ogg');
 
     TEX_LOGO = get_texture_info("textures/wip-logo.png")
     logoScale = 6
 
+    socailScaleMax = 1.2
     socialLinks = [
-        {image:TEX_LOGO, link: "https://bsky.app/profile/squishy6094.github.io", y:300},
-        {image:TEX_LOGO, link: "https://bsky.app/profile/squishy6094.github.io", y:300},
-        {image:TEX_LOGO, link: "https://bsky.app/profile/squishy6094.github.io", y:300},
+        {image:TEX_LOGO, name:"Discord", color:{r:88, g:101, b:242}, link: "https://discord.gg/yN3ahrf5zD", y:300, scale:1},
+        {image:TEX_LOGO, name:"Bluesky", color:{r:79, g:155, b:217}, link: "https://bsky.app/profile/squishy6094.github.io", y:300, scale:1},
+        {image:TEX_LOGO, name:"Twitter", color:{r:30, g:30, b:30}, link: "https://x.com/squishy6094", y:300, scale:1},
     ]
 
-    color = [0, 100, 0]
-    timer = 0
+    bgColorDefault = {r:0, g:88, b:0}
+    bgColorRaw = bgColorDefault
+    bgColor = bgColorRaw
+    bgCheckerSize = 48
     titleClick = false
     titleOffset = djui_hud_get_screen_width()*0.25
     titleScaleSpin = 2
@@ -41,12 +51,31 @@
         screenWidth = djui_hud_get_screen_width()
         screenHeight = djui_hud_get_screen_height()
 
+        // Background Color
+        bgColor.r = lerp(bgColor.r, bgColorRaw.r, 0.06)
+        bgColor.g = lerp(bgColor.g, bgColorRaw.g, 0.06)
+        bgColor.b = lerp(bgColor.b, bgColorRaw.b, 0.06)
+        djui_hud_set_color(bgColor.r, bgColor.g, bgColor.b, 255)
+        djui_hud_render_rect(0, 0, screenWidth, screenHeight)
+        djui_hud_set_color(bgColor.r*0.5, bgColor.g*0.5, bgColor.b*0.5, 255)
+        const checkerWidth = Math.ceil(screenWidth / bgCheckerSize) + 2;
+        const checkerHeight = Math.ceil(screenWidth / bgCheckerSize) + 2;
+        for (let w = 0; w < checkerWidth; w++) {
+            for (let h = 0; h < checkerHeight; h++) {
+                console.log(w);
+                if ((w-1+(h%2)) % 2 == 0) {
+                    djui_hud_render_rect((w - 1) * bgCheckerSize, (h - 1) * bgCheckerSize, bgCheckerSize, bgCheckerSize);
+                }
+            }
+        }
+
+        
         djui_hud_set_color(0, 0, 0, logoFlash)
         djui_hud_render_rect(0, 0, screenWidth, screenHeight)
 
         // Work In Progress Text
-        timer = timer + 1
-        x = -Math.tan(timer*0.02 - 1.1)*screenWidth/3 + screenWidth*0.5
+        globalTimer = globalTimer + 1
+        x = -Math.tan(globalTimer*0.02 - 1.1)*screenWidth/3 + screenWidth*0.5
         wipText = "Work In Progress!!!"
         djui_hud_set_color(0, 0, 0, 100)
         djui_hud_render_rect(0, 10, screenWidth, 60)
@@ -54,7 +83,7 @@
         djui_hud_print_text(wipText, 20 + x, 20, 2)
 
         // Title Screen
-        logoTilt = Math.sin(timer*0.1)/Math.PI*0x1000
+        logoTilt = Math.sin(globalTimer*0.1)/Math.PI*0x800
         djui_hud_set_color(255, 255, 255, 255)
         djui_hud_set_rotation(logoTilt, 0.5, 0.5)
         SpinMath = (Math.sin((titleScaleSpin + 0.5)*Math.PI))
@@ -73,21 +102,36 @@
         if (titleClick) {
             for (let i in socialLinks) {
                 socialLinks[i].y = socialLinks[i].y * (0.85 + (i*0.09/socialLinks.length))
-                x = (i - socialLinks.length*0.5)*80 + screenWidth*0.25
-                y = screenHeight - 100 + socialLinks[i].y
+                x = (i - socialLinks.length*0.5)*80 + screenWidth*0.25 + 32
+                y = screenHeight - 100 + socialLinks[i].y + 32
                 djui_hud_set_color(255, 255, 255, 255)
                 
-                djui_hud_render_texture(socialLinks[i].image, x, y, 1, 1)
+                djui_hud_render_texture(socialLinks[i].image, x - 32*socialLinks[i].scale, y - 32*socialLinks[i].scale, socialLinks[i].scale, socialLinks[i].scale)
 
-                if ((mouseX > x && mouseX < x + 64) && (mouseY > y && mouseY < y + 64) && djui_hud_get_mouse_buttons_released()) {
-                    window.open(socialLinks[i].link)
+                x = x - 32
+                y = y - 32
+                textOpacity = 0
+                if ((mouseX > x && mouseX < x + 64) && (mouseY > y && mouseY < y + 64)) {
+                    if (djui_hud_get_mouse_buttons_released()) {
+                        window.open(socialLinks[i].link)
+                    }
+                    socialLinks[i].scale = Math.min(socialLinks[i].scale*1.1, socailScaleMax)
+                    bgColorRaw = socialLinks[i].color
+                } else {
+                    socialLinks[i].scale = Math.max(socialLinks[i].scale*0.9, 1)
                 }
+                djui_hud_set_color(255, 255, 255, (socialLinks[i].scale - 1)/(socailScaleMax - 1)*255)
+                djui_hud_print_text(socialLinks[i].name, x - djui_hud_measure_text(socialLinks[i].name)*0.5 + 32, y - 40, 1)
             }
-            titleOffset = titleOffset *0.92
+            titleOffset = titleOffset *0.9
             titleScaleSpin = titleScaleSpin*0.90
             logoFlash = logoFlash*0.90
         } else {
             titleOffset = screenWidth*0.25
+            if (globalTimer > 150) {
+                djui_hud_set_color(255, 255, 255, Math.abs(Math.sin((globalTimer - 150)*0.05)/Math.PI)*255)
+                djui_hud_print_text("Click Anywhere", screenWidth*0.5 - djui_hud_measure_text("Click Anywhere"), screenHeight - 150, 2)
+            }
         }
     }
 
