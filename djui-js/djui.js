@@ -146,17 +146,17 @@ canvas.addEventListener('touchmove', function(e) {
     _djui_mouse_x = (touch.clientX - rect.left) / get_res_scale();
     _djui_mouse_y = (touch.clientY - rect.top) / get_res_scale();
 
-    e.preventDefault(); // Prevent scrolling or pinch-zoom
+    //e.preventDefault(); // Prevent scrolling or pinch-zoom
 }, { passive: false }); // Needed to allow preventDefault()
 
 canvas.addEventListener('touchstart', function(e) {
     _djui_mouse_buttons_down |= (1 << 0);
-    e.preventDefault(); // Prevent mouse emulation
+    //e.preventDefault(); // Prevent mouse emulation
 });
 
 canvas.addEventListener('touchend', function(e) {
     _djui_mouse_buttons_down &= ~(1 << 0);
-    e.preventDefault(); // Prevent mouse emulation
+    //e.preventDefault(); // Prevent mouse emulation
 });
 
 function djui_hud_get_mouse_x() {
@@ -285,17 +285,10 @@ function hook_event(func) {
 function djui_on_render() {
     renderList.length = 0;
     // Set Canvas size accordingly
-    const dpr = window.devicePixelRatio || 1;
     canvas.style.width = `${window.innerWidth}px`;
     canvas.style.height = `${window.innerHeight}px`;
-    canvas.width = window.innerWidth * dpr;
-    canvas.height = window.innerHeight * dpr;
-
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.scale(dpr, dpr);
-    }
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
     resN64Math = window.innerHeight / 240;
     resDJUIScale = djui_gfx_get_scale();
