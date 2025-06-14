@@ -23,6 +23,44 @@
         return a + alpha * ( b - a )
     }
 
+
+    function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    let rainbowColor = { r: 255, g: 0, b: 0 };
+    let rainbowState = 0;
+    function rainbow_color() {
+        const speed = 10
+
+        if (rainbowState === 0) {
+            rainbowColor.r += speed;
+            if (rainbowColor.r >= 255) rainbowState = 1;
+        } else if (rainbowState === 1) {
+            rainbowColor.b -= speed;
+            if (rainbowColor.b <= 0) rainbowState = 2;
+        } else if (rainbowState === 2) {
+            rainbowColor.g += speed;
+            if (rainbowColor.g >= 255) rainbowState = 3;
+        } else if (rainbowState === 3) {
+            rainbowColor.r -= speed;
+            if (rainbowColor.r <= 0) rainbowState = 4;
+        } else if (rainbowState === 4) {
+            rainbowColor.b += speed;
+            if (rainbowColor.b >= 255) rainbowState = 5;
+        } else if (rainbowState === 5) {
+            rainbowColor.g -= speed;
+            if (rainbowColor.g <= 0) rainbowState = 0;
+        }
+
+        rainbowColor.r = clamp(rainbowColor.r, 0, 255);
+        rainbowColor.g = clamp(rainbowColor.g, 0, 255);
+        rainbowColor.b = clamp(rainbowColor.b, 0, 255);
+
+        return {r:rainbowColor.r*0.6, g:rainbowColor.g*0.6, b:rainbowColor.b*0.6};
+    }
+
+
     // Website
     globalTimer = 0
 
@@ -36,6 +74,7 @@
         {image:TEX_LOGO, name:"Discord", color:{r:88, g:101, b:242}, link: "https://discord.gg/yN3ahrf5zD", y:300, scale:1},
         {image:TEX_LOGO, name:"Bluesky", color:{r:79, g:155, b:217}, link: "https://bsky.app/profile/squishy6094.github.io", y:300, scale:1},
         {image:TEX_LOGO, name:"Twitter", color:{r:30, g:30, b:30}, link: "https://x.com/squishy6094", y:300, scale:1},
+        {image:TEX_LOGO, name:"Romhacking.com", color:rainbow_color, link: "https://romhacking.com/user/SQUISHY", y:300, scale:1},
     ]
 
     bgColorDefault = {r:0, g:88, b:0}
@@ -52,9 +91,10 @@
         screenHeight = djui_hud_get_screen_height()
 
         // Background Color
-        bgColor.r = lerp(bgColor.r, bgColorRaw.r, 0.06)
-        bgColor.g = lerp(bgColor.g, bgColorRaw.g, 0.06)
-        bgColor.b = lerp(bgColor.b, bgColorRaw.b, 0.06)
+        prevColor = (typeof bgColorRaw === 'function' ? bgColorRaw() : bgColorRaw);
+        bgColor.r = lerp(bgColor.r, prevColor.r, 0.1)
+        bgColor.g = lerp(bgColor.g, prevColor.g, 0.1)
+        bgColor.b = lerp(bgColor.b, prevColor.b, 0.1)
         djui_hud_set_color(bgColor.r, bgColor.g, bgColor.b, 255)
         djui_hud_render_rect(0, 0, screenWidth, screenHeight)
         djui_hud_set_color(bgColor.r*0.5, bgColor.g*0.5, bgColor.b*0.5, 255)
