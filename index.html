@@ -2,208 +2,95 @@
 <html>
 <head>
     <!-- Embed -->
-    <title>Squishy Site >.<</title>
-    <meta property="og:title" content="Squishy Site >.<">
+    <title>Squishy Site</title>
+    <meta property="og:title" content="Squishy Site">
+    <meta property="og:description" content='SM64CoopDX Develeoper, Squishy T. "Madeline" Server'>
+    <!-- 
     <link rel="icon" type="image/x-icon" href="images/icons/hat-logo.png">
-    <meta property="og:description" content="woahhh custom embed o.o">
     <meta property="og:image" content="https://squishy6094.github.io/images/icons/hat-logo.png">
-
-    <!-- Page Style -->
-    <link rel="stylesheet" type="text/css" href="styles/style.css">
-    
-    <script>
-        // Get Birthday
-        const d = new Date();
-        const b = new Date("April 3, 2007 2:00:00");
-        let birth = b.getFullYear()
-        let year = d.getFullYear()
-        var age = year - birth;
-
-        // Snackbar/Popups
-        const pageUnavailable = {
-            text: "This page is a Work in Progress\nCome back another time!!",
-            duration: 5000,
-            gravity: "top", // `top` or `bottom`
-            position: "right", // `left`, `center` or `right`
-            stopOnFocus: true, // Prevents dismissing of toast on hover
-            onClick: function(){} // Callback after click
+    -->
+    <style>
+        body {
+            background-color: #333;
         }
-
-        // Get Status from Codist's cool and awesome thingy
-        fetch("https://savespace.imcodist.xyz/data/user/5d23caa3-70b6-4ed0-ba41-e0a0d30b0e11")
-            .then((response) => response.json()).then((json) => {
-                const status = document.getElementById("howImFeeling")
-                status.textContent = json.status.status
-                status.title = "Last Updated: " + Date(json.status.timestamp)
-                document.getElementById("howImFeelingDiscord").textContent = "Status - " + json.status.online
-
-                // console.log(json.status.status); // The status the user wrote.
-                // console.log(json.status.expression); // The expression to go with the written status.
-                // console.log(json.status.online); // The users online status (whether from discord or manually defined)
-                
-                // console.log(json.status.timestamp); // The timestamp when the status was changed last.
-            });
-    </script>
-    
-    <!-- Toastify JS by apvarun -->
-    <link rel="stylesheet" type="text/css" href="scripts/toastify-js/toastify.css">
+    </style>
 </head>
 
-<style>
-    h2 {
-        line-height: 0.1;
-    }
+<script type="text/javascript" src="djui-js/djui.js"></script>
+<script type="text/javascript">
 
-    body {
-        padding-top: 150px;
-        padding-bottom: 50px;
-    }
-</style>
+    SOUND_CHECKPOINT = new Audio('sound/Checkpoint.ogg');
 
-<header>
-    <span>
-        <img src="images/header.png" style="height: 100px;">
-    </span>
-    <!-- Achievments -->
-    <img id = "squishedBadge" src="images/achievements/golden-squished.gif" style = "position: absolute; left: 10px; top: 48px; visibility: hidden;">
-    <script>
-        if (localStorage.getItem("squishedFound") == "true") {
-            document.getElementById('squishedBadge').style.visibility = 'visible';
+    TEX_LOGO = get_texture_info("textures/wip-logo.png")
+    logoScale = 6
+
+    socialLinks = [
+        {image:TEX_LOGO, link: "https://bsky.app/profile/squishy6094.github.io", y:300},
+        {image:TEX_LOGO, link: "https://bsky.app/profile/squishy6094.github.io", y:300},
+        {image:TEX_LOGO, link: "https://bsky.app/profile/squishy6094.github.io", y:300},
+    ]
+
+    color = [0, 100, 0]
+    timer = 0
+    titleClick = false
+    titleOffset = djui_hud_get_screen_width()*0.25
+    titleScaleSpin = 2
+    logoFlash = 0
+    function hud_render() {
+        djui_hud_set_resolution(RESOLUTION_DJUI)
+        screenWidth = djui_hud_get_screen_width()
+        screenHeight = djui_hud_get_screen_height()
+
+        djui_hud_set_color(0, 0, 0, logoFlash)
+        djui_hud_render_rect(0, 0, screenWidth, screenHeight)
+
+        // Work In Progress Text
+        timer = timer + 1
+        x = -Math.tan(timer*0.02 - 1.1)*screenWidth/3 + screenWidth*0.5
+        wipText = "Work In Progress!!!"
+        djui_hud_set_color(0, 0, 0, 100)
+        djui_hud_render_rect(0, 10, screenWidth, 60)
+        djui_hud_set_color(255, 255, 255, 255)
+        djui_hud_print_text(wipText, 20 + x, 20, 2)
+
+        // Title Screen
+        logoTilt = Math.sin(timer*0.1)/Math.PI*0x1000
+        djui_hud_set_color(255, 255, 255, 255)
+        djui_hud_set_rotation(logoTilt, 0.5, 0.5)
+        SpinMath = (Math.sin((titleScaleSpin + 0.5)*Math.PI))
+        djui_hud_render_texture(TEX_LOGO, screenWidth*0.25 + titleOffset - TEX_LOGO.naturalWidth*logoScale*0.5 * SpinMath, screenHeight*0.5 - TEX_LOGO.naturalHeight*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*70), logoScale * SpinMath, logoScale)
+        djui_hud_set_rotation(0, 0, 0)
+        if (djui_hud_get_mouse_buttons_released() && titleClick != true) {
+            titleClick = true
+            SOUND_CHECKPOINT.play()
+            logoFlash = 150
         }
-    </script>
 
-    <!-- Crossover Links -->
-    <a id ="hangingCrossoverLink"><img id = "hangingCrossover" src="images/hanging-crossover/404.png" style = "position: absolute; right: 60px; top: 138px; height: 200px;"></a>
-    
-    <script>
-        function mulberry32(a) { // mulberry32 PRNG Method
-            return function() {
-                let t = a += 0x6D2B79F5;
-                t = Math.imul(t ^ t >>> 15, t | 1);
-                t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-                return ((t ^ t >>> 14) >>> 0) / 4294967296;
-            }
-        }
-        const seed = Math.round(d.getTime() / 86400000); // Seconds since epoch rounded to every day
-        const rng = mulberry32(seed)
-        const hangingCreatures = [
-            {name: "404", image:"404.png", link:"404.html"},
-            {name: "Lukas' Workshop", image:"geno.png", link:"https://lukasworkshop.nekoweb.org/"},
-            {name: "KF (Twitter)", image:"kf.gif", link:"https://x.com/KFIC_TSMK"},
-            {name: "Carl & John", image:"carlandjohn.png", link:"https://carlandjohn.neocities.org/"},
-            {name: "Garlicker/ChickenGunner (Youtube)", image:"garlicker.png", link:"https://www.youtube.com/@ssg-eggunner/"},
-            {name: "DM-Kun (Youtube)", image:"dm-kun.png", link:"https://www.youtube.com/@dm-kun"},
-            {name: "Jaytomz (Youtube)", image:"jaytomz.png", link:"https://www.youtube.com/@JayTomzMuzik"},
-            {name: "Liampy Strawpage", image:"liampy.png", link:"https://liampy.straw.page/"},
-            {name: "Mario 85", image:"mario85.png", link:"https://gamejolt.com/games/LUCAS/837168", artist: "5up34",},
-        ];
-        const tableLength = hangingCreatures.length
-        const charRng = Math.round(rng()*tableLength)
-        if (charRng >= 0 && charRng < tableLength) {
-            var siteGen = hangingCreatures[charRng]
-            document.getElementById("hangingCrossover").src = 'images/hanging-crossover/' + siteGen.image
-            document.getElementById("hangingCrossoverLink").href = siteGen.link
-            if (siteGen.artist != null) {
-                siteGen.artist = "\nArt made by: " + siteGen.artist + "!"
-            } else {
-                siteGen.artist = ""
-            }
-            document.getElementById("hangingCrossoverLink").title= "Check out " + siteGen.name + "!" + siteGen.artist
-        } else {
-            document.getElementById("hangingCrossover").style.visibility = 'hidden'
-        }
-    </script>
-</header>
+        mouseX = djui_hud_get_mouse_x()
+        mouseY = djui_hud_get_mouse_y()
 
-<body style="text-align: center; display: flex; margin-bottom: 50px;">
-
-    <div style="margin-bottom: auto; flex: 1">
-        <div>
-            <span style="left: 5px;" class="side-design"></span>
-            <span style="right: 5px;" class="side-design"></span>
-        </div>
-
-        <div style="text-align: center; width: 600px;" class="text-box">
-            <p>
-                Haii!! I'm a developer modder for Super Mario 64 Coop Deluxe! <br>
-                I've primarily work on Character Select but I'm work on pleanty of other mods too! <br>
-                This website is still a huge work in progress so bare with me!!
-                <br>>.<'<br>
-            </p>
-        </div>
-
-        <div style="text-align: left; width: 500px; height: 150px;" class="text-box">
-            <span style="float:left;">
-                <h2>About Me:</h2>
-                She/Her - Transgender<br>
-                Age: <script type="text/javascript">document.write(age)</script> (April 3rd)<br>
+        // Bottom Socials
+        if (titleClick) {
+            for (let i in socialLinks) {
+                socialLinks[i].y = socialLinks[i].y * (0.85 + (i*0.09/socialLinks.length))
+                x = (i - socialLinks.length*0.5)*80 + screenWidth*0.25
+                y = screenHeight - 100 + socialLinks[i].y
+                djui_hud_set_color(255, 255, 255, 255)
                 
-                Time: <span id="time">Loading...</span> (GMT-7)
-            </span>
-            <span style="float:right;">
-                <img src="images/sketchy-trans.png" alt="I'm trans btw!!" style="height:150px;"><br>
-            </span>
-        </div>
-        
-        <div style="width: 550px; height: 160px;">
-            <span class="text-box" style = "text-align: center; position: absolute; right: calc(50% + 5px); font-size: 160%; width: 300px; font-family: FONT_ALIASED; height: 80px; padding: 30px 0;">
-                <span id = "howImFeelingDiscord">Status - Loading...</span><br>
-                <span id = "howImFeeling" style="font-size: 90%;">Loading...</span>
-            </span>
-            <a id = "latestBlog" href = "blog-posts/8-29-2024.html" class = "text-box" style = "text-align: center; position: absolute; left: calc(50% + 5px); font-size: 80%; width: 300px; height: 80px; padding: 30px 0;">
-                <span style="font-size: 200%; font-family: FONT_ALIASED;">Latest Blog:</span><br>
-        
-                <span style="font-size: 200%; font-family: FONT_ALIASED;">Apologize to the ladyy,,</span><br>
-                <span style="font-size: 100%;">(8/29/2024 - 10:27 PM)</span>
-            </a>
-        </div>
+                djui_hud_render_texture(socialLinks[i].image, x, y, 1, 1)
 
-        <div style="width: 550px; height: 230px;" class="text-box">
-            <h2>Navigation</h2>
-            <span class="navigation">
-                <div>
-                    <a href="blogs.html">
-                        <img src="images/icons/hat-logo.png" alt="Blogs" class="navigation-images">
-                        <div>Blog Posts</div>
-                    </a>
-                </div>
-                <div>
-                    <a onclick='Toastify(pageUnavailable).showToast();'>
-                        <img src="images/icons/portfolio.png" alt="Portfolio" class="navigation-images">
-                        <div>Project Portfolio</div>
-                    </a>
-                </div>
-                <div>
-                    <a href="gallery.html">
-                        <img src="images/icons/gallery.png" alt="Gallery" class="navigation-images">
-                        <div>Art Gallery</div>
-                    </a>
-                </div>
-            </span>
-        </div>
-    </div>
+                if ((mouseX > x && mouseX < x + 64) && (mouseY > y && mouseY < y + 64) && djui_hud_get_mouse_buttons_released()) {
+                    window.open(socialLinks[i].link)
+                }
+            }
+            titleOffset = titleOffset *0.92
+            titleScaleSpin = titleScaleSpin*0.90
+            logoFlash = logoFlash*0.90
+        } else {
+            titleOffset = screenWidth*0.25
+        }
+    }
 
-</body>
-
-<footer style="font-size:150%;">
-    <!-- Newest Blog Post -->
-    <a id ="runAnimLink"><img src="images/run-anims/squishy-run.gif" alt="Squishy6094" class="squishy-run" id ="runAnim"></a>
-    <span style="float:left;">
-        Copyright - Squishy Inc. 1996
-    </span>
-    <div class = "links">
-        <a href="https://mods.sm64coopdx.com/members/squishy6094.37"><img src="images/icons/coopdx.png" alt="Squishy6094" style="width:40px;height:40px;"></a>
-        <a href="https://bsky.app/profile/squishy6094.github.io"><img src="images/icons/bluesky.png" alt="@squishy6094.github.io" style="width:40px;height:40px;"></a>
-        <a href="https://discord.gg/2bg2FnFp6f"><img src="images/icons/discord.png" alt="Squishy Community Server" style="width:40px;height:40px;"></a>
-        <a href="https://www.youtube.com/@Squishy6094"><img src="images/icons/youtube.png" alt="@Squishy6094" style="width:40px;height:40px;"></a>
-        <a href="https://squishy6094.newgrounds.com"><img src="images/icons/newgrounds.png" alt="@Squishy6094" style="width:40px;height:40px;"></a>
-    </div>
-    <br>
-</footer> 
-
-<script type="text/javascript" src="scripts/squishyRun.js"></script>
-<script type="text/javascript" src="scripts/timeUpdate.js"></script>
-
-<script type="text/javascript" src="scripts/toastify-js/toastify.js"></script>
-
+    hook_event(hud_render);   
+</script>
 </html> 
