@@ -66,15 +66,34 @@ function djui_hud_set_resolution(res) {
     currentResolution = res;
 }
 
+function resizeCanvas() {
+    const scale = get_res_scale();
+    const dpr = window.devicePixelRatio || 1;
+
+    canvas.style.width = `${window.innerWidth}px`;
+    canvas.style.height = `${window.innerHeight}px`;
+
+    canvas.width = window.innerWidth * dpr;
+    canvas.height = window.innerHeight * dpr;
+
+    // If using a rendering context that needs scaling (like 2D)
+    const ctx = canvas.getContext('2d');
+    if (ctx) ctx.setTransform(dpr / scale, 0, 0, dpr / scale, 0, 0);
+}
+
+// Call on load and resize
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
 function djui_hud_get_screen_width() {
-    return canvas.width / get_res_scale();
+    return canvas.width / (get_res_scale() * (window.devicePixelRatio || 1));
 }
 
 function djui_hud_get_screen_height() {
     if (currentResolution === RESOLUTION_DJUI) {
-        return canvas.height / resDJUIScale;
+        return canvas.height / (resDJUIScale * (window.devicePixelRatio || 1));
     } else if (currentResolution === RESOLUTION_N64) {
-        return 240; // N64 height is always 240 pixels
+        return 240;
     }
 }
 
@@ -137,6 +156,27 @@ canvas.addEventListener('mousedown', function(e) {
 
 canvas.addEventListener('mouseup', function(e) {
     _djui_mouse_buttons_down &= ~(1 << e.button);
+});
+
+// Mobile "Mouse" Support
+canvas.addEventListener('touchmove', function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0]; // Use the first touch point
+
+    _djui_mouse_x = (touch.clientX - rect.left) / get_res_scale();
+    _djui_mouse_y = (touch.clientY - rect.top) / get_res_scale();
+
+    e.preventDefault(); // Prevent scrolling or pinch-zoom
+}, { passive: false }); // Needed to allow preventDefault()
+
+canvas.addEventListener('touchstart', function(e) {
+    _djui_mouse_buttons_down |= (1 << 0);
+    e.preventDefault(); // Prevent mouse emulation
+});
+
+canvas.addEventListener('touchend', function(e) {
+    _djui_mouse_buttons_down &= ~(1 << 0);
+    e.preventDefault(); // Prevent mouse emulation
 });
 
 function djui_hud_get_mouse_x() {
