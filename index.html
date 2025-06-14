@@ -64,6 +64,14 @@
     // Website
     globalTimer = 0
 
+    TEXT_WEBSITE = "Squishy Site"
+    TEXT_WIP = "Nastywerkkk in Progress!!"
+
+    // Music
+    MUSIC_TF2_UPGRADE = new Audio('sound/tf2-upgrade-station.mp3');
+    MUSIC_TF2_UPGRADE.loop = true
+    MUSIC_TF2_UPGRADE.volume=0.2
+    // Sounds
     SOUND_CHECKPOINT = new Audio('sound/Checkpoint.ogg');
 
     TEX_LOGO = get_texture_info("textures/wip-logo.png")
@@ -71,6 +79,7 @@
 
     socailScaleMax = 1.2
     socialLinks = [
+        {image:TEX_LOGO, name:"Github", color:{r:30, g:30, b:30}, link: "https://github.com/Squishy6094", y:300, scale:1},
         {image:TEX_LOGO, name:"Discord", color:{r:88, g:101, b:242}, link: "https://discord.gg/yN3ahrf5zD", y:300, scale:1},
         {image:TEX_LOGO, name:"Bluesky", color:{r:79, g:155, b:217}, link: "https://bsky.app/profile/squishy6094.github.io", y:300, scale:1},
         {image:TEX_LOGO, name:"Twitter", color:{r:30, g:30, b:30}, link: "https://x.com/squishy6094", y:300, scale:1},
@@ -115,11 +124,10 @@
         // Work In Progress Text
         globalTimer = globalTimer + 1
         x = -Math.tan(globalTimer*0.02 - 1.1)*screenWidth/3 + screenWidth*0.5
-        wipText = "Work In Progress!!!"
         djui_hud_set_color(0, 0, 0, 100)
         djui_hud_render_rect(0, 10, screenWidth, 60)
         djui_hud_set_color(255, 255, 255, 255)
-        djui_hud_print_text(wipText, 20 + x, 20, 2)
+        djui_hud_print_text(TEXT_WIP, 20 + x, 20, 2)
 
         // Title Screen
         logoTilt = Math.sin(globalTimer*0.1)/Math.PI*0x800
@@ -131,8 +139,12 @@
         if (djui_hud_get_mouse_buttons_released() && titleClick != true) {
             titleClick = true
             SOUND_CHECKPOINT.play()
+            MUSIC_TF2_UPGRADE.play()
             logoFlash = 150
         }
+        djui_hud_set_color(255, 255, 255, 255)
+        djui_hud_set_font(FONT_ALIASED)
+        djui_hud_print_text(TEXT_WEBSITE, -titleOffset*2 + screenWidth*0.25 - djui_hud_measure_text(TEXT_WEBSITE)*1.5, screenHeight*0.5 - 250, 3)
 
         mouseX = djui_hud_get_mouse_x()
         mouseY = djui_hud_get_mouse_y()
