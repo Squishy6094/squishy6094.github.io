@@ -92,12 +92,12 @@ window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
 function djui_hud_get_screen_width() {
-    return window.innerWidth / get_res_scale();
+    return canvas.width / get_res_scale() / (window.devicePixelRatio || 1);
 }
 
 function djui_hud_get_screen_height() {
     if (currentResolution === RESOLUTION_DJUI) {
-        return window.innerHeight / resDJUIScale;
+        return canvas.height / resDJUIScale / (window.devicePixelRatio || 1);
     } else if (currentResolution === RESOLUTION_N64) {
         return 240;
     }
