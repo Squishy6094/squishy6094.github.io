@@ -76,7 +76,7 @@
     currMusicTrack = clamp(Math.floor(Math.random()*musicTracks.length), 0, musicTracks.length)
     SOUND_MUSIC = new Audio(musicTracks[currMusicTrack].audio);
     SOUND_MUSIC.loop = true
-    SOUND_MUSIC.volume=0.2
+    SOUND_MUSIC.volume=0.1
     TEXT_MUSIC = musicTracks[currMusicTrack].name
     console.log("Music Track: " + TEXT_MUSIC)
     // Sounds
@@ -157,6 +157,9 @@
             console.log(konamiKeys[konamiKeys.length - 1])
             if (konamiKeys[konamiKeys.length - 1] == "1") {
                 TEXT_WEBSITE_NAME = "Madeline Site"
+            }
+            if (konamiKeys[konamiKeys.length - 1] == "7") {
+                TEXT_WIP = "KILLER7"
             }
         }
         djui_hud_set_color(255, 255, 255, 255)
