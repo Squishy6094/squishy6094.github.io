@@ -89,15 +89,15 @@
 
     konamiKeys = []
 
-    socialScaleMin = 0.3
-    socialScaleMax = 0.35
+    socialScaleMin = 0.3*4
+    socialScaleMax = 0.35*4
     socialLinks = [
-        {image:TEX_LOGO, name:"Github", color:{r:100, g:100, b:100}, link: "https://github.com/Squishy6094"},
-        {image:TEX_LOGO, name:"Discord", color:{r:88, g:101, b:242}, link: "https://discord.gg/yN3ahrf5zD"},
-        {image:TEX_LOGO, name:"Bluesky", color:{r:79, g:155, b:217}, link: "https://bsky.app/profile/squishy6094.github.io"},
-        {image:TEX_LOGO, name:"Twitter", color:{r:30, g:30, b:30}, link: "https://x.com/squishy6094"},
-        {image:TEX_LOGO, name:"Youtube", color:{r:255, g:0, b:0}, link: "https://www.youtube.com/@Squishy6094"},
-        {image:TEX_LOGO, name:"Romhacking.com", color:rainbow_color, link: "https://romhacking.com/user/SQUISHY"},
+        {image:get_texture_info("textures/social-github.png"), name:"Github", color:{r:100, g:100, b:100}, link: "https://github.com/Squishy6094"},
+        {image:get_texture_info("textures/social-discord.png"), name:"Discord", color:{r:88, g:101, b:242}, link: "https://discord.gg/yN3ahrf5zD"},
+        {image:get_texture_info("textures/social-bsky.png"), name:"Bluesky", color:{r:79, g:155, b:217}, link: "https://bsky.app/profile/squishy6094.github.io"},
+        {image:get_texture_info("textures/social-twitter.png"), name:"Twitter", color:{r:30, g:30, b:30}, link: "https://x.com/squishy6094"},
+        {image:get_texture_info("textures/social-youtube.png"), name:"Youtube", color:{r:255, g:0, b:0}, link: "https://www.youtube.com/@Squishy6094"},
+        {image:get_texture_info("textures/social-romhacking.png"), name:"Romhacking.com", color:rainbow_color, link: "https://romhacking.com/user/SQUISHY"},
     ]
     for (let i in socialLinks) {
         socialLinks[i].y = 300
