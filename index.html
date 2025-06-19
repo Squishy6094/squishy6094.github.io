@@ -66,6 +66,7 @@
 
     TEXT_WEBSITE_NAME = "Squishy Site"
     TEXT_WIP = "Nastywerkkk in Progress!!"
+    TEXT_CLICK_ANYWHERE = "Click Anywhere"
 
     // Music
     const musicTracks = [
@@ -84,24 +85,30 @@
 
     TEX_LOGO = get_texture_info("textures/wip-logo.png")
     TEX_MUSIC_RECORD = get_texture_info("textures/record.png")
-    logoScale = 6
+    logoScale = 1.5
 
     konamiKeys = []
 
-    socailScaleMax = 1.2
+    socialScaleMin = 0.3
+    socialScaleMax = 0.35
     socialLinks = [
-        {image:TEX_LOGO, name:"Github", color:{r:100, g:100, b:100}, link: "https://github.com/Squishy6094", y:300, scale:1},
-        {image:TEX_LOGO, name:"Discord", color:{r:88, g:101, b:242}, link: "https://discord.gg/yN3ahrf5zD", y:300, scale:1},
-        {image:TEX_LOGO, name:"Bluesky", color:{r:79, g:155, b:217}, link: "https://bsky.app/profile/squishy6094.github.io", y:300, scale:1},
-        {image:TEX_LOGO, name:"Twitter", color:{r:30, g:30, b:30}, link: "https://x.com/squishy6094", y:300, scale:1},
-        {image:TEX_LOGO, name:"Youtube", color:{r:255, g:0, b:0}, link: "https://www.youtube.com/@Squishy6094", y:300, scale:1},
-        {image:TEX_LOGO, name:"Romhacking.com", color:rainbow_color, link: "https://romhacking.com/user/SQUISHY", y:300, scale:1},
+        {image:TEX_LOGO, name:"Github", color:{r:100, g:100, b:100}, link: "https://github.com/Squishy6094"},
+        {image:TEX_LOGO, name:"Discord", color:{r:88, g:101, b:242}, link: "https://discord.gg/yN3ahrf5zD"},
+        {image:TEX_LOGO, name:"Bluesky", color:{r:79, g:155, b:217}, link: "https://bsky.app/profile/squishy6094.github.io"},
+        {image:TEX_LOGO, name:"Twitter", color:{r:30, g:30, b:30}, link: "https://x.com/squishy6094"},
+        {image:TEX_LOGO, name:"Youtube", color:{r:255, g:0, b:0}, link: "https://www.youtube.com/@Squishy6094"},
+        {image:TEX_LOGO, name:"Romhacking.com", color:rainbow_color, link: "https://romhacking.com/user/SQUISHY"},
     ]
+    for (let i in socialLinks) {
+        socialLinks[i].y = 300
+        socialLinks[i].scale = socialScaleMin
+    }
+    
 
     bgColorDefault = {r:0, g:88, b:0}
     bgColorRaw = bgColorDefault
     bgColor = bgColorRaw
-    bgCheckerSize = 48
+    bgCheckerSize = 16
     titleClick = false
     titleOffset = djui_hud_get_screen_width()*0.25
     titleScaleSpin = 2
@@ -109,7 +116,7 @@
     logoFallVelY = 0
     logoFlash = 0
     function hud_render() {
-        djui_hud_set_resolution(RESOLUTION_DJUI)
+        djui_hud_set_resolution(RESOLUTION_N64)
         screenWidth = djui_hud_get_screen_width()
         screenHeight = djui_hud_get_screen_height()
 
@@ -164,7 +171,7 @@
         }
         djui_hud_set_color(255, 255, 255, 255)
         djui_hud_set_font(FONT_ALIASED)
-        djui_hud_print_text(TEXT_WEBSITE_NAME, -titleOffset*2 + screenWidth*0.25 - djui_hud_measure_text(TEXT_WEBSITE_NAME)*1.5, screenHeight*0.5 - 250, 3)
+        djui_hud_print_text(TEXT_WEBSITE_NAME, -titleOffset*2 + screenWidth*0.25 - djui_hud_measure_text(TEXT_WEBSITE_NAME)*0.5, screenHeight*0.25, 1)
         djui_hud_set_font(FONT_NORMAL)
 
         mouseX = djui_hud_get_mouse_x()
@@ -174,26 +181,28 @@
             // Bottom Socials
             for (let i in socialLinks) {
                 socialLinks[i].y = socialLinks[i].y * (0.85 + (i*0.09/socialLinks.length))
-                x = (i - socialLinks.length*0.5)*80 + screenWidth*0.25 + 32
-                y = screenHeight - 100 + socialLinks[i].y + 32
+                imgWidth = socialLinks[i].image.naturalWidth
+                imgHeight = socialLinks[i].image.naturalHeight
+                imgScale = socialLinks[i].scale
+                x = (i - socialLinks.length*0.5)*imgWidth*socialScaleMax+2 + screenWidth*0.25
+                y = screenHeight - 30 + socialLinks[i].y
                 djui_hud_set_color(255, 255, 255, 255)
                 
-                djui_hud_render_texture(socialLinks[i].image, x - 32*socialLinks[i].scale, y - 32*socialLinks[i].scale, socialLinks[i].scale, socialLinks[i].scale)
+                imgScaleOffset = -imgWidth*socialScaleMin*0.5 + (imgWidth*socialScaleMin*(imgScale/socialScaleMin))*0.5
+                djui_hud_render_texture(socialLinks[i].image, x - imgScaleOffset, y - imgScaleOffset, imgScale, imgScale)
 
-                x = x - 32
-                y = y - 32
                 textOpacity = 0
-                if ((mouseX > x && mouseX < x + 64) && (mouseY > y && mouseY < y + 64)) {
+                if ((mouseX > x && mouseX < x + imgWidth*imgScale) && (mouseY > y && mouseY < y + imgWidth*imgScale)) {
                     if (djui_hud_get_mouse_buttons_released()) {
                         window.open(socialLinks[i].link)
                     }
-                    socialLinks[i].scale = Math.min(socialLinks[i].scale*1.1, socailScaleMax)
+                    socialLinks[i].scale = Math.min(socialLinks[i].scale*1.1, socialScaleMax)
                     bgColorRaw = socialLinks[i].color
                 } else {
-                    socialLinks[i].scale = Math.max(socialLinks[i].scale*0.9, 1)
+                    socialLinks[i].scale = Math.max(socialLinks[i].scale*0.9, socialScaleMin)
                 }
-                djui_hud_set_color(255, 255, 255, (socialLinks[i].scale - 1)/(socailScaleMax - 1)*255)
-                djui_hud_print_text(socialLinks[i].name, x - djui_hud_measure_text(socialLinks[i].name)*0.5 + 32, y - 40, 1)
+                djui_hud_set_color(255, 255, 255, (imgScale-socialScaleMin)/(socialScaleMax-socialScaleMin)*255)
+                djui_hud_print_text(socialLinks[i].name, (x + imgWidth*socialScaleMin*0.5) - djui_hud_measure_text(socialLinks[i].name)*0.15, y - 10, 0.3)
             }
             titleOffset = titleOffset *0.9
             titleScaleSpin = titleScaleSpin*0.90
@@ -202,14 +211,14 @@
             // Music Record
             djui_hud_set_color(255, 255, 255, 255)
             djui_hud_set_rotation(globalTimer*0x80, 0.5, 0.5);
-            djui_hud_render_texture(TEX_MUSIC_RECORD, screenWidth - TEX_MUSIC_RECORD.naturalWidth - 30, screenHeight - TEX_MUSIC_RECORD.naturalHeight - 30 + titleOffset, 2, 2)
+            djui_hud_render_texture(TEX_MUSIC_RECORD, screenWidth - TEX_MUSIC_RECORD.naturalWidth*0.25 - 15 + titleOffset, screenHeight - TEX_MUSIC_RECORD.naturalHeight*0.25 - 15 + titleOffset, 0.5, 0.5)
             djui_hud_set_rotation(0, 0, 0)
-            djui_hud_print_text(TEXT_MUSIC, screenWidth - (djui_hud_measure_text(TEXT_MUSIC) + 20) * (1 - (titleOffset / (screenWidth * 0.25))), screenHeight - 30, 1)
+            djui_hud_print_text(TEXT_MUSIC, screenWidth - (djui_hud_measure_text(TEXT_MUSIC)*0.3 + 10) * (1 - (titleOffset / (screenWidth * 0.25))), screenHeight - 10, 0.3)
         } else {
             titleOffset = screenWidth*0.25
             if (globalTimer > 150) {
                 djui_hud_set_color(255, 255, 255, Math.abs(Math.sin((globalTimer - 150)*0.05)/Math.PI)*255)
-                djui_hud_print_text("Click Anywhere", screenWidth*0.5 - djui_hud_measure_text("Click Anywhere"), screenHeight - 150, 2)
+                djui_hud_print_text(TEXT_CLICK_ANYWHERE, screenWidth*0.5 - djui_hud_measure_text(TEXT_CLICK_ANYWHERE)*0.25, screenHeight - 30, 0.5)
             }
         }
 
@@ -218,9 +227,9 @@
         globalTimer = globalTimer + 1
         x = -Math.tan(globalTimer*0.02 - 1.1)*screenWidth/3 + screenWidth*0.5
         djui_hud_set_color(0, 0, 0, 100)
-        djui_hud_render_rect(0, 10, screenWidth, 60)
+        djui_hud_render_rect(0, 10, screenWidth, 16)
         djui_hud_set_color(255, 255, 255, 255)
-        djui_hud_print_text(TEXT_WIP, 20 + x, 20, 2)
+        djui_hud_print_text(TEXT_WIP, 20 + x, 13, 0.5)
     }
 
 
