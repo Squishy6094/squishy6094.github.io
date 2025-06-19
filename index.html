@@ -105,6 +105,7 @@
     }
     
 
+    djui_hud_set_resolution(RESOLUTION_N64)
     bgColorDefault = {r:0, g:88, b:0}
     bgColorRaw = bgColorDefault
     bgColor = bgColorRaw
@@ -143,7 +144,7 @@
         djui_hud_render_rect(0, 0, screenWidth, screenHeight)
 
         // Title Screen
-        logoFallVelY = logoFallVelY - 1
+        logoFallVelY = logoFallVelY - 0.3
         logoFallPosY = logoFallPosY + logoFallVelY
         if (logoFallPosY < 0) {
             logoFallVelY = -logoFallVelY*0.5
@@ -153,7 +154,7 @@
         djui_hud_set_color(255, 255, 255, 255)
         djui_hud_set_rotation(logoTilt, 0.5, 0.5)
         SpinMath = (Math.sin((titleScaleSpin + 0.5)*Math.PI))
-        djui_hud_render_texture(TEX_LOGO, screenWidth*0.25 + titleOffset - TEX_LOGO.naturalWidth*logoScale*0.5 * SpinMath, screenHeight*0.5 - TEX_LOGO.naturalHeight*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*70) - logoFallPosY, logoScale * SpinMath, logoScale)
+        djui_hud_render_texture(TEX_LOGO, screenWidth*0.25 + titleOffset - TEX_LOGO.naturalWidth*logoScale*0.5 * SpinMath, screenHeight*0.5 - TEX_LOGO.naturalHeight*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30) - logoFallPosY, logoScale * SpinMath, logoScale)
         djui_hud_set_rotation(0, 0, 0)
         if (djui_hud_get_mouse_buttons_released() && titleClick != true) {
             // Initialize like EVERYTHINGG
@@ -196,10 +197,10 @@
                     if (djui_hud_get_mouse_buttons_released()) {
                         window.open(socialLinks[i].link)
                     }
-                    socialLinks[i].scale = Math.min(socialLinks[i].scale*1.1, socialScaleMax)
+                    socialLinks[i].scale = Math.min(socialLinks[i].scale*1.05, socialScaleMax)
                     bgColorRaw = socialLinks[i].color
                 } else {
-                    socialLinks[i].scale = Math.max(socialLinks[i].scale*0.9, socialScaleMin)
+                    socialLinks[i].scale = Math.max(socialLinks[i].scale*0.95, socialScaleMin)
                 }
                 djui_hud_set_color(255, 255, 255, (imgScale-socialScaleMin)/(socialScaleMax-socialScaleMin)*255)
                 djui_hud_print_text(socialLinks[i].name, (x + imgWidth*socialScaleMin*0.5) - djui_hud_measure_text(socialLinks[i].name)*0.15, y - 10, 0.3)
