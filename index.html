@@ -89,6 +89,19 @@
 
     konamiKeys = []
 
+    function konami_keys_check_pass(string) {
+        let stringArray = Array.from(string)
+        console.log(stringArray.length)
+        for (let i = 0; i < stringArray.length; i++) {
+            console.log(konamiKeys)
+            console.log(stringArray[i] + " " + konamiKeys[konamiKeys.length - stringArray.length + i] + " at " + (konamiKeys.length - stringArray.length + i))
+            if (stringArray[i] != konamiKeys[konamiKeys.length - stringArray.length + i]) {
+                return false
+            }
+        }
+        return true
+    }
+
     socialScaleMin = 0.3*4
     socialScaleMax = 0.35*4
     socialLinks = [
@@ -163,11 +176,14 @@
             SOUND_MUSIC.play()
             logoFlash = 150
 
-            if (konamiKeys[konamiKeys.length - 1] == "1") {
+            if (konami_keys_check_pass("real")) {
                 TEXT_WEBSITE_NAME = "Madeline Site"
             }
-            if (konamiKeys[konamiKeys.length - 1] == "7") {
+            if (konami_keys_check_pass("7")) {
                 TEXT_WIP = "KILLER7"
+            }
+            if (konami_keys_check_pass("iloveyou")) {
+                window.open("https://raw.githubusercontent.com/Squishy6094/squishy6094.github.io/refs/heads/main/textures/squishy-iloveyoutoo.png", "_blank", "width=200, height=200");
             }
         }
         djui_hud_set_color(255, 255, 255, 255)
@@ -178,6 +194,8 @@
         mouseX = djui_hud_get_mouse_x()
         mouseY = djui_hud_get_mouse_y()
 
+        djui_hud_set_color(0, 0, 0, 100)
+        djui_hud_render_rect(screenWidth*0.25 - socialLinks.length*0.5*16*socialScaleMax+2 - 5, screenHeight - 35 + socialLinks[1].y, socialLinks.length*16*socialScaleMax+2 + 5, 28)
         if (titleClick) {
             // Bottom Socials
             for (let i in socialLinks) {
