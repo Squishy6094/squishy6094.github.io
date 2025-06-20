@@ -18,76 +18,104 @@
 
 <script type="text/javascript" src="djui-js/djui.js"></script>
 <script type="text/javascript">
+
     // Utilities
-    function lerp( a, b, alpha ) {
+    function lerp(a, b, alpha) {
         return a + alpha * ( b - a )
     }
 
-
     function clamp(value, min, max) {
-        return Math.max(min, Math.min(max, value));
+        return Math.max(min, Math.min(max, value))
     }
 
-    let rainbowColor = { r: 255, g: 0, b: 0 };
-    let rainbowState = 0;
+    function remap(a, b, c, d, x) {
+        return c + (d - c) * ((x - a) / (b - a))
+    }
+
+    function random(a, b) {
+        return remap(0, 1, a, b, Math.random())
+    }
+
+    let rainbowColor = { r: 255, g: 0, b: 0 }
+    let rainbowState = 0
     function rainbow_color() {
         const speed = 10
 
-        if (rainbowState === 0) {
-            rainbowColor.r += speed;
-            if (rainbowColor.r >= 255) rainbowState = 1;
-        } else if (rainbowState === 1) {
-            rainbowColor.b -= speed;
-            if (rainbowColor.b <= 0) rainbowState = 2;
-        } else if (rainbowState === 2) {
-            rainbowColor.g += speed;
-            if (rainbowColor.g >= 255) rainbowState = 3;
-        } else if (rainbowState === 3) {
-            rainbowColor.r -= speed;
-            if (rainbowColor.r <= 0) rainbowState = 4;
-        } else if (rainbowState === 4) {
-            rainbowColor.b += speed;
-            if (rainbowColor.b >= 255) rainbowState = 5;
-        } else if (rainbowState === 5) {
-            rainbowColor.g -= speed;
-            if (rainbowColor.g <= 0) rainbowState = 0;
+        switch (rainbowState) {
+            case 0:
+                rainbowColor.r += speed
+                if (rainbowColor.r >= 255) rainbowState++
+                break
+            case 1:
+                rainbowColor.b -= speed
+                if (rainbowColor.b <= 0) rainbowState++
+                break
+            case 2:
+                rainbowColor.g += speed
+                if (rainbowColor.g >= 255) rainbowState++
+                break
+            case 3:
+                rainbowColor.r -= speed
+                if (rainbowColor.r <= 0) rainbowState++
+                break
+            case 4:
+                rainbowColor.b += speed
+                if (rainbowColor.b >= 255) rainbowState++
+                break
+            case 5:
+                rainbowColor.g -= speed
+                if (rainbowColor.g <= 0) rainbowState = 0
+                break
         }
 
-        rainbowColor.r = clamp(rainbowColor.r, 0, 255);
-        rainbowColor.g = clamp(rainbowColor.g, 0, 255);
-        rainbowColor.b = clamp(rainbowColor.b, 0, 255);
+        rainbowColor.r = clamp(rainbowColor.r, 0, 255)
+        rainbowColor.g = clamp(rainbowColor.g, 0, 255)
+        rainbowColor.b = clamp(rainbowColor.b, 0, 255)
 
-        return {r:rainbowColor.r*0.6, g:rainbowColor.g*0.6, b:rainbowColor.b*0.6};
+        return {
+            r: rainbowColor.r*0.6,
+            g: rainbowColor.g*0.6,
+            b: rainbowColor.b*0.6
+        }
     }
 
-
     // Website
-    globalTimer = 0
+    let globalTimer = 0
 
-    TEXT_WEBSITE_NAME = "Squishy Site"
-    TEXT_WIP = "Nastywerkkk in Progress!!"
-    TEXT_CLICK_ANYWHERE = "Click Anywhere"
+    let TEXT_WEBSITE_NAME = "Squishy Site"
+    let TEXT_WIP = "Nastywerkkk in Progress!!"
+    let TEXT_CLICK_ANYWHERE = "Click Anywhere"
 
     // Music
     const musicTracks = [
-        {name: "Team Fortress 2 - Upgrade Station", audio: 'sound/tf2-upgrade-station.mp3'},
-        {name: "Portal - Radio Tune", audio: 'sound/portal-radio.mp3'},
-        {name: "3DS - Internet Settings (BedrockSolid Remake)", audio: 'sound/3ds-internet-settings.mp3'},
+        { name: "Team Fortress 2 - Upgrade Station", audio: 'sound/tf2-upgrade-station.mp3' },
+        { name: "Portal - Radio Tune", audio: 'sound/portal-radio.mp3' },
+        { name: "3DS - Internet Settings (BedrockSolid Remake)", audio: 'sound/3ds-internet-settings.mp3' },
     ]
-    currMusicTrack = clamp(Math.floor(Math.random()*musicTracks.length), 0, musicTracks.length)
-    SOUND_MUSIC = new Audio(musicTracks[currMusicTrack].audio);
+
+    const currMusicTrack = musicTracks[Math.floor(Math.random()*musicTracks.length)]
+    const SOUND_MUSIC = new Audio(currMusicTrack.audio)
     SOUND_MUSIC.loop = true
-    SOUND_MUSIC.volume=0.1
-    TEXT_MUSIC = musicTracks[currMusicTrack].name
+    SOUND_MUSIC.preservesPitch = false
+    SOUND_MUSIC.volume = 0.1
+    const TEXT_MUSIC = currMusicTrack.name
     console.log("Music Track: " + TEXT_MUSIC)
+
     // Sounds
-    SOUND_CHECKPOINT = new Audio('sound/Checkpoint.ogg');
+    const SOUND_CHECKPOINT = new Audio('sound/Checkpoint.ogg')
 
-    TEX_LOGO = get_texture_info("textures/wip-logo.png")
-    TEX_MUSIC_RECORD = get_texture_info("textures/record.png")
-    logoScale = 1.5
+    const shatterSounds = [
+        'smw',
+        'glass',
+        'lego',
+    ]
+    const SOUND_SHATTER = new Audio('sound/shatter-' + shatterSounds[Math.floor(Math.random()*shatterSounds.length)] + '.mp3')
 
-    konamiKeys = []
+    const TEX_LOGO = get_texture_info("textures/wip-logo.png")
+    const TEX_MUSIC_RECORD = get_texture_info("textures/record.png")
+    const logoScale = 1.5
+
+    let konamiKeys = []
 
     function konami_keys_check_pass(string) {
         let stringArray = Array.from(string)
@@ -102,74 +130,93 @@
         return true
     }
 
-    socialScaleMin = 0.3*4
-    socialScaleMax = 0.35*4
-    socialLinks = [
-        {image:get_texture_info("textures/social-github.png"), name:"Github", color:{r:100, g:100, b:100}, link: "https://github.com/Squishy6094"},
-        {image:get_texture_info("textures/social-discord.png"), name:"Discord", color:{r:88, g:101, b:242}, link: "https://discord.gg/yN3ahrf5zD"},
-        {image:get_texture_info("textures/social-bsky.png"), name:"Bluesky", color:{r:79, g:155, b:217}, link: "https://bsky.app/profile/squishy6094.github.io"},
-        {image:get_texture_info("textures/social-twitter.png"), name:"Twitter", color:{r:30, g:30, b:30}, link: "https://x.com/squishy6094"},
-        {image:get_texture_info("textures/social-youtube.png"), name:"Youtube", color:{r:255, g:0, b:0}, link: "https://www.youtube.com/@Squishy6094"},
-        {image:get_texture_info("textures/social-romhacking.png"), name:"Romhacking.com", color:rainbow_color, link: "https://romhacking.com/user/SQUISHY"},
+    const socialScaleMin = 0.3*4
+    const socialScaleMax = 0.35*4
+    const socialLinks = [
+        { image: "github",     name: "Github",  color: { r: 100, g: 100, b: 100 }, link: "https://github.com/Squishy6094"                 },
+        { image: "discord",    name: "Discord", color: { r:  88, g: 101, b: 242 }, link: "https://discord.gg/yN3ahrf5zD"                  },
+        { image: "bsky",       name: "Bluesky", color: { r:  79, g: 155, b: 217 }, link: "https://bsky.app/profile/squishy6094.github.io" },
+        { image: "twitter",    name: "Twitter", color: { r:  30, g:  30, b:  30 }, link: "https://x.com/squishy6094"                      },
+        { image: "youtube",    name: "Youtube", color: { r: 255, g:   0, b:   0 }, link: "https://www.youtube.com/@Squishy6094"           },
+        { image: "romhacking", name: "Romhacking.com", color: rainbow_color,       link: "https://romhacking.com/user/SQUISHY"            },
     ]
     for (let i in socialLinks) {
+        socialLinks[i].image = get_texture_info("textures/social-" + socialLinks[i].image + ".png")
         socialLinks[i].y = 300
         socialLinks[i].scale = socialScaleMin
     }
-    
 
     djui_hud_set_resolution(RESOLUTION_N64)
-    bgColorDefault = {r:0, g:88, b:0}
-    bgColorRaw = bgColorDefault
-    bgColor = bgColorRaw
-    bgCheckerSize = 16
-    titleClick = false
-    titleOffset = djui_hud_get_screen_width()*0.25
-    titleScaleSpin = 2
-    logoFallPosY = djui_hud_get_screen_height()
-    logoFallVelY = 0
-    logoFlash = 0
+
+    let bgColorDefault = { r: 0, g: 88, b: 0 }
+    let bgColorRaw = bgColorDefault
+    let bgColor = bgColorRaw
+    let bgCheckerSize = 16
+    let titleClick = false
+    let titleOffset = djui_hud_get_screen_width()*0.25
+    let titleScaleSpin = 2
+    let logoFallPosY = djui_hud_get_screen_height()
+    let logoFallVelY = 0
+    let logoFlash = 0
+
+    let recordSpeed = 0x10 // fullrev   fps  s/m  rpm
+    const recordSpeedTarget = 0x10000 / 60 / 60 * 33
+    const recordSpeedUp = 10
+    const recordSlowDown = 6
+    const recordBrake = 40
+    const recordBreakThreshold = 3500
+    let recordRot = 0
+    let recordDragStart = 0
+    let recordHeld = false
+
+    let recordBreakTimer = 0
+    let recordBreakSpin = 0
+    let recordBroken = false
+    let recordPos = { x: 0, y: 0 }
+    let recordVel = { x: 0, y: 0 }
+    let musicTitlePos = { x: 0, y: 0 }
+    let musicTitleVel = { x: 0, y: 0 }
+
     function hud_render() {
         djui_hud_set_resolution(RESOLUTION_N64)
-        screenWidth = djui_hud_get_screen_width()
-        screenHeight = djui_hud_get_screen_height()
+        let screenWidth = djui_hud_get_screen_width()
+        let screenHeight = djui_hud_get_screen_height()
 
         // Background Color
-        prevColor = (typeof bgColorRaw === 'function' ? bgColorRaw() : bgColorRaw);
+        let prevColor = (typeof bgColorRaw === 'function' ? bgColorRaw() : bgColorRaw)
         bgColor.r = lerp(bgColor.r, prevColor.r, 0.1)
         bgColor.g = lerp(bgColor.g, prevColor.g, 0.1)
         bgColor.b = lerp(bgColor.b, prevColor.b, 0.1)
         djui_hud_set_color(bgColor.r, bgColor.g, bgColor.b, 255)
         djui_hud_render_rect(0, 0, screenWidth, screenHeight)
         djui_hud_set_color(bgColor.r*0.5, bgColor.g*0.5, bgColor.b*0.5, 255)
-        checkerWidth = Math.ceil(screenWidth / bgCheckerSize) + 2;
-        checkerHeight = Math.ceil(screenHeight / bgCheckerSize) + 2;
+        let checkerWidth = Math.ceil(screenWidth / bgCheckerSize) + 1
+        let checkerHeight = Math.ceil(screenHeight / bgCheckerSize) + 1
         for (let w = 0; w < checkerWidth; w++) {
             for (let h = 0; h < checkerHeight; h++) {
-                if ((w-1+(h%2)) % 2 == 0) {
-                    djui_hud_render_rect((w - 1) * bgCheckerSize, (h - 1) * bgCheckerSize, bgCheckerSize, bgCheckerSize);
+                if ((w+h) % 2) {
+                    djui_hud_render_rect((w - 1) * bgCheckerSize, (h - 1) * bgCheckerSize, bgCheckerSize, bgCheckerSize)
                 }
             }
         }
-
         
         djui_hud_set_color(0, 0, 0, logoFlash)
         djui_hud_render_rect(0, 0, screenWidth, screenHeight)
 
         // Title Screen
-        logoFallVelY = logoFallVelY - 0.3
-        logoFallPosY = logoFallPosY + logoFallVelY
+        logoFallVelY -= 0.3
+        logoFallPosY += logoFallVelY
         if (logoFallPosY < 0) {
             logoFallVelY = -logoFallVelY*0.5
             logoFallPosY = 0
         }
-        logoTilt = Math.sin(globalTimer*0.1)/Math.PI*0x800
+        let logoTilt = Math.sin(globalTimer*0.1)/Math.PI*0x800
         djui_hud_set_color(255, 255, 255, 255)
         djui_hud_set_rotation(logoTilt, 0.5, 0.5)
-        SpinMath = (Math.sin((titleScaleSpin + 0.5)*Math.PI))
-        djui_hud_render_texture(TEX_LOGO, screenWidth*0.25 + titleOffset - TEX_LOGO.naturalWidth*logoScale*0.5 * SpinMath, screenHeight*0.5 - TEX_LOGO.naturalHeight*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30) - logoFallPosY, logoScale * SpinMath, logoScale)
+        let spinMath = (Math.sin((titleScaleSpin + 0.5)*Math.PI))
+        djui_hud_render_texture(TEX_LOGO, screenWidth*0.25 + titleOffset - TEX_LOGO.width*logoScale*0.5 * spinMath, screenHeight*0.5 - TEX_LOGO.height*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30) - logoFallPosY, logoScale * spinMath, logoScale)
         djui_hud_set_rotation(0, 0, 0)
-        if (djui_hud_get_mouse_buttons_released() && titleClick != true) {
+        if (djui_hud_get_mouse_buttons_released() && !titleClick) {
             // Initialize like EVERYTHINGG
             titleClick = true
             SOUND_CHECKPOINT.play()
@@ -191,28 +238,28 @@
         djui_hud_print_text(TEXT_WEBSITE_NAME, -titleOffset*2 + screenWidth*0.25 - djui_hud_measure_text(TEXT_WEBSITE_NAME)*0.5, screenHeight*0.25, 1)
         djui_hud_set_font(FONT_NORMAL)
 
-        mouseX = djui_hud_get_mouse_x()
-        mouseY = djui_hud_get_mouse_y()
+        let mouseX = djui_hud_get_mouse_x()
+        let mouseY = djui_hud_get_mouse_y()
 
         djui_hud_set_color(0, 0, 0, 100)
         djui_hud_render_rect(screenWidth*0.25 - socialLinks.length*0.5*16*socialScaleMax+2 - 5, screenHeight - 35 + socialLinks[1].y, socialLinks.length*16*socialScaleMax+2 + 5, 28)
         if (titleClick) {
             // Bottom Socials
             for (let i in socialLinks) {
-                socialLinks[i].y = socialLinks[i].y * (0.85 + (i*0.09/socialLinks.length))
-                imgWidth = socialLinks[i].image.naturalWidth
-                imgHeight = socialLinks[i].image.naturalHeight
-                imgScale = socialLinks[i].scale
-                x = (i - socialLinks.length*0.5)*imgWidth*socialScaleMax+2 + screenWidth*0.25
-                y = screenHeight - 30 + socialLinks[i].y
+                socialLinks[i].y *= 0.85 + (i*0.09/socialLinks.length)
+                let imgWidth = socialLinks[i].image.width
+                let imgHeight = socialLinks[i].image.height
+                let imgScale = socialLinks[i].scale
+                let x = (i - socialLinks.length*0.5)*imgWidth*socialScaleMax+2 + screenWidth*0.25
+                let y = screenHeight - 30 + socialLinks[i].y
                 djui_hud_set_color(255, 255, 255, 255)
                 
-                imgScaleOffset = -imgWidth*socialScaleMin*0.5 + (imgWidth*socialScaleMin*(imgScale/socialScaleMin))*0.5
+                let imgScaleOffset = -imgWidth*socialScaleMin*0.5 + (imgWidth*socialScaleMin*(imgScale/socialScaleMin))*0.5
                 djui_hud_render_texture(socialLinks[i].image, x - imgScaleOffset, y - imgScaleOffset, imgScale, imgScale)
 
-                textOpacity = 0
+                let textOpacity = 0
                 if ((mouseX > x && mouseX < x + imgWidth*imgScale) && (mouseY > y && mouseY < y + imgWidth*imgScale)) {
-                    if (djui_hud_get_mouse_buttons_released()) {
+                    if (djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON) {
                         window.open(socialLinks[i].link)
                     }
                     socialLinks[i].scale = Math.min(socialLinks[i].scale*1.05, socialScaleMax)
@@ -223,16 +270,70 @@
                 djui_hud_set_color(255, 255, 255, (imgScale-socialScaleMin)/(socialScaleMax-socialScaleMin)*255)
                 djui_hud_print_text(socialLinks[i].name, (x + imgWidth*socialScaleMin*0.5) - djui_hud_measure_text(socialLinks[i].name)*0.15, y - 10, 0.3)
             }
-            titleOffset = titleOffset *0.9
-            titleScaleSpin = titleScaleSpin*0.90
-            logoFlash = logoFlash*0.90
+            titleOffset *= 0.9
+            titleScaleSpin *= 0.9
+            logoFlash *= 0.9
 
             // Music Record
+            if (!recordBroken) {
+                let distFromRecord = Math.hypot((screenWidth - 30) - mouseX, (screenHeight - 30 + titleOffset) - mouseY)
+                let angleToRecord = Math.atan2((screenHeight - 30 + titleOffset) - mouseY, (screenWidth - 30) - mouseX) * 0x8000 / Math.PI
+
+                if (distFromRecord < TEX_MUSIC_RECORD.width && djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON) {
+                    recordHeld = true
+                    recordDragStart = angleToRecord
+                }
+                if (distFromRecord > TEX_MUSIC_RECORD.width || djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON)
+                    recordHeld = false
+
+                if (recordHeld) {
+                    recordSpeed *= 0.95
+                    recordSpeed += (recordDragStart - angleToRecord) / 16
+                    recordDragStart = angleToRecord
+                } else {
+                    if (recordSpeed > recordSpeedTarget)
+                        recordSpeed -= recordSlowDown
+                    else if (recordSpeed < 0)
+                        recordSpeed += recordBrake
+                    else recordSpeed = Math.min(recordSpeedTarget, recordSpeed + recordSpeedUp)
+                }
+                recordRot += recordSpeed
+
+                if (recordSpeed > recordBreakThreshold) recordBreakTimer++
+                else recordBreakTimer = 0
+
+                SOUND_MUSIC.playbackRate = clamp(recordSpeed / recordSpeedTarget, 0.07, 16)
+                if (recordSpeed / recordSpeedTarget < SOUND_MUSIC.playbackRate)
+                    SOUND_MUSIC.pause()
+                else SOUND_MUSIC.play()
+
+                if (recordBreakTimer > 99) {
+                    recordBroken = true
+                    SOUND_MUSIC.pause()
+                    SOUND_SHATTER.play()
+                    recordVel.x = random(-25, 10)
+                    recordVel.y = random(-40, -5)
+                    musicTitleVel.x = random(-25, 10)
+                    musicTitleVel.y = random(-40, -5)
+                }
+            } else {
+                recordPos.x += recordVel.x
+                recordPos.y += recordVel.y
+                musicTitlePos.x += musicTitleVel.x
+                musicTitlePos.y += musicTitleVel.y
+
+                recordVel.y += 2
+                musicTitleVel.y += 2
+                
+                recordRot += recordSpeed
+                recordBreakSpin += recordSpeed * 0.03
+            }
+
             djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_set_rotation(globalTimer*0x80, 0.5, 0.5);
-            djui_hud_render_texture(TEX_MUSIC_RECORD, screenWidth - TEX_MUSIC_RECORD.naturalWidth*0.25 - 15 + titleOffset, screenHeight - TEX_MUSIC_RECORD.naturalHeight*0.25 - 15 + titleOffset, 0.5, 0.5)
+            djui_hud_set_rotation(recordRot, 0.5, 0.5)
+            djui_hud_render_texture(TEX_MUSIC_RECORD, screenWidth - TEX_MUSIC_RECORD.width*0.25 * Math.cos(recordBreakSpin) - 15 + recordPos.x + titleOffset, screenHeight - TEX_MUSIC_RECORD.height*0.25 - 15 + titleOffset + recordPos.y, 0.5 * Math.cos(recordBreakSpin), 0.5)
             djui_hud_set_rotation(0, 0, 0)
-            djui_hud_print_text(TEXT_MUSIC, screenWidth - (djui_hud_measure_text(TEXT_MUSIC)*0.3 + 10) * (1 - (titleOffset / (screenWidth * 0.25))), screenHeight - 10, 0.3)
+            djui_hud_print_text(TEXT_MUSIC, screenWidth - (djui_hud_measure_text(TEXT_MUSIC)*0.3 + 10) * (1 - (titleOffset / (screenWidth * 0.25))) + musicTitlePos.x, screenHeight - 10 + musicTitlePos.y, 0.3)
         } else {
             titleOffset = screenWidth*0.25
             if (globalTimer > 150) {
@@ -241,22 +342,21 @@
             }
         }
 
-
         // Work In Progress Text
         globalTimer = globalTimer + 1
-        x = -Math.tan(globalTimer*0.02 - 1.1)*screenWidth/3 + screenWidth*0.5
+        let headerScrollX = -Math.tan(globalTimer*0.02 - 1.1)*screenWidth/3 + screenWidth*0.5
         djui_hud_set_color(0, 0, 0, 100)
         djui_hud_render_rect(0, 10, screenWidth, 16)
         djui_hud_set_color(255, 255, 255, 255)
-        djui_hud_print_text(TEXT_WIP, 20 + x, 13, 0.5)
+        djui_hud_print_text(TEXT_WIP, 20 + headerScrollX, 13, 0.5)
     }
-
 
     // Secrets
     window.addEventListener('keypress', (e) => {
         konamiKeys.push(e.key)
-    });
+    })
 
-    hook_event(hud_render);   
+    hook_event(hud_render)
+
 </script>
 </html> 
