@@ -178,6 +178,8 @@
     let recordVel = { x: 0, y: 0 }
     let musicTitlePos = { x: 0, y: 0 }
     let musicTitleVel = { x: 0, y: 0 }
+    let musicArtistPos = { x: 0, y: 0 }
+    let musicArtistVel = { x: 0, y: 0 }
 
     function hud_render() {
         djui_hud_set_resolution(RESOLUTION_N64)
@@ -279,14 +281,14 @@
 
             // Music Record
             if (!recordBroken) {
-                let distFromRecord = Math.hypot((screenWidth - 30) - mouseX, (screenHeight - 30 + titleOffset) - mouseY)
-                let angleToRecord = Math.atan2((screenHeight - 30 + titleOffset) - mouseY, (screenWidth - 30) - mouseX) * 0x8000 / Math.PI
+                let distFromRecord = Math.hypot((screenWidth - 15) - mouseX, (screenHeight - 15 + titleOffset) - mouseY)
+                let angleToRecord = Math.atan2((screenHeight - 15 + titleOffset) - mouseY, (screenWidth - 15) - mouseX) * 0x8000 / Math.PI
 
-                if (distFromRecord < TEX_MUSIC_RECORD.width && djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON) {
+                if (distFromRecord < TEX_MUSIC_RECORD.width * 0.5 && djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON) {
                     recordHeld = true
                     recordDragStart = angleToRecord
                 }
-                if (distFromRecord > TEX_MUSIC_RECORD.width || djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON)
+                if (distFromRecord > TEX_MUSIC_RECORD.width * 0.5 || djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON)
                     recordHeld = false
 
                 if (recordHeld) {
@@ -314,26 +316,31 @@
                     recordBroken = true
                     SOUND_MUSIC.pause()
                     SOUND_SHATTER.play()
-                    recordVel.x = random(-25, 10)
-                    recordVel.y = random(-40, -5)
-                    musicTitleVel.x = random(-25, 10)
-                    musicTitleVel.y = random(-40, -5)
+                    recordVel.x = random(-7, 2)
+                    recordVel.y = random(-20, -2)
+                    musicTitleVel.x = random(-7, 2)
+                    musicTitleVel.y = random(-20, -2)
+                    musicArtistVel.x = random(-7, 2)
+                    musicArtistVel.y = random(-20, -2)
                 }
             } else {
                 recordPos.x += recordVel.x
                 recordPos.y += recordVel.y
                 musicTitlePos.x += musicTitleVel.x
                 musicTitlePos.y += musicTitleVel.y
+                musicArtistPos.x += musicArtistVel.x
+                musicArtistPos.y += musicArtistVel.y
 
                 recordVel.y += 2
                 musicTitleVel.y += 2
+                musicArtistVel.y += 2
                 
                 recordRot += recordSpeed
                 recordBreakSpin += recordSpeed * 0.03
             }
 
             djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_print_text(currMusicTrack.artist, screenWidth - (djui_hud_measure_text(currMusicTrack.artist)*0.3 + 50) * (1 - (titleOffset / (screenWidth * 0.25))) + musicTitlePos.x, screenHeight - 20 + musicTitlePos.y, 0.3)
+            djui_hud_print_text(currMusicTrack.artist, screenWidth - (djui_hud_measure_text(currMusicTrack.artist)*0.3 + 50) * (1 - (titleOffset / (screenWidth * 0.25))) + musicArtistPos.x, screenHeight - 20 + musicArtistPos.y, 0.3)
             djui_hud_print_text(currMusicTrack.name, screenWidth - (djui_hud_measure_text(currMusicTrack.name)*0.3 + 50) * (1 - (titleOffset / (screenWidth * 0.25))) + musicTitlePos.x, screenHeight - 10 + musicTitlePos.y, 0.3)
             djui_hud_set_rotation(recordRot, 0.5, 0.5)
             djui_hud_render_texture(TEX_MUSIC_RECORD, screenWidth - TEX_MUSIC_RECORD.width*0.25 * Math.cos(recordBreakSpin) - 15 + recordPos.x + titleOffset, screenHeight - TEX_MUSIC_RECORD.height*0.25 - 15 + titleOffset + recordPos.y, 0.5 * Math.cos(recordBreakSpin), 0.5)
