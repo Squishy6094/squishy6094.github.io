@@ -317,12 +317,12 @@
                     recordBroken = true
                     SOUND_MUSIC.pause()
                     SOUND_SHATTER.play()
-                    recordVel.x = random(-7, 2)
-                    recordVel.y = random(-20, -2)
-                    musicTitleVel.x = random(-7, 2)
-                    musicTitleVel.y = random(-20, -2)
-                    musicArtistVel.x = random(-7, 2)
-                    musicArtistVel.y = random(-20, -2)
+                    recordVel.x = random(-5, 1)
+                    recordVel.y = random(-7, -1)
+                    musicTitleVel.x = random(-5, 1)
+                    musicTitleVel.y = random(-7, -1)
+                    musicArtistVel.x = random(-5, 2)
+                    musicArtistVel.y = random(-7, -1)
                 }
             } else {
                 recordPos.x += recordVel.x
@@ -332,9 +332,9 @@
                 musicArtistPos.x += musicArtistVel.x
                 musicArtistPos.y += musicArtistVel.y
 
-                recordVel.y += 2
-                musicTitleVel.y += 2
-                musicArtistVel.y += 2
+                recordVel.y += 0.3
+                musicTitleVel.y += 0.3
+                musicArtistVel.y += 0.3
                 
                 recordRot += recordSpeed
                 recordBreakSpin += recordSpeed * 0.03
