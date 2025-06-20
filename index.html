@@ -120,10 +120,7 @@
 
     function konami_keys_check_pass(string) {
         let stringArray = Array.from(string)
-        console.log(stringArray.length)
         for (let i = 0; i < stringArray.length; i++) {
-            console.log(konamiKeys)
-            console.log(stringArray[i] + " " + konamiKeys[konamiKeys.length - stringArray.length + i] + " at " + (konamiKeys.length - stringArray.length + i))
             if (stringArray[i] != konamiKeys[konamiKeys.length - stringArray.length + i]) {
                 return false
             }
@@ -236,6 +233,9 @@
             if (konami_keys_check_pass("shell")) {
                 bgColorRaw = {r:107, g:94, b:255}
             }
+            if (konami_keys_check_pass("kys")) {
+                recordSpeed = recordBreakThreshold*2
+            }
         }
 
         let mouseX = djui_hud_get_mouse_x()
@@ -256,8 +256,6 @@
                 let x = (i - socialLinks.length*0.5)*imgWidth*socialScaleMax+2 + screenWidth*0.25
                 let y = screenHeight - 30 + socialLinks[i].y
                 djui_hud_set_color(255, 255, 255, 255)
-
-                console.log(imgScale)
                 
                 let imgScaleOffset = -imgWidth*socialScaleMin*0.5 + (imgWidth*socialScaleMin*(socialLinks[i].scale/socialScaleMin))*0.5
                 djui_hud_render_texture(socialLinks[i].image, x - imgScaleOffset, y - imgScaleOffset, imgScale, imgScale)
@@ -282,15 +280,18 @@
             // Music Record
             if (!recordBroken) {
                 let distFromRecord = Math.hypot((screenWidth - 15) - mouseX, (screenHeight - 15 + titleOffset) - mouseY)
-                let angleToRecord = Math.atan2((screenHeight - 15 + titleOffset) - mouseY, (screenWidth - 15) - mouseX) * 0x8000 / Math.PI
-
+                let angleToRecord = Math.atan2((screenHeight - 15 + titleOffset) - mouseY, (screenWidth - 15) - mouseX) * 0x8000 / Math.PI + 0x8000
+                
                 if (distFromRecord < TEX_MUSIC_RECORD.width * 0.5 && djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON) {
                     recordHeld = true
                     recordDragStart = angleToRecord
                 }
-                if (distFromRecord > TEX_MUSIC_RECORD.width * 0.5 || djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON)
+                if (distFromRecord > TEX_MUSIC_RECORD.width * 0.5 || djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON) {
                     recordHeld = false
-
+                }
+                if (Math.abs(recordDragStart - angleToRecord) > 0x4000) {
+                    recordDragStart = angleToRecord
+                }
                 if (recordHeld) {
                     recordSpeed *= 0.95
                     recordSpeed += (recordDragStart - angleToRecord) / 16
