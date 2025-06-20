@@ -31,7 +31,7 @@
     let rainbowColor = { r: 255, g: 0, b: 0 };
     let rainbowState = 0;
     function rainbow_color() {
-        const speed = 10
+        const speed = 5
 
         if (rainbowState === 0) {
             rainbowColor.r += speed;
@@ -70,16 +70,16 @@
 
     // Music
     const musicTracks = [
-        {name: "Team Fortress 2 - Upgrade Station", audio: 'sound/tf2-upgrade-station.mp3'},
-        {name: "Portal - Radio Tune", audio: 'sound/portal-radio.mp3'},
-        {name: "3DS - Internet Settings (BedrockSolid Remake)", audio: 'sound/3ds-internet-settings.mp3'},
+        {name: "Team Fortress 2 - Upgrade Station", artist: "Value Inc.",              audio: 'sound/tf2-upgrade-station.ogg'},
+        {name: "Portal - Radio Tune",               artist: "Value Inc.",              audio: 'sound/portal-radio.ogg'},
+        {name: "Nintendo 3DS - Internet Settings",  artist: "Nintendo / BedrockSolid", audio: 'sound/3ds-internet-settings.ogg'},
     ]
     currMusicTrack = clamp(Math.floor(Math.random()*musicTracks.length), 0, musicTracks.length)
     SOUND_MUSIC = new Audio(musicTracks[currMusicTrack].audio);
     SOUND_MUSIC.loop = true
-    SOUND_MUSIC.volume=0.1
-    TEXT_MUSIC = musicTracks[currMusicTrack].name
-    console.log("Music Track: " + TEXT_MUSIC)
+    SOUND_MUSIC.volume=0.2
+
+    console.log("Music Track: " + musicTracks[currMusicTrack].name + " | " + musicTracks[currMusicTrack].artist)
     // Sounds
     SOUND_CHECKPOINT = new Audio('sound/Checkpoint.ogg');
 
@@ -109,14 +109,13 @@
         {image:get_texture_info("textures/social-discord.png"), name:"Discord", color:{r:88, g:101, b:242}, link: "https://discord.gg/yN3ahrf5zD"},
         {image:get_texture_info("textures/social-bsky.png"), name:"Bluesky", color:{r:79, g:155, b:217}, link: "https://bsky.app/profile/squishy6094.github.io"},
         {image:get_texture_info("textures/social-twitter.png"), name:"Twitter", color:{r:30, g:30, b:30}, link: "https://x.com/squishy6094"},
-        {image:get_texture_info("textures/social-youtube.png"), name:"Youtube", color:{r:255, g:0, b:0}, link: "https://www.youtube.com/@Squishy6094"},
+        {image:get_texture_info("textures/social-youtube.png"), name:"Youtube", color:{r:200, g:0, b:0}, link: "https://www.youtube.com/@Squishy6094"},
         {image:get_texture_info("textures/social-romhacking.png"), name:"Romhacking.com", color:rainbow_color, link: "https://romhacking.com/user/SQUISHY"},
     ]
     for (let i in socialLinks) {
         socialLinks[i].y = 300
         socialLinks[i].scale = socialScaleMin
     }
-    
 
     djui_hud_set_resolution(RESOLUTION_N64)
     bgColorDefault = {r:0, g:88, b:0}
@@ -124,6 +123,7 @@
     bgColor = bgColorRaw
     bgCheckerSize = 16
     titleClick = false
+    keyTitleClick = false
     titleOffset = djui_hud_get_screen_width()*0.25
     titleScaleSpin = 2
     logoFallPosY = djui_hud_get_screen_height()
@@ -169,27 +169,23 @@
         SpinMath = (Math.sin((titleScaleSpin + 0.5)*Math.PI))
         djui_hud_render_texture(TEX_LOGO, screenWidth*0.25 + titleOffset - TEX_LOGO.naturalWidth*logoScale*0.5 * SpinMath, screenHeight*0.5 - TEX_LOGO.naturalHeight*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30) - logoFallPosY, logoScale * SpinMath, logoScale)
         djui_hud_set_rotation(0, 0, 0)
-        if (djui_hud_get_mouse_buttons_released() && titleClick != true) {
+        if ((djui_hud_get_mouse_buttons_released() || keyTitleClick) && titleClick != true) {
             // Initialize like EVERYTHINGG
             titleClick = true
             SOUND_CHECKPOINT.play()
             SOUND_MUSIC.play()
             logoFlash = 150
 
-            if (konami_keys_check_pass("real")) {
-                TEXT_WEBSITE_NAME = "Madeline Site"
-            }
             if (konami_keys_check_pass("7")) {
                 TEXT_WIP = "KILLER7"
             }
             if (konami_keys_check_pass("iloveyou")) {
                 window.open("https://raw.githubusercontent.com/Squishy6094/squishy6094.github.io/refs/heads/main/textures/squishy-iloveyoutoo.png", "_blank", "width=200, height=200");
             }
+            if (konami_keys_check_pass("shell")) {
+                bgColorRaw = {r:107, g:94, b:255}
+            }
         }
-        djui_hud_set_color(255, 255, 255, 255)
-        djui_hud_set_font(FONT_ALIASED)
-        djui_hud_print_text(TEXT_WEBSITE_NAME, -titleOffset*2 + screenWidth*0.25 - djui_hud_measure_text(TEXT_WEBSITE_NAME)*0.5, screenHeight*0.25, 1)
-        djui_hud_set_font(FONT_NORMAL)
 
         mouseX = djui_hud_get_mouse_x()
         mouseY = djui_hud_get_mouse_y()
@@ -199,19 +195,24 @@
         if (titleClick) {
             // Bottom Socials
             for (let i in socialLinks) {
+                // Ensure images, no matter res, become the right size
+                socialLinks[i].scaleAdjust = 16/socialLinks[i].image.naturalWidth
+
                 socialLinks[i].y = socialLinks[i].y * (0.85 + (i*0.09/socialLinks.length))
-                imgWidth = socialLinks[i].image.naturalWidth
-                imgHeight = socialLinks[i].image.naturalHeight
-                imgScale = socialLinks[i].scale
+                imgWidth = socialLinks[i].image.naturalWidth * socialLinks[i].scaleAdjust
+                imgHeight = socialLinks[i].image.naturalHeight * socialLinks[i].scaleAdjust
+                imgScale = socialLinks[i].scale * socialLinks[i].scaleAdjust
                 x = (i - socialLinks.length*0.5)*imgWidth*socialScaleMax+2 + screenWidth*0.25
                 y = screenHeight - 30 + socialLinks[i].y
                 djui_hud_set_color(255, 255, 255, 255)
+
+                console.log(imgScale)
                 
-                imgScaleOffset = -imgWidth*socialScaleMin*0.5 + (imgWidth*socialScaleMin*(imgScale/socialScaleMin))*0.5
+                imgScaleOffset = -imgWidth*socialScaleMin*0.5 + (imgWidth*socialScaleMin*(socialLinks[i].scale/socialScaleMin))*0.5
                 djui_hud_render_texture(socialLinks[i].image, x - imgScaleOffset, y - imgScaleOffset, imgScale, imgScale)
 
                 textOpacity = 0
-                if ((mouseX > x && mouseX < x + imgWidth*imgScale) && (mouseY > y && mouseY < y + imgWidth*imgScale)) {
+                if ((mouseX > x && mouseX < x + imgWidth*socialLinks[i].scale) && (mouseY > y && mouseY < y + imgWidth*socialLinks[i].scale)) {
                     if (djui_hud_get_mouse_buttons_released()) {
                         window.open(socialLinks[i].link)
                     }
@@ -220,7 +221,7 @@
                 } else {
                     socialLinks[i].scale = Math.max(socialLinks[i].scale*0.95, socialScaleMin)
                 }
-                djui_hud_set_color(255, 255, 255, (imgScale-socialScaleMin)/(socialScaleMax-socialScaleMin)*255)
+                djui_hud_set_color(255, 255, 255, (socialLinks[i].scale-socialScaleMin)/(socialScaleMax-socialScaleMin)*255)
                 djui_hud_print_text(socialLinks[i].name, (x + imgWidth*socialScaleMin*0.5) - djui_hud_measure_text(socialLinks[i].name)*0.15, y - 10, 0.3)
             }
             titleOffset = titleOffset *0.9
@@ -229,15 +230,18 @@
 
             // Music Record
             djui_hud_set_color(255, 255, 255, 255)
+            djui_hud_print_text(musicTracks[currMusicTrack].artist, screenWidth - (djui_hud_measure_text(musicTracks[currMusicTrack].artist)*0.3 + 50) * (1 - (titleOffset / (screenWidth * 0.25))), screenHeight - 20, 0.3)
+            djui_hud_print_text(musicTracks[currMusicTrack].name, screenWidth - (djui_hud_measure_text(musicTracks[currMusicTrack].name)*0.3 + 50) * (1 - (titleOffset / (screenWidth * 0.25))), screenHeight - 10, 0.3)
             djui_hud_set_rotation(globalTimer*0x80, 0.5, 0.5);
             djui_hud_render_texture(TEX_MUSIC_RECORD, screenWidth - TEX_MUSIC_RECORD.naturalWidth*0.25 - 15 + titleOffset, screenHeight - TEX_MUSIC_RECORD.naturalHeight*0.25 - 15 + titleOffset, 0.5, 0.5)
             djui_hud_set_rotation(0, 0, 0)
-            djui_hud_print_text(TEXT_MUSIC, screenWidth - (djui_hud_measure_text(TEXT_MUSIC)*0.3 + 10) * (1 - (titleOffset / (screenWidth * 0.25))), screenHeight - 10, 0.3)
         } else {
             titleOffset = screenWidth*0.25
             if (globalTimer > 150) {
                 djui_hud_set_color(255, 255, 255, Math.abs(Math.sin((globalTimer - 150)*0.05)/Math.PI)*255)
                 djui_hud_print_text(TEXT_CLICK_ANYWHERE, screenWidth*0.5 - djui_hud_measure_text(TEXT_CLICK_ANYWHERE)*0.25, screenHeight - 30, 0.5)
+                djui_hud_set_color(255, 255, 255, 255)
+                djui_hud_print_text(konamiKeys.toString().replace(/,/g, ''), screenWidth*0.5 - djui_hud_measure_text(konamiKeys.join(""))*0.25, 30, 0.5)
             }
         }
 
@@ -254,6 +258,10 @@
 
     // Secrets
     window.addEventListener('keypress', (e) => {
+        if (e.key == "Enter") {
+            keyTitleClick = true
+            return
+        }
         konamiKeys.push(e.key)
     });
 
