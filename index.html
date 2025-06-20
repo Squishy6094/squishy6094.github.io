@@ -77,11 +77,12 @@
     currMusicTrack = clamp(Math.floor(Math.random()*musicTracks.length), 0, musicTracks.length)
     SOUND_MUSIC = new Audio(musicTracks[currMusicTrack].audio);
     SOUND_MUSIC.loop = true
-    SOUND_MUSIC.volume=0.2
+    SOUND_MUSIC.volume=0.1
 
     console.log("Music Track: " + musicTracks[currMusicTrack].name + " | " + musicTracks[currMusicTrack].artist)
     // Sounds
     SOUND_CHECKPOINT = new Audio('sound/Checkpoint.ogg');
+    SOUND_CHECKPOINT.volume=0.5
 
     TEX_LOGO = get_texture_info("textures/wip-logo.png")
     TEX_MUSIC_RECORD = get_texture_info("textures/record.png")
