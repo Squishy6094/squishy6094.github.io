@@ -79,6 +79,31 @@
         }
     }
 
+    function get_current_time_string() {
+        const now = new Date();
+
+        const isOddSecond = now.getSeconds() % 2 === 1;
+        const separator = isOddSecond ? ' ' : ':'; // space on odd seconds, colon on even
+
+        // Get hours and minutes for PST
+        const pstOptions = {
+            timeZone: 'America/Los_Angeles',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        };
+        const pstParts = new Intl.DateTimeFormat('en-US', pstOptions).formatToParts(now);
+        const hour = pstParts.find(p => p.type === 'hour').value;
+        const minute = pstParts.find(p => p.type === 'minute').value;
+
+        const formattedPST = `${hour}${separator}${minute}`;
+
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+
+        return `${month}/${day} - ${formattedPST} PST`;
+    }
+
     // Website
     let globalTimer = 0
 
@@ -355,6 +380,21 @@
                 djui_hud_print_text(konamiKeys.toString().replace(/,/g, ''), screenWidth*0.5 - djui_hud_measure_text(konamiKeys.join(""))*0.25, 30, 0.5)
             }
         }
+
+        // if ('getBattery' in navigator) {
+        // navigator.getBattery().then(function(battery) {
+        //     console.log('Battery level: ' + (battery.level * 100) + '%');
+        //     console.log('Is charging: ' + battery.charging);
+        // });
+        // } else {
+        // console.log('Battery Status API not supported');
+        // }
+
+
+        // Show Time in Corner
+        djui_hud_set_color(255, 255, 255, 255)
+        const timeString = get_current_time_string()
+        djui_hud_print_text(timeString, screenWidth - 3 - djui_hud_measure_text(timeString)*0.4, 3, 0.4)
 
         // Work In Progress Text
         globalTimer = globalTimer + 1
