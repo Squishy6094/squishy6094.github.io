@@ -169,6 +169,29 @@
         socialLinks[i].scale = socialScaleMin
     }
 
+    // Info Tabs Info??
+
+    function info_tab_render_about_me(pageX, pageY, pageWidth, pageHeight) {
+        djui_hud_set_color(255, 0, 0, 255)
+        djui_hud_print_text("Hii, I'm Squishy", pageX + 10, pageY + 10, 0.5)
+    }
+    
+    function info_tab_render_about_me_2(pageX, pageY, pageWidth, pageHeight) {
+        djui_hud_set_color(255, 0, 0, 255)
+        djui_hud_print_text("No you're not", pageX + 10, pageY + 10, 0.5)
+    }
+
+    let currInfoTab = 0
+    let prevInfoTab = 1
+    let infoTabPosX = 1
+    const infoTabs = [
+        {image: null, name: "About Me", func: info_tab_render_about_me},
+        {image: null, name: "test tab", func: info_tab_render_about_me_2},
+    ]
+    for (let i in infoTabs) {
+        infoTabs[i].y = 10
+    }
+
     djui_hud_set_resolution(RESOLUTION_N64)
 
     let bgColorDefault = { r: 0, g: 88, b: 0 }
@@ -286,7 +309,7 @@
                 djui_hud_render_texture(socialLinks[i].image, x - imgScaleOffset, y - imgScaleOffset, imgScale, imgScale)
 
                 let textOpacity = 0
-                if ((mouseX > x && mouseX < x + imgWidth*socialLinks[i].scale) && (mouseY > y && mouseY < y + imgWidth*socialLinks[i].scale)) {
+                if (currInfoTab == 0 && (mouseX > x && mouseX < x + imgWidth*socialLinks[i].scale) && (mouseY > y && mouseY < y + imgWidth*socialLinks[i].scale)) {
                     if (djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON) {
                         window.open(socialLinks[i].link)
                     }
@@ -301,6 +324,52 @@
             titleOffset *= 0.9
             titleScaleSpin *= 0.9
             logoFlash *= 0.9
+            
+            // Info Tabs
+            let tabY = 15
+            for (let i in infoTabs) {
+                i = Number(i)
+                let x = screenWidth - 49 - infoTabPosX
+                let y = tabY + infoTabs[i].y
+                if ((mouseX > x && mouseX < x + 50) && (mouseY > y && mouseY < y + 60)) {
+                    if (djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON) {
+                        if (currInfoTab != i + 1) {
+                            currInfoTab = i + 1
+                        } else {
+                            currInfoTab = 0
+                        }
+                    }
+                    infoTabs[i].y = Math.max(infoTabs[i].y*0.85, 1)
+                } else {
+                    infoTabs[i].y = Math.min(infoTabs[i].y*1.3, 5)
+                }
+                djui_hud_set_color(0, 0, 0, 150)
+                djui_hud_render_rect(x, y, 50, 60)
+                djui_hud_set_color(255, 255, 255, 255)
+                djui_hud_print_text(infoTabs[i].name, x + 25 - djui_hud_measure_text(infoTabs[i].name)*0.15, y + 50, 0.3)
+                tabY = tabY + 65
+            }
+
+            if (infoTabPosX > 1) {
+                djui_hud_set_color(0, 0, 0, 150)
+                djui_hud_render_rect(screenWidth - infoTabPosX + 1, 0, screenWidth, screenHeight)
+                djui_hud_set_color(bgColor.r*0.5, bgColor.g*0.5, bgColor.b*0.5, 255)
+                djui_hud_render_rect(screenWidth - infoTabPosX + 1, 0, screenWidth, 20)
+                djui_hud_set_color(255, 255, 255, 255)
+                djui_hud_print_text(infoTabs[prevInfoTab - 1].name, screenWidth - infoTabPosX + 6, 4, 0.6)
+                infoTabs[prevInfoTab - 1].func(screenWidth - infoTabPosX, 20, screenWidth - infoTabPosX)
+            }
+
+            if (currInfoTab != 0) {
+                infoTabPosX = Math.min(infoTabPosX * 1.2, screenWidth - 50)
+                if (infoTabs[currInfoTab - 1] != null) {
+                    prevInfoTab = currInfoTab
+                } else {
+                    currInfoTab = 0
+                }
+            } else {
+                infoTabPosX = Math.max(infoTabPosX * 0.9, 1)
+            }
 
             // Music Record
             if (!recordBroken) {
@@ -397,12 +466,14 @@
         djui_hud_print_text(timeString, screenWidth - 3 - djui_hud_measure_text(timeString)*0.4, 3, 0.4)
 
         // Work In Progress Text
+        // let headerScrollX = -Math.tan(globalTimer*0.02 - 1.1)*screenWidth/3 + screenWidth*0.5
+        // djui_hud_set_color(0, 0, 0, 100)
+        // djui_hud_render_rect(0, 10, screenWidth, 16)
+        // djui_hud_set_color(255, 255, 255, 255)
+        // djui_hud_print_text(TEXT_WIP, 20 + headerScrollX, 13, 0.5)
+
+        // Global Site Timer
         globalTimer = globalTimer + 1
-        let headerScrollX = -Math.tan(globalTimer*0.02 - 1.1)*screenWidth/3 + screenWidth*0.5
-        djui_hud_set_color(0, 0, 0, 100)
-        djui_hud_render_rect(0, 10, screenWidth, 16)
-        djui_hud_set_color(255, 255, 255, 255)
-        djui_hud_print_text(TEXT_WIP, 20 + headerScrollX, 13, 0.5)
     }
 
     // Secrets
