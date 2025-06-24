@@ -277,15 +277,23 @@
         djui_hud_print_text("Commit Rate: " + commitRate + "/Weekly", x + 6, textY, 0.25)
     }
     
-    let optionMusicVolume = 0.75
-    let optionMusicSpeed = 0.5
+    let optionMusicVolume = localStorage.getItem("musicVolume") ? localStorage.getItem("musicVolume") : 0.75
+    let optionMusicSpeed = localStorage.getItem("musicSpeed") ? localStorage.getItem("musicSpeed") : 0.5
     function info_tab_render_options(x, y, width, height) {
+        
         djui_hud_print_text("Music Volume: ", x + 10, y + 10, 0.4)
         optionMusicVolume = djui_hud_render_slider(optionMusicVolume, x + 70, y + 9, 100, 10)
         djui_hud_print_text(Math.round(optionMusicVolume*100) + "%", x + 180, y + 10, 0.4)
+        if (globalTimer % 30 == 1) {
+            localStorage.setItem("musicVolume", optionMusicVolume)
+        }
+
         djui_hud_print_text("Music Speed: ", x + 10, y + 25, 0.4)
         optionMusicSpeed = djui_hud_render_slider(optionMusicSpeed, x + 70, y + 24, 100, 10)
         djui_hud_print_text("x" + Math.round((0.8 + optionMusicSpeed*0.4)*100)/100, x + 180, y + 25, 0.4)
+        if (globalTimer % 30 == 1) {
+            localStorage.setItem("musicSpeed", optionMusicSpeed)
+        }
     }
 
     let currInfoTab = 0
@@ -466,7 +474,7 @@
                             if (currInfoTab == 0) {
                                 SOUND_WOODBLOCK_OPEN.play()
                             } else {
-                                SOUND_WOODBLOCK_SWITCH.pause()
+                                SOUND_WOODBLOCK_SWITCH.currentTime = 0
                                 SOUND_WOODBLOCK_SWITCH.play()
                             }
                             currInfoTab = i + 1
@@ -481,7 +489,7 @@
                 }
             }
 
-            if (infoTabPosX > 1) {
+            if (infoTabPosX != 0) {
                 djui_hud_set_color(0, 0, 0, 150)
                 djui_hud_render_rect(screenWidth - infoTabPosX, 0, screenWidth, screenHeight)
                 djui_hud_set_color(0, 0, 0, 255)
