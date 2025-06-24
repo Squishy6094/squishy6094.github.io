@@ -195,6 +195,9 @@
     // Sounds
     const SOUND_CHECKPOINT = new Audio('sound/Checkpoint.ogg')
     SOUND_CHECKPOINT.volume=0.5
+    const SOUND_WOODBLOCK_OPEN = new Audio('sound/woodblock-open.ogg')
+    const SOUND_WOODBLOCK_CLOSE = new Audio('sound/woodblock-close.ogg')
+    const SOUND_WOODBLOCK_SWITCH = new Audio('sound/woodblock-switch.ogg')
 
     const shatterSounds = [
         'smw',
@@ -274,21 +277,23 @@
         djui_hud_print_text("Commit Rate: " + commitRate + "/Weekly", x + 6, textY, 0.25)
     }
     
-    let optionVolume = 0.5
-    let optionSpeed = 0.5
+    let optionMusicVolume = 0.75
+    let optionMusicSpeed = 0.5
     function info_tab_render_options(x, y, width, height) {
-        djui_hud_print_text("Volume: ", x + 10, y + 10, 0.4)
-        optionVolume = djui_hud_render_slider(optionVolume, x + 70, y + 9, 100, 10)
+        djui_hud_print_text("Music Volume: ", x + 10, y + 10, 0.4)
+        optionMusicVolume = djui_hud_render_slider(optionMusicVolume, x + 70, y + 9, 100, 10)
+        djui_hud_print_text(Math.round(optionMusicVolume*100) + "%", x + 180, y + 10, 0.4)
         djui_hud_print_text("Music Speed: ", x + 10, y + 25, 0.4)
-        optionSpeed = djui_hud_render_slider(optionSpeed, x + 70, y + 24, 100, 10)
+        optionMusicSpeed = djui_hud_render_slider(optionMusicSpeed, x + 70, y + 24, 100, 10)
+        djui_hud_print_text("x" + Math.round((0.8 + optionMusicSpeed*0.4)*100)/100, x + 180, y + 25, 0.4)
     }
 
     let currInfoTab = 0
     let prevInfoTab = 1
     let infoTabPosX = 0
     const infoTabs = [
-        {image: null, name: "About Me", func: info_tab_render_about_me},
-        {image: null, name: "Options", func: info_tab_render_options},
+        {image: get_texture_info("textures/squishy-about-me.png"), name: "About Me", func: info_tab_render_about_me},
+        {image: null,                                              name: "Options", func: info_tab_render_options},
     ]
     for (let i in infoTabs) {
         infoTabs[i].x = 1
@@ -334,7 +339,7 @@
         let screenHeight = djui_hud_get_screen_height()
 
         // Set User Settings
-        SOUND_MUSIC.volume = 0.2*optionVolume
+        SOUND_MUSIC.volume = 0.2*optionMusicVolume
 
         // Background Color
         let prevColor = (typeof bgColorRaw === 'function' ? bgColorRaw() : bgColorRaw)
@@ -449,15 +454,25 @@
                 djui_hud_set_color(0, 0, 0, 150)
                 djui_hud_render_rect(x, y, 50 + infoTabs[i].x, tabHeight)
                 djui_hud_set_color(255, 255, 255, 255)
+                if (infoTabs[i].image != null) {
+                djui_hud_render_texture(infoTabs[i].image, x + 2, y + 2, 46/infoTabs[i].image.width, 46/infoTabs[i].image.width)
+                }
                 djui_hud_print_text(infoTabs[i].name, x + 25 - djui_hud_measure_text(infoTabs[i].name)*0.15, y + tabHeight - 10, 0.3)
                 tabY = tabY + tabHeight + 5
                 
                 if ((mouseX > x && mouseX < x + 50 + infoTabs[i].x) && (mouseY > y && mouseY < y + tabHeight)) {
                     if (djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON) {
                         if (currInfoTab != i + 1) {
+                            if (currInfoTab == 0) {
+                                SOUND_WOODBLOCK_OPEN.play()
+                            } else {
+                                SOUND_WOODBLOCK_SWITCH.pause()
+                                SOUND_WOODBLOCK_SWITCH.play()
+                            }
                             currInfoTab = i + 1
                         } else {
                             currInfoTab = 0
+                            SOUND_WOODBLOCK_CLOSE.play()
                         }
                     }
                     infoTabs[i].x = Math.min(infoTabs[i].x*1.3, 5)
@@ -490,7 +505,7 @@
 
             // Music Record
             if (!recordBroken) {
-                let userSpeedTarget = recordSpeedTarget * (0.8 + optionSpeed*0.4)
+                let userSpeedTarget = recordSpeedTarget * (0.8 + optionMusicSpeed*0.4)
                 let distFromRecord = Math.hypot((screenWidth - 15) - mouseX, (screenHeight - 15 + titleOffset) - mouseY)
                 let angleToRecord = Math.atan2((screenHeight - 15 + titleOffset) - mouseY, (screenWidth - 15) - mouseX) * 0x8000 / Math.PI + 0x8000
                 
