@@ -36,6 +36,27 @@
         return remap(0, 1, a, b, Math.random())
     }
 
+    function djui_hud_render_slider(sliderPos, x, y, width, height) {
+        let mouseX = djui_hud_get_mouse_x()
+        let mouseY = djui_hud_get_mouse_y()
+
+        djui_hud_set_color(255, 255, 255, 255)
+        djui_hud_render_rect(x, y, width, 1)
+        djui_hud_render_rect(x, y + height - 1, width, 1)
+        djui_hud_render_rect(x, y, 1, height)
+        djui_hud_render_rect(x + width - 1, y, 1, height)
+
+        djui_hud_render_rect(x + 2, y + 2, (width - 4)*sliderPos, height - 4)
+        
+        if ((mouseX > x && mouseX < x + width) && (mouseY > y && mouseY < y + height)) {
+            if (djui_hud_get_mouse_buttons_down() & L_MOUSE_BUTTON) {
+                sliderPos = (mouseX - (x + 2))/(width - 4)
+                sliderPos = clamp(sliderPos, 0, 1)
+            }
+        }
+        return sliderPos
+    }
+
     let rainbowColor = { r: 255, g: 0, b: 0 }
     let rainbowState = 0
     function rainbow_color() {
@@ -79,6 +100,7 @@
         }
     }
 
+    // Grab External Data
     function get_current_time_string() {
         const now = new Date();
 
@@ -113,7 +135,6 @@
         }
 
         const data = await res.json();
-        console.log(data)
 
         discordInfo = data.name + " - " + data.presence_count + " Online"
     }
@@ -135,6 +156,7 @@
 
         const res = await fetch(url, { headers });
         const data = await res.json();
+        console.log(data)
 
         if (!res.ok || !data.total_count) {
             console.error(data);
@@ -166,7 +188,7 @@
     const SOUND_MUSIC = new Audio(currMusicTrack.audio)
     SOUND_MUSIC.loop = true
     SOUND_MUSIC.preservesPitch = false
-    SOUND_MUSIC.volume = 0.1
+    SOUND_MUSIC.volume = 0.2
 
     console.log("Music Track: " + currMusicTrack.name + " | " + currMusicTrack.artist)
 
@@ -252,9 +274,13 @@
         djui_hud_print_text("Commit Rate: " + commitRate + "/Weekly", x + 6, textY, 0.25)
     }
     
-    function info_tab_render_about_me_2(x, y, width, height) {
-        djui_hud_set_color(255, 0, 0, 255)
-        djui_hud_print_text("na na na big boobs", x + 10, y + 10, 0.5)
+    let optionVolume = 0.5
+    let optionSpeed = 0.5
+    function info_tab_render_options(x, y, width, height) {
+        djui_hud_print_text("Volume: ", x + 10, y + 10, 0.4)
+        optionVolume = djui_hud_render_slider(optionVolume, x + 70, y + 9, 100, 10)
+        djui_hud_print_text("Music Speed: ", x + 10, y + 25, 0.4)
+        optionSpeed = djui_hud_render_slider(optionSpeed, x + 70, y + 24, 100, 10)
     }
 
     let currInfoTab = 0
@@ -262,7 +288,7 @@
     let infoTabPosX = 0
     const infoTabs = [
         {image: null, name: "About Me", func: info_tab_render_about_me},
-        {image: null, name: "test tab", func: info_tab_render_about_me_2},
+        {image: null, name: "Options", func: info_tab_render_options},
     ]
     for (let i in infoTabs) {
         infoTabs[i].x = 1
@@ -306,6 +332,9 @@
         djui_hud_set_resolution(RESOLUTION_N64)
         let screenWidth = djui_hud_get_screen_width()
         let screenHeight = djui_hud_get_screen_height()
+
+        // Set User Settings
+        SOUND_MUSIC.volume = 0.2*optionVolume
 
         // Background Color
         let prevColor = (typeof bgColorRaw === 'function' ? bgColorRaw() : bgColorRaw)
@@ -423,7 +452,7 @@
                 djui_hud_print_text(infoTabs[i].name, x + 25 - djui_hud_measure_text(infoTabs[i].name)*0.15, y + tabHeight - 10, 0.3)
                 tabY = tabY + tabHeight + 5
                 
-                if ((mouseX > x && mouseX < x + 50) && (mouseY > y && mouseY < y + tabHeight)) {
+                if ((mouseX > x && mouseX < x + 50 + infoTabs[i].x) && (mouseY > y && mouseY < y + tabHeight)) {
                     if (djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON) {
                         if (currInfoTab != i + 1) {
                             currInfoTab = i + 1
@@ -461,6 +490,7 @@
 
             // Music Record
             if (!recordBroken) {
+                let userSpeedTarget = recordSpeedTarget * (0.8 + optionSpeed*0.4)
                 let distFromRecord = Math.hypot((screenWidth - 15) - mouseX, (screenHeight - 15 + titleOffset) - mouseY)
                 let angleToRecord = Math.atan2((screenHeight - 15 + titleOffset) - mouseY, (screenWidth - 15) - mouseX) * 0x8000 / Math.PI + 0x8000
                 
@@ -479,11 +509,11 @@
                     recordSpeed += (recordDragStart - angleToRecord) / 16
                     recordDragStart = angleToRecord
                 } else {
-                    if (recordSpeed > recordSpeedTarget)
+                    if (recordSpeed > userSpeedTarget)
                         recordSpeed -= recordSlowDown
                     else if (recordSpeed < 0)
                         recordSpeed += recordBrake
-                    else recordSpeed = Math.min(recordSpeedTarget, recordSpeed + recordSpeedUp)
+                    else recordSpeed = Math.min(userSpeedTarget, recordSpeed + recordSpeedUp)
                 }
                 recordRot += recordSpeed
 
