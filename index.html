@@ -104,6 +104,50 @@
         return `${month}/${day} - ${formattedPST} PST`;
     }
 
+    let discordInfo = "Discord"
+    async function load_discord_data() {
+        const guildId = '1137469863741362297';
+        const res = await fetch(`https://discord.com/api/guilds/${guildId}/widget.json`);
+        if (!res.ok) {
+            return;
+        }
+
+        const data = await res.json();
+        console.log(data)
+
+        discordInfo = data.name + " - " + data.presence_count + " Online"
+    }
+    
+    load_discord_data()
+
+    let commitRate = "?";
+    async function load_github_commit_rate(username, days = 30, token = null) {
+        const since = new Date(Date.now() - days * 86400000).toISOString().split('T')[0];
+        const url = `https://api.github.com/search/commits?q=author:${username}+committer-date:>=${since}`;
+
+        const headers = {
+            Accept: "application/vnd.github.cloak-preview" // Required for commit search
+        };
+
+        if (token) {
+            headers.Authorization = `Bearer ${token}`;
+        }
+
+        const res = await fetch(url, { headers });
+        const data = await res.json();
+
+        if (!res.ok || !data.total_count) {
+            console.error(data);
+            return "Error or no commits found.";
+        }
+
+        const weeks = days / 7;
+        commitRate = (data.total_count / weeks).toFixed(2); // average commits per week
+    }
+
+    load_github_commit_rate("Squishy6094")
+
+
     // Website
     let globalTimer = 0
 
@@ -139,6 +183,7 @@
 
     const TEX_LOGO = get_texture_info("textures/wip-logo.png")
     const TEX_MUSIC_RECORD = get_texture_info("textures/record.png")
+    const TEX_SQUISHY_PFP = get_texture_info("textures/squishy-ref-pfp.png")
     const logoScale = 1.5
 
     let konamiKeys = []
@@ -171,25 +216,56 @@
 
     // Info Tabs Info??
 
-    function info_tab_render_about_me(pageX, pageY, pageWidth, pageHeight) {
-        djui_hud_set_color(255, 0, 0, 255)
-        djui_hud_print_text("Hii, I'm Squishy", pageX + 10, pageY + 10, 0.5)
+    const currAge = new Date().getFullYear() - 2007 - (
+        new Date() < new Date(new Date().getFullYear(), 3, 3) ? 1 : 0
+    );
+    function info_tab_render_about_me(x, y, width, height) {
+        // Profile Picture
+        djui_hud_render_rect(x + 5, y + 3, 75, 75)
+        djui_hud_render_texture(TEX_SQUISHY_PFP, x + 7, y + 5, 0.2, 0.2)
+
+        // Description
+        djui_hud_print_text("Haii, I'm Squishy!", x + 85, y + 5, 0.5)
+        let textY = y + 20
+        djui_hud_print_text("I'm also known as Madeline, I'm a programmer who mainly", x + 85, textY, 0.3)
+        textY = textY + 10
+        djui_hud_print_text("works on SM64CoopDX Mods and Frontend Web Development!", x + 85, textY, 0.3)
+        textY = textY + 10
+        djui_hud_print_text("I'm generally just a silly gal looking for stuff to program,", x + 85, textY, 0.3)
+        textY = textY + 10
+        djui_hud_print_text("and I'm always up to learn new Scripting Languages", x + 85, textY, 0.3)
+        textY = textY + 15
+        djui_hud_print_text("My currently known Scripting Languages are:", x + 85, textY, 0.3)
+        textY = textY + 10
+        djui_hud_print_text("- Lua", x + 90, textY, 0.3)
+        textY = textY + 10
+        djui_hud_print_text("- Python", x + 90, textY, 0.3)
+        textY = textY + 10
+        djui_hud_print_text("- Javascript, CSS, Html", x + 90, textY, 0.3)
+
+        // Basic Info
+        textY = y + 80
+        djui_hud_print_text("She/Her - Transgender Female", x + 6, textY, 0.25)
+        textY = textY + 8
+        djui_hud_print_text("Age: " + currAge, x + 6, textY, 0.25)
+        textY = textY + 8
+        djui_hud_print_text("Commit Rate: " + commitRate + "/Weekly", x + 6, textY, 0.25)
     }
     
-    function info_tab_render_about_me_2(pageX, pageY, pageWidth, pageHeight) {
+    function info_tab_render_about_me_2(x, y, width, height) {
         djui_hud_set_color(255, 0, 0, 255)
-        djui_hud_print_text("No you're not", pageX + 10, pageY + 10, 0.5)
+        djui_hud_print_text("na na na big boobs", x + 10, y + 10, 0.5)
     }
 
     let currInfoTab = 0
     let prevInfoTab = 1
-    let infoTabPosX = 1
+    let infoTabPosX = 0
     const infoTabs = [
         {image: null, name: "About Me", func: info_tab_render_about_me},
         {image: null, name: "test tab", func: info_tab_render_about_me_2},
     ]
     for (let i in infoTabs) {
-        infoTabs[i].y = 10
+        infoTabs[i].x = 1
     }
 
     djui_hud_set_resolution(RESOLUTION_N64)
@@ -297,6 +373,11 @@
                 // Ensure images, no matter res, become the right size
                 socialLinks[i].scaleAdjust = 16/socialLinks[i].image.width
 
+                // Update Discord Name
+                if (socialLinks[i].name == "Discord" && discordInfo != "Discord") {
+                    socialLinks[i].name = discordInfo
+                }
+
                 socialLinks[i].y *= 0.85 + (i*0.09/socialLinks.length)
                 let imgWidth = socialLinks[i].image.width * socialLinks[i].scaleAdjust
                 let imgHeight = socialLinks[i].image.height * socialLinks[i].scaleAdjust
@@ -329,9 +410,20 @@
             let tabY = 15
             for (let i in infoTabs) {
                 i = Number(i)
-                let x = screenWidth - 49 - infoTabPosX
-                let y = tabY + infoTabs[i].y
-                if ((mouseX > x && mouseX < x + 50) && (mouseY > y && mouseY < y + 60)) {
+                let x = screenWidth - 50 - infoTabPosX - infoTabs[i].x
+                let y = tabY
+                let tabHeight = 60
+                if (infoTabs[i].image == null) {
+                    tabHeight = 15
+                }
+
+                djui_hud_set_color(0, 0, 0, 150)
+                djui_hud_render_rect(x, y, 50 + infoTabs[i].x, tabHeight)
+                djui_hud_set_color(255, 255, 255, 255)
+                djui_hud_print_text(infoTabs[i].name, x + 25 - djui_hud_measure_text(infoTabs[i].name)*0.15, y + tabHeight - 10, 0.3)
+                tabY = tabY + tabHeight + 5
+                
+                if ((mouseX > x && mouseX < x + 50) && (mouseY > y && mouseY < y + tabHeight)) {
                     if (djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON) {
                         if (currInfoTab != i + 1) {
                             currInfoTab = i + 1
@@ -339,36 +431,32 @@
                             currInfoTab = 0
                         }
                     }
-                    infoTabs[i].y = Math.max(infoTabs[i].y*0.85, 1)
+                    infoTabs[i].x = Math.min(infoTabs[i].x*1.3, 5)
                 } else {
-                    infoTabs[i].y = Math.min(infoTabs[i].y*1.3, 5)
+                    infoTabs[i].x = Math.max(infoTabs[i].x*0.85, 1)
                 }
-                djui_hud_set_color(0, 0, 0, 150)
-                djui_hud_render_rect(x, y, 50, 60)
-                djui_hud_set_color(255, 255, 255, 255)
-                djui_hud_print_text(infoTabs[i].name, x + 25 - djui_hud_measure_text(infoTabs[i].name)*0.15, y + 50, 0.3)
-                tabY = tabY + 65
             }
 
             if (infoTabPosX > 1) {
                 djui_hud_set_color(0, 0, 0, 150)
-                djui_hud_render_rect(screenWidth - infoTabPosX + 1, 0, screenWidth, screenHeight)
-                djui_hud_set_color(bgColor.r*0.5, bgColor.g*0.5, bgColor.b*0.5, 255)
-                djui_hud_render_rect(screenWidth - infoTabPosX + 1, 0, screenWidth, 20)
+                djui_hud_render_rect(screenWidth - infoTabPosX, 0, screenWidth, screenHeight)
+                djui_hud_set_color(0, 0, 0, 255)
+                djui_hud_render_rect(screenWidth - infoTabPosX, 0, screenWidth, 20)
+                djui_hud_render_rect(screenWidth - infoTabPosX, 0, 3, screenHeight)
                 djui_hud_set_color(255, 255, 255, 255)
                 djui_hud_print_text(infoTabs[prevInfoTab - 1].name, screenWidth - infoTabPosX + 6, 4, 0.6)
                 infoTabs[prevInfoTab - 1].func(screenWidth - infoTabPosX, 20, screenWidth - infoTabPosX)
             }
 
             if (currInfoTab != 0) {
-                infoTabPosX = Math.min(infoTabPosX * 1.2, screenWidth - 50)
+                infoTabPosX = lerp(infoTabPosX, screenWidth - 60, 0.15)
                 if (infoTabs[currInfoTab - 1] != null) {
                     prevInfoTab = currInfoTab
                 } else {
                     currInfoTab = 0
                 }
             } else {
-                infoTabPosX = Math.max(infoTabPosX * 0.9, 1)
+                infoTabPosX = lerp(infoTabPosX, 0, 0.15)
             }
 
             // Music Record
