@@ -144,11 +144,6 @@
         }
     }
 
-    const cooldown = await get_webhook_cooldown();
-    if (cooldown !== null) {
-        personalMessageCooldown = cooldown - Date.now();
-    }
-
     // Helper Functions
     function djui_hud_render_slider(sliderPos, x, y, width, height) {
         let mouseX = djui_hud_get_mouse_x()
