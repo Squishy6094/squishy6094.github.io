@@ -35,6 +35,121 @@
     function random(a, b) {
         return remap(0, 1, a, b, Math.random())
     }
+
+
+    
+    // Grab External Data
+    function get_current_time_string() {
+        const now = new Date();
+
+        const isOddSecond = now.getSeconds() % 2 === 1;
+        const separator = isOddSecond ? ' ' : ':'; // space on odd seconds, colon on even
+
+        // Get hours and minutes for PST
+        const pstOptions = {
+            timeZone: 'America/Los_Angeles',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        };
+        const pstParts = new Intl.DateTimeFormat('en-US', pstOptions).formatToParts(now);
+        const hour = pstParts.find(p => p.type === 'hour').value;
+        const minute = pstParts.find(p => p.type === 'minute').value;
+
+        const formattedPST = `${hour}${separator}${minute}`;
+
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+
+        return `${month}/${day} - ${formattedPST} PST`;
+    }
+
+    let discordInfo = "Discord"
+    async function load_discord_data() {
+        const guildId = '1137469863741362297';
+        const res = await fetch(`https://discord.com/api/guilds/${guildId}/widget.json`);
+        if (!res.ok) {
+            return;
+        }
+
+        const data = await res.json();
+
+        discordInfo = data.name + " - " + data.presence_count + " Online"
+    }
+    
+    load_discord_data()
+
+    let commitRate = "?";
+    async function load_github_commit_rate(username, days = 30, token = null) {
+        const since = new Date(Date.now() - days * 86400000).toISOString().split('T')[0];
+        const url = `https://api.github.com/search/commits?q=author:${username}+committer-date:>=${since}`;
+
+        const headers = {
+            Accept: "application/vnd.github.cloak-preview" // Required for commit search
+        };
+
+        if (token) {
+            headers.Authorization = `Bearer ${token}`;
+        }
+
+        const res = await fetch(url, { headers });
+        const data = await res.json();
+
+        if (!res.ok || !data.total_count) {
+            console.error(data);
+            return "Error or no commits found.";
+        }
+
+        const weeks = days / 7;
+        commitRate = (data.total_count / weeks).toFixed(2); // average commits per week
+    }
+    load_github_commit_rate("Squishy6094")
+
+    async function get_webhook_cooldown() {
+        try {
+            const response = await fetch("https://squishy-site-backend.vercel.app/api/check-cooldown", {
+                method: "GET"
+            });
+
+            if (!response.ok) {
+                console.error("Failed to fetch cooldown:", await response.text());
+                return null;
+            }
+
+            const data = await response.json();
+            // Expected response: { remainingMs: 0 } or { remainingMs: 480000 }
+            return data.remainingMs;
+        } catch (err) {
+            console.error("Error checking cooldown:", err);
+            return null;
+        }
+    }
+
+    let personalMessageCooldown = null
+    async function send_webhook_message(message) {
+        personalMessageCooldown = await get_webhook_cooldown();
+        if (personalMessageCooldown === null || personalMessageCooldown - Date.now() > 0) return;
+        const response = await fetch("https://squishy-site-backend.vercel.app/api/send-discord", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message })
+        });
+
+        if (response.ok) {
+            console.log("Message sent!");
+            djui_hud_text_input_state.success = true;
+        } else {
+            console.error("Failed to send:", await response.text());
+            djui_hud_text_input_state.success = false;
+        }
+    }
+
+    const cooldown = await get_webhook_cooldown();
+    if (cooldown !== null) {
+        personalMessageCooldown = cooldown - Date.now();
+    }
+
+    // Helper Functions
     function djui_hud_render_slider(sliderPos, x, y, width, height) {
         let mouseX = djui_hud_get_mouse_x()
         let mouseY = djui_hud_get_mouse_y()
@@ -113,6 +228,7 @@
         // Return the possibly updated value
         return djui_hud_text_input_state.active ? djui_hud_text_input_state.value : textValue;
     }
+
     function djui_hud_text_input_keydown(e) {
         if (!djui_hud_text_input_state.active) return;
         // Prevent input if message was sent (value is empty and not active)
@@ -137,8 +253,6 @@
             djui_hud_text_input_state.active = false;
             send_webhook_message(djui_hud_text_input_state.value);
             djui_hud_text_input_state.sent = true;
-            // Set cooldown: store current time + 10 minutes (in ms)
-            localStorage.setItem("discordWebhookCooldown", Date.now() + 10 * 60 * 1000);
         }
         djui_hud_text_input_state.value = val;
         djui_hud_text_input_state.cursor = cur;
@@ -185,90 +299,6 @@
             r: rainbowColor.r*0.6,
             g: rainbowColor.g*0.6,
             b: rainbowColor.b*0.6
-        }
-    }
-
-    // Grab External Data
-    function get_current_time_string() {
-        const now = new Date();
-
-        const isOddSecond = now.getSeconds() % 2 === 1;
-        const separator = isOddSecond ? ' ' : ':'; // space on odd seconds, colon on even
-
-        // Get hours and minutes for PST
-        const pstOptions = {
-            timeZone: 'America/Los_Angeles',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
-        };
-        const pstParts = new Intl.DateTimeFormat('en-US', pstOptions).formatToParts(now);
-        const hour = pstParts.find(p => p.type === 'hour').value;
-        const minute = pstParts.find(p => p.type === 'minute').value;
-
-        const formattedPST = `${hour}${separator}${minute}`;
-
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-
-        return `${month}/${day} - ${formattedPST} PST`;
-    }
-
-    let discordInfo = "Discord"
-    async function load_discord_data() {
-        const guildId = '1137469863741362297';
-        const res = await fetch(`https://discord.com/api/guilds/${guildId}/widget.json`);
-        if (!res.ok) {
-            return;
-        }
-
-        const data = await res.json();
-
-        discordInfo = data.name + " - " + data.presence_count + " Online"
-    }
-    
-    load_discord_data()
-
-    let commitRate = "?";
-    async function load_github_commit_rate(username, days = 30, token = null) {
-        const since = new Date(Date.now() - days * 86400000).toISOString().split('T')[0];
-        const url = `https://api.github.com/search/commits?q=author:${username}+committer-date:>=${since}`;
-
-        const headers = {
-            Accept: "application/vnd.github.cloak-preview" // Required for commit search
-        };
-
-        if (token) {
-            headers.Authorization = `Bearer ${token}`;
-        }
-
-        const res = await fetch(url, { headers });
-        const data = await res.json();
-
-        if (!res.ok || !data.total_count) {
-            console.error(data);
-            return "Error or no commits found.";
-        }
-
-        const weeks = days / 7;
-        commitRate = (data.total_count / weeks).toFixed(2); // average commits per week
-    }
-    load_github_commit_rate("Squishy6094")
-
-    async function send_webhook_message(message) {
-        if (personalMessageCooldown - Date.now() > 0) return;
-        const response = await fetch("https://squishy-site-backend.vercel.app/api/send-discord", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message })
-        });
-
-        if (response.ok) {
-            console.log("Message sent!");
-            djui_hud_text_input_state.success = true;
-        } else {
-            console.error("Failed to send:", await response.text());
-            djui_hud_text_input_state.success = false;
         }
     }
 
@@ -352,7 +382,6 @@
         new Date() < new Date(new Date().getFullYear(), 3, 3) ? 1 : 0
     );
     let personalMessage = ""
-    const personalMessageCooldown = localStorage.getItem("discordWebhookCooldown");
     function info_tab_render_about_me(x, y, width, height) {
         // Profile Picture
         djui_hud_set_color(bgColor.r, bgColor.g, bgColor.b, 255)
