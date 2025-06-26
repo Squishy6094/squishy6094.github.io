@@ -40,10 +40,10 @@
     
     // Grab External Data
     function get_current_time_string() {
-        const now = new Date();
+        const now = new Date()
 
-        const isOddSecond = now.getSeconds() % 2 === 1;
-        const separator = isOddSecond ? ' ' : ':'; // space on odd seconds, colon on even
+        const isOddSecond = now.getSeconds() % 2 === 1
+        const separator = isOddSecond ? ' ' : ':' // space on odd seconds, colon on even
 
         // Get hours and minutes for PST
         const pstOptions = {
@@ -51,84 +51,79 @@
             hour: '2-digit',
             minute: '2-digit',
             hour12: false
-        };
-        const pstParts = new Intl.DateTimeFormat('en-US', pstOptions).formatToParts(now);
-        const hour = pstParts.find(p => p.type === 'hour').value;
-        const minute = pstParts.find(p => p.type === 'minute').value;
+        }
+        const pstParts = new Intl.DateTimeFormat('en-US', pstOptions).formatToParts(now)
+        const hour = pstParts.find(p => p.type === 'hour').value
+        const minute = pstParts.find(p => p.type === 'minute').value
 
-        const formattedPST = `${hour}${separator}${minute}`;
+        const formattedPST = `${hour}${separator}${minute}`
 
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0')
+        const day = String(now.getDate()).padStart(2, '0')
 
-        return `${month}/${day} - ${formattedPST} PST`;
+        return `${month}/${day} - ${formattedPST} PST`
     }
 
     let discordInfo = "Discord"
     async function load_discord_data() {
-        const guildId = '1137469863741362297';
-        const res = await fetch(`https://discord.com/api/guilds/${guildId}/widget.json`);
-        if (!res.ok) {
-            return;
-        }
+        const guildId = '1137469863741362297'
+        const res = await fetch(`https://discord.com/api/guilds/${guildId}/widget.json`)
+        if (!res.ok) return
 
-        const data = await res.json();
+        const data = await res.json()
 
-        discordInfo = data.name + " - " + data.presence_count + " Online"
-    }
-    
-    load_discord_data()
+        discordInfo = `${data.name} - ${data.presence_count} Online`
+    } load_discord_data()
 
-    let commitRate = "?";
+    let commitRate = "?"
     async function load_github_commit_rate(username, days = 30, token = null) {
-        const since = new Date(Date.now() - days * 86400000).toISOString().split('T')[0];
-        const url = `https://api.github.com/search/commits?q=author:${username}+committer-date:>=${since}`;
+        const since = new Date(Date.now() - days * 86400000).toISOString().split('T')[0]
+        const url = `https://api.github.com/search/commits?q=author:${username}+committer-date:>=${since}`
 
         const headers = {
             Accept: "application/vnd.github.cloak-preview" // Required for commit search
-        };
+        }
 
         if (token) {
-            headers.Authorization = `Bearer ${token}`;
+            headers.Authorization = `Bearer ${token}`
         }
 
-        const res = await fetch(url, { headers });
-        const data = await res.json();
+        const res = await fetch(url, { headers })
+        const data = await res.json()
 
         if (!res.ok || !data.total_count) {
-            console.error(data);
-            return "Error or no commits found.";
+            console.error(data)
+            return "Error or no commits found."
         }
 
-        const weeks = days / 7;
-        commitRate = (data.total_count / weeks).toFixed(2); // average commits per week
-    }
-    load_github_commit_rate("Squishy6094")
+        const weeks = days / 7
+        commitRate = (data.total_count / weeks).toFixed(2) // average commits per week
+    } load_github_commit_rate("Squishy6094")
 
-    let personalMessageCooldown = 0;
+    let personalMessageCooldown = 0
     async function send_webhook_message(message) {
         // Always try to send, backend will enforce cooldown
         const response = await fetch("https://squishy-site-backend.vercel.app/api/send-discord", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message })
-        });
+        })
 
-        const data = await response.json();
+        const data = await response.json()
 
         if (response.ok && !data.error) {
-            console.log("Message sent!");
-            djui_hud_text_input_state.success = true;
+            console.log("Message sent!")
+            djui_hud_text_input_state.success = true
             // Set new cooldown for 15 minutes from now
-            personalMessageCooldown = Date.now() + 15 * 60 * 1000;
+            personalMessageCooldown = Date.now() + 15 * 60 * 1000
         } else if (data && data.cooldown) {
             // Backend returned cooldown, set it
-            personalMessageCooldown = data.cooldown;
-            djui_hud_text_input_state.success = false;
-            console.log("Cooldown active, cannot send message until:", new Date(personalMessageCooldown).toLocaleTimeString());
+            personalMessageCooldown = data.cooldown
+            djui_hud_text_input_state.success = false
+            console.log("Cooldown active, cannot send message until:", new Date(personalMessageCooldown).toLocaleTimeString())
         } else {
-            console.error("Failed to send:", data && data.error ? data.error : await response.text());
-            djui_hud_text_input_state.success = false;
+            console.error("Failed to send:", data && data.error ? data.error : await response.text())
+            djui_hud_text_input_state.success = false
         }
     }
 
@@ -162,86 +157,86 @@
         sent: false,
         success: null,
         lastFrameActive: false
-    };
+    }
 
     function djui_hud_render_text_input(textValue, x, y, width, height) {
-        let mouseX = djui_hud_get_mouse_x();
-        let mouseY = djui_hud_get_mouse_y();
-        let isInside = (mouseX > x && mouseX < x + width) && (mouseY > y && mouseY < y + height);
+        let mouseX = djui_hud_get_mouse_x()
+        let mouseY = djui_hud_get_mouse_y()
+        let isInside = (mouseX > x && mouseX < x + width) && (mouseY > y && mouseY < y + height)
 
         // Draw box
-        width = Math.max(width, djui_hud_measure_text(textValue) * 0.3 + 8);
-        djui_hud_set_color(255, 255, 255, 255);
-        djui_hud_render_rect(x, y, width, height);
+        width = Math.max(width, djui_hud_measure_text(textValue) * 0.3 + 8)
+        djui_hud_set_color(255, 255, 255, 255)
+        djui_hud_render_rect(x, y, width, height)
 
         // Draw text
-        djui_hud_set_color(0, 0, 0, 255);
-        let textY = y + (height/2) - 3;
-        djui_hud_print_text(textValue, x + 4, textY, 0.3);
+        djui_hud_set_color(0, 0, 0, 255)
+        let textY = y + (height/2) - 3
+        djui_hud_print_text(textValue, x + 4, textY, 0.3)
 
         // Handle focus
         if (isInside && djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON) {
-            djui_hud_text_input_state.active = true;
-            djui_hud_text_input_state.value = textValue;
-            djui_hud_text_input_state.cursor = textValue.length;
+            djui_hud_text_input_state.active = true
+            djui_hud_text_input_state.value = textValue
+            djui_hud_text_input_state.cursor = textValue.length
         } else if (!isInside && djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON) {
-            djui_hud_text_input_state.active = false;
+            djui_hud_text_input_state.active = false
         }
 
         // Handle input
         if (djui_hud_text_input_state.active) {
             // Draw cursor
-            let cursorX = x + 4 + djui_hud_measure_text(textValue.substring(0, djui_hud_text_input_state.cursor)) * 0.3;
+            let cursorX = x + 4 + djui_hud_measure_text(textValue.substring(0, djui_hud_text_input_state.cursor)) * 0.3
             if ((globalTimer % 60) < 30) {
-                djui_hud_set_color(0, 0, 0, 255);
-                djui_hud_print_text("|", cursorX, textY, 0.3);
+                djui_hud_set_color(0, 0, 0, 255)
+                djui_hud_print_text("|", cursorX, textY, 0.3)
             }
 
             // Only attach event once per frame
             if (!djui_hud_text_input_state.lastFrameActive) {
-                window.addEventListener('keydown', djui_hud_text_input_keydown);
+                window.addEventListener('keydown', djui_hud_text_input_keydown)
             }
         } else {
             if (djui_hud_text_input_state.lastFrameActive) {
-                window.removeEventListener('keydown', djui_hud_text_input_keydown);
+                window.removeEventListener('keydown', djui_hud_text_input_keydown)
             }
         }
-        djui_hud_text_input_state.lastFrameActive = djui_hud_text_input_state.active;
+        djui_hud_text_input_state.lastFrameActive = djui_hud_text_input_state.active
 
         // Return the possibly updated value
-        return djui_hud_text_input_state.active ? djui_hud_text_input_state.value : textValue;
+        return djui_hud_text_input_state.active ? djui_hud_text_input_state.value : textValue
     }
 
     function djui_hud_text_input_keydown(e) {
-        if (!djui_hud_text_input_state.active) return;
+        if (!djui_hud_text_input_state.active) return
         // Prevent input if message was sent (value is empty and not active)
 
-        let val = djui_hud_text_input_state.value;
-        let cur = djui_hud_text_input_state.cursor;
-        if (e.key.length === 1 && val.length < 64) {
-            val = val.slice(0, cur) + e.key + val.slice(cur);
-            cur++;
-        } else if (e.key === "Backspace" && cur > 0) {
-            val = val.slice(0, cur - 1) + val.slice(cur);
-            cur--;
-        } else if (e.key === "Delete" && cur < val.length) {
-            val = val.slice(0, cur) + val.slice(cur + 1);
-        } else if (e.key === "ArrowLeft" && cur > 0) {
-            cur--;
-        } else if (e.key === "ArrowRight" && cur < val.length) {
-            cur++;
-        } else if (e.key === "Enter") {
-            if (personalMessageCooldown - Date.now() > 0) return;
-            djui_hud_text_input_state.active = false;
-            send_webhook_message(djui_hud_text_input_state.value);
-            djui_hud_text_input_state.sent = true;
-        } else if (e.key === "Escape") {
-            djui_hud_text_input_state.active = false;
-            djui_hud_text_input_state.sent = false;
+        let val = djui_hud_text_input_state.value
+        let cur = djui_hud_text_input_state.cursor
+        if (e.key.length == 1 && val.length < 64) {
+            val = val.slice(0, cur) + e.key + val.slice(cur)
+            cur++
+        } else if (e.key == "Backspace" && cur > 0) {
+            val = val.slice(0, cur - 1) + val.slice(cur)
+            cur--
+        } else if (e.key == "Delete" && cur < val.length) {
+            val = val.slice(0, cur) + val.slice(cur + 1)
+        } else if (e.key == "ArrowLeft" && cur > 0) {
+            cur--
+        } else if (e.key == "ArrowRight" && cur < val.length) {
+            cur++
+        } else if (e.key == "Enter") {
+            if (personalMessageCooldown - Date.now() > 0) return
+            djui_hud_text_input_state.active = false
+            send_webhook_message(djui_hud_text_input_state.value)
+            djui_hud_text_input_state.sent = true
+        } else if (e.key == "Escape") {
+            djui_hud_text_input_state.active = false
+            djui_hud_text_input_state.sent = false
         }
-        djui_hud_text_input_state.value = val;
-        djui_hud_text_input_state.cursor = cur;
-        e.preventDefault();
+        djui_hud_text_input_state.value = val
+        djui_hud_text_input_state.cursor = cur
+        e.preventDefault()
     }
 
     let rainbowColor = { r: 255, g: 0, b: 0 }
@@ -296,27 +291,129 @@
 
     // Music
     const musicTracks = [
-        { name: "Team Fortress 2 - Upgrade Station", artist: "Value Inc.",              audio: 'sound/tf2-upgrade-station.ogg' },
-        { name: "Portal - Radio Tune",               artist: "Value Inc.",              audio: 'sound/portal-radio.ogg' },
-        { name: "Nintendo 3DS - Internet Settings",  artist: "Nintendo / BedrockSolid", audio: 'sound/3ds-internet-settings.ogg' },
-        { name: "SM64CoopDX - Kindness Luigi",       artist: "foxwithguns2 / Gorillaz", audio: 'sound/music-kindness-luigi.ogg' },
-        { name: "Sonic Unleashed - Windmill Isle (Night)",       artist: "Sonic Team", audio: 'sound/music-windmill-isle-night.ogg' },
+        { name: "Team Fortress 2 - Upgrade Station",       artist: "Valve Inc.",              audio: 'tf2-upgrade-station' },
+        { name: "Portal - Radio Tune",                     artist: "Valve Inc.",              audio: 'portal-radio' },
+        { name: "Nintendo 3DS - Internet Settings",        artist: "Nintendo / BedrockSolid", audio: '3ds-internet-settings' },
+        { name: "sm64coopdx - Kindness Luigi",             artist: "foxwithguns2 / Gorillaz", audio: 'kindness-luigi' },
+        { name: "Sonic Unleashed - Windmill Isle (Night)", artist: "Sonic Team",              audio: 'windmill-isle-night' },
         // Gay People, 10 am!
-        { name: "Deltarune - Hip Shop",              artist: "Toby Fox",                audio: 'sound/music-hip-shop.ogg' },
-        { name: "Undertale - Him",                   artist: "Toby Fox",                audio: 'sound/music-him.ogg'},
+        { name: "DELTARUNE - Hip Shop",                    artist: "Toby Fox",                audio: 'hip-shop' },
+        { name: "UNDERTALE - Him",                         artist: "Toby Fox",                audio: 'him' },
     ]
-
     const currMusicTrack = musicTracks[Math.floor(Math.random()*musicTracks.length)]
-    const SOUND_MUSIC = new Audio(currMusicTrack.audio)
+
+    const SOUND_MUSIC = new Object()
+    Object.defineProperties(SOUND_MUSIC, {
+        curPos: {
+            value: 0,
+            writable: true
+        },
+        init: {
+            value() {
+                if (this.inited) return
+
+                this.ctx = new AudioContext()
+                this.volumeNode = this.ctx.createGain()
+                this.volumeNode.connect(this.ctx.destination)
+                this.inited = true
+            }
+        },
+        play: {
+            async value() {
+                await this.load()
+                if (!this.playing) {
+                    let reversed = this.playbackRate > 0
+                    this.source = this.ctx.createBufferSource()
+                    this.source.buffer =
+                        reversed
+                        ? this.buf
+                        : this.revBuf
+                    this.source.loop = this.loop
+                    this.source.volume = this.volume
+                    this.source.playbackRate.value = Math.abs(this.playbackRate)
+                    this.source.connect(this.volumeNode)
+                    this.source.start(0, reversed ? this.curPos : (this.buf.duration - this.curPos))
+                    this.lastPos = this.ctx.currentTime
+                    this.playing = true
+                }
+            }
+        },
+        pause: {
+            value() {
+                if (this.playing) {
+                    this.source.stop()
+                    delete this.source
+                    this.playing = false
+                }
+            }
+        },
+        loop: {
+            get() {
+                return this._loop || false
+            },
+            set(loop) {
+                if (this.playing) this.source.loop = loop
+                this._loop = loop
+            }
+        },
+        volume: {
+            get() {
+                return this._volume || 1
+            },
+            set(volume) {
+                this.volumeNode.gain.value = volume
+                this._volume = volume
+            }
+        },
+        playbackRate: {
+            get() {
+                return this._playbackRate || 1
+            },
+            set(playbackRate) {
+                let oldRate = this._playbackRate || 1
+                this._playbackRate = playbackRate
+                if (this.playing) {
+                    this.curPos += (this.ctx.currentTime - this.lastPos) * oldRate
+                    this.curPos %= this.buf.duration
+                    if (this.curPos < 0) this.curPos += this.buf.duration
+                    this.lastPos = this.ctx.currentTime
+
+                    if (playbackRate < 0 != oldRate < 0) {
+                        this.pause()
+                        this.play()
+                    } else {
+                        this.source.playbackRate.value = Math.abs(playbackRate)
+                    }
+                }
+            }
+        },
+        load: {
+            async value(url) {
+                if (this.loaded) return this.loaded
+                this.loaded = fetch(url)
+                .then(response => response.arrayBuffer())
+                .then(buffer => this.ctx.decodeAudioData(buffer))
+                .then(buf => {
+                    this.buf = buf
+                    this.revBuf = this.ctx.createBuffer(buf.numberOfChannels, buf.length, buf.sampleRate)
+                    for (let i = 0; i < buf.numberOfChannels; i++) {
+                        buf.copyFromChannel(this.revBuf.getChannelData(i), i)
+                        this.revBuf.getChannelData(i).reverse()
+                    }
+                })
+            }
+        }
+    })
+
+    SOUND_MUSIC.init()
+    SOUND_MUSIC.load(`sound/music-${currMusicTrack.audio}.ogg`)
     SOUND_MUSIC.loop = true
-    SOUND_MUSIC.preservesPitch = false
     SOUND_MUSIC.volume = 0.2
 
-    console.log("Music Track: " + currMusicTrack.name + " | " + currMusicTrack.artist)
+    console.log(`Music Track: ${currMusicTrack.name} | ${currMusicTrack.artist}`)
 
     // Sounds
-    const SOUND_CHECKPOINT = new Audio('sound/Checkpoint.ogg')
-    SOUND_CHECKPOINT.volume=0.5
+    const SOUND_CHECKPOINT = new Audio('sound/checkpoint.ogg'); SOUND_CHECKPOINT.volume = 0.5
     const SOUND_WOODBLOCK_OPEN = new Audio('sound/woodblock-open.ogg')
     const SOUND_WOODBLOCK_CLOSE = new Audio('sound/woodblock-close.ogg')
     const SOUND_WOODBLOCK_SWITCH = new Audio('sound/woodblock-switch.ogg')
@@ -326,7 +423,7 @@
         'glass',
         'lego',
     ]
-    const SOUND_SHATTER = new Audio('sound/shatter-' + shatterSounds[Math.floor(Math.random()*shatterSounds.length)] + '.mp3')
+    const SOUND_SHATTER = new Audio(`sound/shatter-${shatterSounds[Math.floor(Math.random()*shatterSounds.length)]}.ogg`)
 
     const TEX_LOGO = get_texture_info("textures/wip-logo.png")
     const TEX_MUSIC_RECORD = get_texture_info("textures/record.png")
@@ -355,17 +452,18 @@
         { image: "youtube",    name: "Youtube", color: { r: 200, g:   0, b:   0 }, link: "https://www.youtube.com/@Squishy6094"           },
         { image: "romhacking", name: "Romhacking.com", color: rainbow_color,       link: "https://romhacking.com/user/SQUISHY"            },
     ]
-    for (let i in socialLinks) {
-        socialLinks[i].image = get_texture_info("textures/social-" + socialLinks[i].image + ".png")
-        socialLinks[i].y = 300
-        socialLinks[i].scale = socialScaleMin
-    }
+i=0;for (let link of socialLinks) {
+        link.i = i++
+        link.image = get_texture_info(`textures/social-${link.image}.png`)
+        link.y = 300
+        link.scale = socialScaleMin
+    } delete i
 
     // Info Tabs Info??
 
     const currAge = new Date().getFullYear() - 2007 - (
         new Date() < new Date(new Date().getFullYear(), 3, 3) ? 1 : 0
-    );
+    )
     let personalMessage = ""
     function info_tab_render_about_me(x, y, width, height) {
         // Profile Picture
@@ -375,44 +473,37 @@
         djui_hud_render_texture(TEX_SQUISHY_PFP, x + 7, y + 5, 71/TEX_SQUISHY_PFP.width, 71/TEX_SQUISHY_PFP.height)
 
         // Description
-        djui_hud_print_text("Haii, I'm Squishy!", x + 85, y + 5, 0.5)
-        let textY = y + 20
-        djui_hud_print_text("I'm also known as Madeline, I'm a programmer who mainly", x + 85, textY, 0.3)
-        textY = textY + 10
-        djui_hud_print_text("works on SM64CoopDX Mods and Frontend Web Development!", x + 85, textY, 0.3)
-        textY = textY + 10
-        djui_hud_print_text("I'm generally just a silly gal looking for stuff to program,", x + 85, textY, 0.3)
-        textY = textY + 10
-        djui_hud_print_text("and I'm always up to learn new Scripting Languages", x + 85, textY, 0.3)
-        textY = textY + 15
-        djui_hud_print_text("My currently known Scripting Languages are:", x + 85, textY, 0.3)
-        textY = textY + 10
-        djui_hud_print_text("- Lua", x + 90, textY, 0.3)
-        textY = textY + 10
-        djui_hud_print_text("- Python", x + 90, textY, 0.3)
-        textY = textY + 10
-        djui_hud_print_text("- Javascript, CSS, Html", x + 90, textY, 0.3)
+        let textX = x + 85, textY = y + 5
+        djui_hud_print_text("Haii, I'm Squishy!", textX, textY, 0.5)
+        textY +=  5;
+        textY += 10; djui_hud_print_text("I'm also known as Madeline, I'm a programmer who mainly",      textX, textY, 0.3)
+        textY += 10; djui_hud_print_text("works on SM64CoopDX Mods and Frontend Web Development!",       textX, textY, 0.3)
+        textY += 10; djui_hud_print_text("I'm generally just a silly gal looking for stuff to program,", textX, textY, 0.3)
+        textY += 10; djui_hud_print_text("and I'm always up to learn new Scripting Languages.",          textX, textY, 0.3)
+        textY +=  5;
+        textY += 10; djui_hud_print_text("My currently known Scripting Languages are:", textX, textY, 0.3)
+        textY += 10; djui_hud_print_text("  - Lua",                   textX, textY, 0.3)
+        textY += 10; djui_hud_print_text("  - Python",                textX, textY, 0.3)
+        textY += 10; djui_hud_print_text("  - JavaScript, CSS, HTML", textX, textY, 0.3)
 
         // Basic Info
-        textY = y + 80
-        djui_hud_print_text("She/Her - Transgender Female", x + 6, textY, 0.25)
-        textY = textY + 8
-        djui_hud_print_text("Age: " + currAge, x + 6, textY, 0.25)
-        textY = textY + 8
-        djui_hud_print_text("Commit Rate: " + commitRate + "/Weekly", x + 6, textY, 0.25)
+        textX = x + 6, textY = y + 80
+                    djui_hud_print_text("She/Her - Transgender Female",  textX, textY, 0.25)
+        textY += 8; djui_hud_print_text(`Age: ${currAge}`,               textX, textY, 0.25)
+        textY += 8; djui_hud_print_text(`Commit Rate: ${commitRate}/wk`, textX, textY, 0.25)
 
-        let messageStatus = `${personalMessage.length}/64`;
+        let messageStatus = `${personalMessage.length}/64`
         if (djui_hud_text_input_state.sent) {
             messageStatus = "Sending..."
             if (djui_hud_text_input_state.success) {
                 messageStatus = "Sent!"
             } else if (djui_hud_text_input_state.success === false) {
                 if (personalMessageCooldown > Date.now()) {
-                    let msLeft = personalMessageCooldown - Date.now();
-                    let min = Math.floor(msLeft / 60000);
-                    let sec = Math.floor((msLeft % 60000) / 1000);
-                    let secStr = sec < 10 ? "0" + sec : sec;
-                    messageStatus = `Cooldown ${min}:${secStr}`;
+                    let msLeft = personalMessageCooldown - Date.now()
+                    let min = Math.floor(msLeft / 60000)
+                    let sec = Math.floor((msLeft % 60000) / 1000)
+                    let secStr = sec < 10 ? "0" + sec : sec
+                    messageStatus = `Cooldown ${min}:${secStr}`
                     if (msLeft < 1000) {
                         djui_hud_text_input_state.sent = false
                     }
@@ -423,41 +514,41 @@
         }
 
         djui_hud_set_color(255, 255, 255, 255)
-        djui_hud_print_text("Send me a Message!! - " + messageStatus, x + 10, y + 140, 0.3)
-        personalMessage = djui_hud_render_text_input(personalMessage, x + 10, y + 148, 100, 15);
+        djui_hud_print_text(`Send me a Message!! - ${messageStatus}`, x + 10, y + 140, 0.3)
+        personalMessage = djui_hud_render_text_input(personalMessage, x + 10, y + 148, 100, 15)
         djui_hud_set_color(255, 255, 255, 150)
         djui_hud_print_text("(Messages are publicly viewable but anonymous)", x + 10, y + 165, 0.2)
     }
     
-    let optionMusicVolume = localStorage.getItem("musicVolume") ? localStorage.getItem("musicVolume") : 0.25
-    let optionMusicSpeed = localStorage.getItem("musicSpeed") ? localStorage.getItem("musicSpeed") : 0.5
+    let optionMusicVolume = localStorage.getItem("musicVolume") || 0.25
+    let optionMusicSpeed = localStorage.getItem("musicSpeed") || 0.5
     function info_tab_render_options(x, y, width, height) {
-        
         djui_hud_print_text("Music Volume: ", x + 10, y + 10, 0.4)
         optionMusicVolume = djui_hud_render_slider(optionMusicVolume, x + 70, y + 9, 100, 10)
-        djui_hud_print_text(Math.round(optionMusicVolume*100) + "%", x + 180, y + 10, 0.4)
+        djui_hud_print_text(`${Math.round(optionMusicVolume*100)}%`, x + 180, y + 10, 0.4)
         if (globalTimer % 30 == 1) {
             localStorage.setItem("musicVolume", optionMusicVolume)
         }
 
         djui_hud_print_text("Music Speed: ", x + 10, y + 25, 0.4)
         optionMusicSpeed = djui_hud_render_slider(optionMusicSpeed, x + 70, y + 24, 100, 10)
-        djui_hud_print_text("x" + Math.round((0.8 + optionMusicSpeed*0.4)*100)/100, x + 180, y + 25, 0.4)
+        djui_hud_print_text(`${Math.round((0.8 + optionMusicSpeed*0.4)*100)/100}x`, x + 180, y + 25, 0.4)
         if (globalTimer % 30 == 1) {
             localStorage.setItem("musicSpeed", optionMusicSpeed)
         }
     }
 
-    let currInfoTab = 0
-    let prevInfoTab = 1
+    let currInfoTab, prevInfoTab
     let infoTabPosX = 0
     const infoTabs = [
-        {image: get_texture_info("textures/squishy-about-me.png"), name: "About Me", func: info_tab_render_about_me},
-        {image: null,                                              name: "Options", func: info_tab_render_options},
+        { image: "squishy-about-me.png", name: "About Me", func: info_tab_render_about_me },
+        { image: null,                   name: "Options",  func: info_tab_render_options  },
     ]
-    for (let i in infoTabs) {
-        infoTabs[i].x = -80 - 5*(i + 1)
-    }
+i=0;for (let tab of infoTabs) {
+        if (tab.image)
+            tab.image = get_texture_info(`textures/${tab.image}`)
+        tab.x = -80 - 5*(i++ + 1)
+    } delete i
 
     djui_hud_set_resolution(RESOLUTION_N64)
 
@@ -474,7 +565,7 @@
     let logoFlash = 0
 
     let recordSpeed = 0x10 // fullrev   fps  s/m  rpm
-    const recordSpeedTarget = 0x10000 / 60 / 60 * 33
+    const recordSpeedTarget = 0x10000 / 30 / 60 * 33
     const recordSpeedUp = 10
     const recordSlowDown = 10
     const recordBrake = 40
@@ -502,19 +593,19 @@
         SOUND_MUSIC.volume = 0.2*optionMusicVolume
 
         // Background Color
-        let prevColor = (typeof bgColorRaw === 'function' ? bgColorRaw() : bgColorRaw)
+        let prevColor = (typeof bgColorRaw  == 'function' ? bgColorRaw() : bgColorRaw)
         bgColor.r = lerp(bgColor.r, prevColor.r, 0.1)
         bgColor.g = lerp(bgColor.g, prevColor.g, 0.1)
         bgColor.b = lerp(bgColor.b, prevColor.b, 0.1)
         djui_hud_set_color(bgColor.r, bgColor.g, bgColor.b, 255)
         djui_hud_render_rect(0, 0, screenWidth, screenHeight)
         djui_hud_set_color(bgColor.r*0.5, bgColor.g*0.5, bgColor.b*0.5, 255)
-        let checkerWidth = Math.ceil(screenWidth / bgCheckerSize) + 1
-        let checkerHeight = Math.ceil(screenHeight / bgCheckerSize) + 1
+        let checkerWidth = Math.ceil(screenWidth / bgCheckerSize)
+        let checkerHeight = Math.ceil(screenHeight / bgCheckerSize)
         for (let w = 0; w < checkerWidth; w++) {
             for (let h = 0; h < checkerHeight; h++) {
                 if ((w+h) % 2) {
-                    djui_hud_render_rect((w - 1) * bgCheckerSize, (h - 1) * bgCheckerSize, bgCheckerSize, bgCheckerSize)
+                    djui_hud_render_rect(w * bgCheckerSize, h * bgCheckerSize, bgCheckerSize, bgCheckerSize)
                 }
             }
         }
@@ -542,18 +633,17 @@
             SOUND_MUSIC.play()
             logoFlash = 150
 
-            if (konami_keys_check_pass("7")) {
+            if (konami_keys_check_pass("7"))
                 TEXT_WIP = "KILLER7"
-            }
-            if (konami_keys_check_pass("iloveyou")) {
-                window.open("https://raw.githubusercontent.com/Squishy6094/squishy6094.github.io/refs/heads/main/textures/squishy-iloveyoutoo.png", "_blank", "width=200, height=200");
-            }
-            if (konami_keys_check_pass("shell")) {
+
+            if (konami_keys_check_pass("iloveyou"))
+                window.open("https://raw.githubusercontent.com/Squishy6094/squishy6094.github.io/refs/heads/main/textures/squishy-iloveyoutoo.png", "_blank", "width=200, height=200")
+
+            if (konami_keys_check_pass("shell"))
                 bgColorRaw = {r:107, g:94, b:255}
-            }
-            if (konami_keys_check_pass("kys")) {
+
+            if (konami_keys_check_pass("kys"))
                 recordSpeed = recordBreakThreshold*2
-            }
         }
 
         let mouseX = djui_hud_get_mouse_x()
@@ -563,125 +653,118 @@
         djui_hud_render_rect(screenWidth*0.25 - socialLinks.length*0.5*16*socialScaleMax+2 - 5, screenHeight - 35 + socialLinks[1].y, socialLinks.length*16*socialScaleMax+2 + 5, 28)
         if (titleClick) {
             // Bottom Socials
-            for (let i in socialLinks) {
+            for (let link of socialLinks) {
                 // Ensure images, no matter res, become the right size
-                socialLinks[i].scaleAdjust = 16/socialLinks[i].image.width
+                link.scaleAdjust = 16/link.image.width
 
                 // Update Discord Name
-                if (socialLinks[i].name == "Discord" && discordInfo != "Discord") {
-                    socialLinks[i].name = discordInfo
+                if (link.name == "Discord" && discordInfo != "Discord") {
+                    link.name = discordInfo
                 }
 
-                socialLinks[i].y *= 0.85 + (i*0.09/socialLinks.length)
-                let imgWidth = socialLinks[i].image.width * socialLinks[i].scaleAdjust
-                let imgHeight = socialLinks[i].image.height * socialLinks[i].scaleAdjust
-                let imgScale = socialLinks[i].scale * socialLinks[i].scaleAdjust
-                let x = (i - socialLinks.length*0.5)*imgWidth*socialScaleMax+2 + screenWidth*0.25
-                let y = screenHeight - 30 + socialLinks[i].y
+                link.y *= 0.85 + (link.i*0.09/socialLinks.length)
+                let imgWidth = link.image.width * link.scaleAdjust
+                let imgHeight = link.image.height * link.scaleAdjust
+                let imgScale = link.scale * link.scaleAdjust
+                let x = (link.i - socialLinks.length*0.5)*imgWidth*socialScaleMax+2 + screenWidth*0.25
+                let y = screenHeight - 30 + link.y
                 djui_hud_set_color(255, 255, 255, 255)
                 
-                let imgScaleOffset = -imgWidth*socialScaleMin*0.5 + (imgWidth*socialScaleMin*(socialLinks[i].scale/socialScaleMin))*0.5
-                djui_hud_render_texture(socialLinks[i].image, x - imgScaleOffset, y - imgScaleOffset, imgScale, imgScale)
+                let imgScaleOffset = -imgWidth*socialScaleMin*0.5 + (imgWidth*socialScaleMin*(link.scale/socialScaleMin))*0.5
+                djui_hud_render_texture(link.image, x - imgScaleOffset, y - imgScaleOffset, imgScale, imgScale)
 
                 let textOpacity = 0
-                if (currInfoTab == 0 && (mouseX > x && mouseX < x + imgWidth*socialLinks[i].scale) && (mouseY > y && mouseY < y + imgWidth*socialLinks[i].scale)) {
+                if (!currInfoTab && (mouseX > x && mouseX < x + imgWidth*link.scale) && (mouseY > y && mouseY < y + imgWidth*link.scale)) {
                     if (djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON) {
-                        window.open(socialLinks[i].link)
+                        window.open(link.link)
                     }
-                    socialLinks[i].scale = Math.min(socialLinks[i].scale*1.05, socialScaleMax)
-                    bgColorRaw = socialLinks[i].color
+                    link.scale = Math.min(link.scale*1.05, socialScaleMax)
+                    bgColorRaw = link.color
                 } else {
-                    socialLinks[i].scale = Math.max(socialLinks[i].scale*0.95, socialScaleMin)
+                    link.scale = Math.max(link.scale*0.95, socialScaleMin)
                 }
-                djui_hud_set_color(255, 255, 255, (socialLinks[i].scale-socialScaleMin)/(socialScaleMax-socialScaleMin)*255)
-                djui_hud_print_text(socialLinks[i].name, (x + imgWidth*socialScaleMin*0.5) - djui_hud_measure_text(socialLinks[i].name)*0.15, y - 10, 0.3)
+                djui_hud_set_color(255, 255, 255, (link.scale-socialScaleMin)/(socialScaleMax-socialScaleMin)*255)
+                djui_hud_print_text(link.name, (x + imgWidth*socialScaleMin*0.5) - djui_hud_measure_text(link.name)*0.15, y - 10, 0.3)
             }
+
             titleOffset *= 0.9
             titleScaleSpin *= 0.9
             logoFlash *= 0.9
             
             // Info Tabs
             let tabY = 15
-            for (let i in infoTabs) {
-                i = Number(i)
-                let x = screenWidth - 50 - infoTabPosX - infoTabs[i].x
+            for (let tab of infoTabs) {
+                let x = screenWidth - 50 - infoTabPosX - tab.x
                 let y = tabY
-                let tabHeight = 60
-                if (infoTabs[i].image == null) {
-                    tabHeight = 15
-                }
+                let tabHeight = tab.image ? 60 : 15
 
                 djui_hud_set_color(0, 0, 0, 150)
-                djui_hud_render_rect(x, y, 50 + infoTabs[i].x, tabHeight)
+                djui_hud_render_rect(x, y, 50 + tab.x, tabHeight)
                 djui_hud_set_color(255, 255, 255, 255)
-                if (infoTabs[i].image != null) {
-                djui_hud_render_texture(infoTabs[i].image, x + 2, y + 2, 46/infoTabs[i].image.width, 46/infoTabs[i].image.width)
+                if (tab.image) {
+                    djui_hud_render_texture(tab.image, x + 2, y + 2, 46/tab.image.width, 46/tab.image.width)
                 }
-                djui_hud_print_text(infoTabs[i].name, x + 25 - djui_hud_measure_text(infoTabs[i].name)*0.15, y + tabHeight - 10, 0.3)
+                djui_hud_print_text(tab.name, x + 25 - djui_hud_measure_text(tab.name)*0.15, y + tabHeight - 10, 0.3)
                 tabY = tabY + tabHeight + 5
                 
-                if ((mouseX > x && mouseX < x + 50 + infoTabs[i].x) && (mouseY > y && mouseY < y + tabHeight)) {
+                if ((mouseX > x && mouseX < x + 50 + tab.x) && (mouseY > y && mouseY < y + tabHeight)) {
                     if (djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON) {
-                        if (currInfoTab != i + 1) {
-                            if (currInfoTab == 0) {
+                        if (currInfoTab != tab) {
+                            if (!currInfoTab) {
                                 SOUND_WOODBLOCK_OPEN.play()
                             } else {
                                 SOUND_WOODBLOCK_SWITCH.currentTime = 0
                                 SOUND_WOODBLOCK_SWITCH.play()
                             }
-                            currInfoTab = i + 1
+                            currInfoTab = tab
                         } else {
-                            currInfoTab = 0
+                            currInfoTab = null
                             SOUND_WOODBLOCK_CLOSE.play()
                         }
                     }
-                    infoTabs[i].x = lerp(infoTabs[i].x, 6, 0.1)
+                    tab.x = lerp(tab.x, 6, 0.1)
                 } else {
-                    infoTabs[i].x = lerp(infoTabs[i].x, (currInfoTab == i + 1) ? 3 : 0, 0.1)
+                    tab.x = lerp(tab.x, (currInfoTab == tab) ? 3 : 0, 0.1)
                 }
             }
 
-            if (infoTabPosX != 0) {
+            if (infoTabPosX > 0.01) {
                 djui_hud_set_color(0, 0, 0, 150)
                 djui_hud_render_rect(screenWidth - infoTabPosX, 0, screenWidth, screenHeight)
                 djui_hud_set_color(0, 0, 0, 255)
                 djui_hud_render_rect(screenWidth - infoTabPosX, 0, screenWidth, 20)
                 djui_hud_render_rect(screenWidth - infoTabPosX, 0, 3, screenHeight)
                 djui_hud_set_color(255, 255, 255, 255)
-                djui_hud_print_text(infoTabs[prevInfoTab - 1].name, screenWidth - infoTabPosX + 6, 4, 0.6)
-                infoTabs[prevInfoTab - 1].func(screenWidth - infoTabPosX, 20, screenWidth - infoTabPosX)
+                djui_hud_print_text(prevInfoTab.name, screenWidth - infoTabPosX + 6, 4, 0.6)
+                prevInfoTab.func(screenWidth - infoTabPosX, 20, screenWidth - infoTabPosX)
             }
 
-            if (currInfoTab != 0) {
+            if (currInfoTab) {
                 infoTabPosX = lerp(infoTabPosX, screenWidth - 60, 0.15)
-                if (infoTabs[currInfoTab - 1] != null) {
-                    prevInfoTab = currInfoTab
-                } else {
-                    currInfoTab = 0
-                }
+                prevInfoTab = currInfoTab
             } else {
                 infoTabPosX = lerp(infoTabPosX, 0, 0.15)
             }
 
             // Music Record
+            let recordRadius = TEX_MUSIC_RECORD.width * 0.25
             if (!recordBroken) {
-                let userSpeedTarget = recordSpeedTarget * (0.8 + optionMusicSpeed*0.4)
+                let userSpeedTarget = SOUND_MUSIC.playing ? (recordSpeedTarget * (0.8 + optionMusicSpeed*0.4)) : 0
                 let distFromRecord = Math.hypot((screenWidth - 15) - mouseX, (screenHeight - 15 + titleOffset) - mouseY)
                 let angleToRecord = Math.atan2((screenHeight - 15 + titleOffset) - mouseY, (screenWidth - 15) - mouseX) * 0x8000 / Math.PI + 0x8000
                 
-                if (distFromRecord < TEX_MUSIC_RECORD.width * 0.5 && djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON) {
+                if (distFromRecord < recordRadius && djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON) {
                     recordHeld = true
                     recordDragStart = angleToRecord
-                }
-                if (distFromRecord > TEX_MUSIC_RECORD.width * 0.5 || djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON) {
+                } else if (distFromRecord > recordRadius || djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON) {
                     recordHeld = false
                 }
                 if (Math.abs(recordDragStart - angleToRecord) > 0x4000) {
                     recordDragStart = angleToRecord
                 }
                 if (recordHeld) {
-                    recordSpeed *= 0.95
-                    recordSpeed += (recordDragStart - angleToRecord) / 16
+                    recordSpeed *= 0.5
+                    recordSpeed += (recordDragStart - angleToRecord) / 2
                     recordDragStart = angleToRecord
                 } else {
                     if (recordSpeed > userSpeedTarget)
@@ -692,13 +775,10 @@
                 }
                 recordRot += recordSpeed
 
-                if (recordSpeed > recordBreakThreshold) recordBreakTimer++
+                if (Math.abs(recordSpeed) > recordBreakThreshold) recordBreakTimer++
                 else recordBreakTimer = 0
 
-                SOUND_MUSIC.playbackRate = clamp(recordSpeed / recordSpeedTarget, 0.07, 16)
-                if (recordSpeed / recordSpeedTarget < SOUND_MUSIC.playbackRate)
-                    SOUND_MUSIC.pause()
-                else SOUND_MUSIC.play()
+                SOUND_MUSIC.playbackRate = recordSpeed / recordSpeedTarget
 
                 if (recordBreakTimer > 99) {
                     recordBroken = true
@@ -731,7 +811,7 @@
             djui_hud_print_text(currMusicTrack.artist, screenWidth - (djui_hud_measure_text(currMusicTrack.artist)*0.3 + 50) * (1 - (titleOffset / (screenWidth * 0.25))) + musicArtistPos.x, screenHeight - 20 + musicArtistPos.y, 0.3)
             djui_hud_print_text(currMusicTrack.name, screenWidth - (djui_hud_measure_text(currMusicTrack.name)*0.3 + 50) * (1 - (titleOffset / (screenWidth * 0.25))) + musicTitlePos.x, screenHeight - 10 + musicTitlePos.y, 0.3)
             djui_hud_set_rotation(recordRot, 0.5, 0.5)
-            djui_hud_render_texture(TEX_MUSIC_RECORD, screenWidth - TEX_MUSIC_RECORD.width*0.25 * Math.cos(recordBreakSpin) - 15 + recordPos.x + titleOffset, screenHeight - TEX_MUSIC_RECORD.height*0.25 - 15 + titleOffset + recordPos.y, 0.5 * Math.cos(recordBreakSpin), 0.5)
+            djui_hud_render_texture(TEX_MUSIC_RECORD, screenWidth - recordRadius * Math.cos(recordBreakSpin) - 15 + recordPos.x + titleOffset, screenHeight - recordRadius - 15 + recordPos.y + titleOffset, 0.5 * Math.cos(recordBreakSpin), 0.5)
             djui_hud_set_rotation(0, 0, 0)
         } else {
             titleOffset = screenWidth*0.25
@@ -744,14 +824,13 @@
         }
 
         // if ('getBattery' in navigator) {
-        // navigator.getBattery().then(function(battery) {
-        //     console.log('Battery level: ' + (battery.level * 100) + '%');
-        //     console.log('Is charging: ' + battery.charging);
-        // });
+        //     navigator.getBattery().then(function(battery) {
+        //         console.log(`Battery level: ${battery.level * 100}%`)
+        //         console.log(`Is charging: ${battery.charging}`)
+        //     })
         // } else {
-        // console.log('Battery Status API not supported');
+        //     console.log('Battery Status API not supported')
         // }
-
 
         // Show Time in Corner
         djui_hud_set_color(255, 255, 255, 255)
