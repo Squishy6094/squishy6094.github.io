@@ -235,6 +235,9 @@
             djui_hud_text_input_state.active = false;
             send_webhook_message(djui_hud_text_input_state.value);
             djui_hud_text_input_state.sent = true;
+        } else if (e.key === "Escape") {
+            djui_hud_text_input_state.active = false;
+            djui_hud_text_input_state.sent = false;
         }
         djui_hud_text_input_state.value = val;
         djui_hud_text_input_state.cursor = cur;
@@ -410,6 +413,9 @@
                     let sec = Math.floor((msLeft % 60000) / 1000);
                     let secStr = sec < 10 ? "0" + sec : sec;
                     messageStatus = `Cooldown ${min}:${secStr}`;
+                    if (msLeft < 1000) {
+                        djui_hud_text_input_state.sent = false
+                    }
                 } else {
                     messageStatus = "Failed to Send"
                 }
