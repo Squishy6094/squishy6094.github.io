@@ -175,11 +175,11 @@
         djui_hud_print_text(textValue, x + 4, textY, 0.3)
 
         // Handle focus
-        if (isInside && djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON) {
+        if (isInside && djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON) {
             djui_hud_text_input_state.active = true
             djui_hud_text_input_state.value = textValue
             djui_hud_text_input_state.cursor = textValue.length
-        } else if (!isInside && djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON) {
+        } else if (!isInside && djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON) {
             djui_hud_text_input_state.active = false
         }
 
@@ -626,8 +626,8 @@ i=0;for (let tab of infoTabs) {
         let spinMath = (Math.sin((titleScaleSpin + 0.5)*Math.PI))
         djui_hud_render_texture(TEX_LOGO, screenWidth*0.25 + titleOffset - TEX_LOGO.width*logoScale*0.5 * spinMath, screenHeight*0.5 - TEX_LOGO.height*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30) - logoFallPosY, logoScale * spinMath, logoScale)
         djui_hud_set_rotation(0, 0, 0)
-        if ((djui_hud_get_mouse_buttons_released() || keyTitleClick) && !titleClick) {
-            // Initialize like EVERYTHINGG
+        if ((djui_hud_get_mouse_buttons_pressed() || keyTitleClick) && !titleClick) {
+            // Initialize like EVERYTHING
             titleClick = true
             SOUND_CHECKPOINT.play()
             SOUND_MUSIC.play()
@@ -675,7 +675,7 @@ i=0;for (let tab of infoTabs) {
 
                 let textOpacity = 0
                 if (!currInfoTab && (mouseX > x && mouseX < x + imgWidth*link.scale) && (mouseY > y && mouseY < y + imgWidth*link.scale)) {
-                    if (djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON) {
+                    if (djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON) {
                         window.open(link.link)
                     }
                     link.scale = Math.min(link.scale*1.05, socialScaleMax)
@@ -708,7 +708,7 @@ i=0;for (let tab of infoTabs) {
                 tabY = tabY + tabHeight + 5
                 
                 if ((mouseX > x && mouseX < x + 50 + tab.x) && (mouseY > y && mouseY < y + tabHeight)) {
-                    if (djui_hud_get_mouse_buttons_released() & L_MOUSE_BUTTON) {
+                    if (djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON) {
                         if (currInfoTab != tab) {
                             if (!currInfoTab) {
                                 SOUND_WOODBLOCK_OPEN.play()
