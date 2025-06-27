@@ -526,9 +526,12 @@ async function get_art_gallery_json() {
         // Group by artist
         let grouped = {}
         for (const item of artGalleryRawData) {
+            // Remove file extension from img name
+            let nameWithoutExt = item.img.replace(/\.[^/.]+$/, "")
             if (!grouped[item.artist]) grouped[item.artist] = []
             grouped[item.artist].push({
             ...item,
+            name: nameWithoutExt,
             url: `https://raw.githubusercontent.com/Squishy6094/squishy-site-art-gallery/refs/heads/main/${encodeURIComponent(item.artist)}/${encodeURIComponent(item.img)}`,
             texture: null // will be loaded one at a time
             })
@@ -664,7 +667,8 @@ function info_tab_render_art_gallery(x, y, width, height) {
         let imgY = y + height/2 - imgH/2
         djui_hud_render_texture(focusImageFile.texture, imgX, imgY, scale, scale)
         djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_print_text(focusImageFile.artist, imgX + imgW*0.5 - djui_hud_measure_text(focusImageFile.artist)*0.25, imgY - 15, 0.5)
+        const artName = focusImageFile.name + " - " + focusImageFile.artist
+        djui_hud_print_text(artName, imgX + imgW*0.5 - djui_hud_measure_text(artName)*0.25, imgY - 15, 0.5)
         // Click anywhere to close
         if (mousePressed) {
             focusImage = false
