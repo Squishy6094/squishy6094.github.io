@@ -519,6 +519,178 @@ i=0;for (let link of socialLinks) {
         djui_hud_set_color(255, 255, 255, 150)
         djui_hud_print_text("(Messages are publicly viewable but anonymous)", x + 10, y + 165, 0.2)
     }
+
+
+    // Art Gallery Data Table
+    let artGalleryTable = []
+    let artGalleryLoaded = false
+    let artGalleryLoading = false
+    let artGalleryRawData = null
+
+    async function get_art_gallery_json() {
+        // Already loaded and grouped
+        if (artGalleryLoaded) return true
+
+        // If loading is in progress, return false until done
+        if (artGalleryLoading) return false
+
+        artGalleryLoading = true
+
+        try {
+            // Fetch JSON only once
+            if (!artGalleryRawData) {
+                const response = await fetch('https://raw.githubusercontent.com/Squishy6094/squishy-site-art-gallery/refs/heads/main/art-list.json')
+                artGalleryRawData = await response.json()
+            }
+
+            // Group by artist
+            const grouped = {}
+            for (const item of artGalleryRawData) {
+                if (!grouped[item.artist]) grouped[item.artist] = []
+                grouped[item.artist].push({
+                    ...item,
+                    url: `https://raw.githubusercontent.com/Squishy6094/squishy-site-art-gallery/refs/heads/main/${encodeURIComponent(item.artist)}/${encodeURIComponent(item.img)}`,
+                    texture: null // will be loaded one at a time
+                })
+            }
+
+            // Convert to array
+            artGalleryTable = Object.entries(grouped).map(([artist, items]) => ({
+                artist,
+                items
+            }))
+
+            // Start loading images one at a time, per artist, per item
+            async function loadNextImage() {
+                for (const artist of artGalleryTable) {
+                    for (const item of artist.items) {
+                        if (!item.texture) {
+                            item.texture = get_texture_info(item.url)
+                            // Wait for the image to load if get_texture_info is async, otherwise remove this await
+                            if (item.texture && item.texture.then) {
+                                await item.texture
+                            }
+                            // Load one image per event loop tick
+                            setTimeout(loadNextImage, 0)
+                            return
+                        }
+                    }
+                }
+                // All images loaded
+                artGalleryLoaded = true
+            }
+            loadNextImage()
+        } catch (error) {
+            console.error('Error loading JSON:', error)
+            artGalleryLoading = false
+            return false
+        }
+
+        return false
+    }
+    const imageWidth = 60
+    let galleryScroll = 0
+    let focusImage = false
+    let focusImageFile = null
+    let focusImageX = 1000
+    let galleryHeight = 0
+    function info_tab_render_art_gallery(x, y, width, height) {
+        let imagesPerRow = Math.floor((djui_hud_get_screen_width() - 60) / (imageWidth + 5))
+        // Only render if data is loaded
+        if (!get_art_gallery_json()) {
+            djui_hud_print_text("Loading art gallery...", x + height*0.5, y + height*0.5 - 5, 0.4)
+            return
+        }
+
+        let mouseX = djui_hud_get_mouse_x()
+        let mouseY = djui_hud_get_mouse_y()
+        let mousePressed = djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON
+
+        let artistY = y - galleryScroll;
+        for (let artist of artGalleryTable) {
+            a = artGalleryTable.indexOf(artist)
+            djui_hud_render_rect(x + 10, artistY, width - 20, 1)
+            djui_hud_print_text(artist.artist, x + 10, artistY + 5, 0.4)
+
+            let imgHeights = []
+            for (let i = 0; i < imagesPerRow; i++) {
+                imgHeights[i] = 0
+            }
+            for (let item of artist.items) {
+                // Find the column with the smallest height
+                let i = 0;
+                let minHeight = imgHeights[0];
+                for (let j = 1; j < imagesPerRow; j++) {
+                    if (imgHeights[j] < minHeight) {
+                        minHeight = imgHeights[j];
+                        i = j;
+                    }
+                }
+                let itemX = x + 10 + (i * (imageWidth + 5));
+                let itemY = artistY + 20 + imgHeights[i%imagesPerRow]
+                let scale = imageWidth/item.texture.width
+                let imgW = imageWidth
+                let imgH = item.texture.height * scale
+
+                // Check for click
+                if (
+                    !focusImage && focusImageX > width &&
+                    mouseX > itemX && mouseX < itemX + imgW &&
+                    mouseY > itemY && mouseY < itemY + imgH &&
+                    mousePressed
+                ) {
+                    focusImageFile = item
+                    focusImage = true
+                }
+
+                djui_hud_render_texture(item.texture, itemX, itemY, scale, scale)
+                //djui_hud_print_text(item.name, itemX, itemY + 70, 0.3)
+                imgHeights[i%imagesPerRow] += imgH + 5; // Move down for next artist
+            }
+            let artistYAdd = 0 
+            for (let i = 0; i < imagesPerRow; i++) {
+                artistYAdd = Math.max(artistYAdd, imgHeights[i])
+            }
+            artistY = artistY + artistYAdd + 20
+        }
+        
+        // Focused image overlay
+        if (focusImage) {
+            focusImageX = lerp(focusImageX, 0, 0.15)
+        } else {
+            focusImageX = lerp(focusImageX, width*2, 0.05)
+        }
+        if (focusImageX < width && focusImageFile && focusImageFile.texture) {
+            djui_hud_set_color(255, 255, 255, Math.max((width*0.5)-focusImageX, 0)/(width*0.5)*150)
+            djui_hud_render_rect(x, y, width, height)
+            djui_hud_set_color(255, 255, 255, 255)
+            let scale = Math.min(
+                width / focusImageFile.texture.width,
+                height / focusImageFile.texture.height,
+                2
+            )*0.8
+            let imgW = focusImageFile.texture.width * scale
+            let imgH = focusImageFile.texture.height * scale
+            let imgX = x + width/2 - imgW/2 + focusImageX
+            let imgY = y + height/2 - imgH/2
+            djui_hud_render_texture(focusImageFile.texture, imgX, imgY, scale, scale)
+            djui_hud_set_color(0, 0, 0, 255)
+            djui_hud_print_text(focusImageFile.artist, imgX + imgW*0.5 - djui_hud_measure_text(focusImageFile.artist)*0.25, imgY - 15, 0.5)
+            // Click anywhere to close
+            if (mousePressed) {
+                focusImage = false
+            }
+        }
+
+        galleryHeight = artistY
+    }
+
+    window.addEventListener('wheel', function(e) {
+        if (currInfoTab && currInfoTab.func === info_tab_render_art_gallery) {
+            galleryScroll += e.deltaY * 0.1;
+            galleryScroll = clamp(galleryScroll, 0, galleryHeight)
+        }
+    });
     
     let optionMusicVolume = localStorage.getItem("musicVolume") || 0.25
     let optionMusicSpeed = localStorage.getItem("musicSpeed") || 0.5
@@ -542,13 +714,15 @@ i=0;for (let link of socialLinks) {
     let infoTabPosX = 0
     const infoTabs = [
         { image: "squishy-about-me.png", name: "About Me", func: info_tab_render_about_me },
+        { image: null,                   name: "Art Gallery",  func: info_tab_render_art_gallery  },
         { image: null,                   name: "Options",  func: info_tab_render_options  },
     ]
-i=0;for (let tab of infoTabs) {
+    for (let tab of infoTabs) {
+        let i = infoTabs.indexOf(tab)
         if (tab.image)
             tab.image = get_texture_info(`textures/${tab.image}`)
-        tab.x = -80 - 5*(i++ + 1)
-    } delete i
+        tab.x = -80 - 5*(i + 1)
+    }
 
     djui_hud_set_resolution(RESOLUTION_N64)
 
@@ -731,12 +905,13 @@ i=0;for (let tab of infoTabs) {
             if (infoTabPosX > 0.01) {
                 djui_hud_set_color(0, 0, 0, 150)
                 djui_hud_render_rect(screenWidth - infoTabPosX, 0, screenWidth, screenHeight)
+                djui_hud_set_color(255, 255, 255, 255)
+                prevInfoTab.func(screenWidth - infoTabPosX, 20, Math.max(infoTabPosX, 0), Math.max(screenHeight - 20, 0))
                 djui_hud_set_color(0, 0, 0, 255)
                 djui_hud_render_rect(screenWidth - infoTabPosX, 0, screenWidth, 20)
                 djui_hud_render_rect(screenWidth - infoTabPosX, 0, 3, screenHeight)
                 djui_hud_set_color(255, 255, 255, 255)
                 djui_hud_print_text(prevInfoTab.name, screenWidth - infoTabPosX + 6, 4, 0.6)
-                prevInfoTab.func(screenWidth - infoTabPosX, 20, screenWidth - infoTabPosX)
             }
 
             if (currInfoTab) {
@@ -858,6 +1033,5 @@ i=0;for (let tab of infoTabs) {
     })
 
     hook_event(hud_render)
-
 </script>
 </html> 
