@@ -1,4 +1,3 @@
-
 // Utilities
 function lerp(a, b, alpha) {
     return a + alpha * ( b - a )
@@ -15,8 +14,6 @@ function remap(a, b, c, d, x) {
 function random(a, b) {
     return remap(0, 1, a, b, Math.random())
 }
-
-
 
 // Grab External Data
 function get_current_time_string() {
@@ -284,10 +281,6 @@ const currMusicTrack = musicTracks[Math.floor(Math.random()*musicTracks.length)]
 
 const SOUND_MUSIC = new Object()
 Object.defineProperties(SOUND_MUSIC, {
-    curPos: {
-        value: 0,
-        writable: true
-    },
     init: {
         value() {
             if (this.inited) return
@@ -295,6 +288,10 @@ Object.defineProperties(SOUND_MUSIC, {
             this.ctx = new AudioContext()
             this.volumeNode = this.ctx.createGain()
             this.volumeNode.connect(this.ctx.destination)
+            this._loop = false
+            this._volume = 1
+            this._playbackRate = 1
+            this.curPos = 0
             this.inited = true
         }
     },
@@ -329,7 +326,7 @@ Object.defineProperties(SOUND_MUSIC, {
     },
     loop: {
         get() {
-            return this._loop || false
+            return this._loop
         },
         set(loop) {
             if (this.playing) this.source.loop = loop
@@ -338,7 +335,7 @@ Object.defineProperties(SOUND_MUSIC, {
     },
     volume: {
         get() {
-            return this._volume || 1
+            return this._volume
         },
         set(volume) {
             this.volumeNode.gain.value = volume
@@ -347,7 +344,7 @@ Object.defineProperties(SOUND_MUSIC, {
     },
     playbackRate: {
         get() {
-            return this._playbackRate || 1
+            return this._playbackRate
         },
         set(playbackRate) {
             let oldRate = this._playbackRate || 1
@@ -362,7 +359,7 @@ Object.defineProperties(SOUND_MUSIC, {
                     this.pause()
                     this.play()
                 } else {
-                    this.source.playbackRate.value = Math.abs(playbackRate)
+                    this.source.playbackRate.linearRampToValueAtTime(Math.abs(playbackRate), this.ctx.currentTime + (1/30))
                 }
             }
         }
@@ -432,12 +429,11 @@ const socialLinks = [
     { image: "youtube",    name: "Youtube", color: { r: 200, g:   0, b:   0 }, link: "https://www.youtube.com/@Squishy6094"           },
     { image: "romhacking", name: "Romhacking.com", color: rainbow_color,       link: "https://romhacking.com/user/SQUISHY"            },
 ]
-i=0;for (let link of socialLinks) {
-    link.i = i++
+for (let link of socialLinks) {
     link.image = get_texture_info(`textures/social-${link.image}.png`)
     link.y = 300
     link.scale = socialScaleMin
-} delete i
+}
 
 // Info Tabs Info??
 
@@ -595,7 +591,7 @@ function info_tab_render_art_gallery(x, y, width, height) {
     let mouseY = djui_hud_get_mouse_y()
     let mousePressed = djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON
 
-    let artistY = y - galleryScroll;
+    let artistY = y - galleryScroll
     for (let artist of artGalleryTable) {
         a = artGalleryTable.indexOf(artist)
         if (a != 0) {
@@ -610,12 +606,12 @@ function info_tab_render_art_gallery(x, y, width, height) {
         for (let item of artist.items) {
             if (!item.texture || !item.texture.width || !item.texture.height) continue; // Skip if texture not loaded yet
             // Find the column with the smallest height
-            let i = 0;
-            let minHeight = imgHeights[0];
+            let i = 0
+            let minHeight = imgHeights[0]
             for (let j = 1; j < imagesPerRow; j++) {
                 if (imgHeights[j] < minHeight) {
-                    minHeight = imgHeights[j];
-                    i = j;
+                    minHeight = imgHeights[j]
+                    i = j
                 }
             }
             let itemX = x + 10 + (i * (imageWidth + 5));
@@ -637,7 +633,7 @@ function info_tab_render_art_gallery(x, y, width, height) {
 
             djui_hud_render_texture(item.texture, itemX, itemY, scale, scale)
             //djui_hud_print_text(item.name, itemX, itemY + 70, 0.3)
-            imgHeights[i%imagesPerRow] += imgH + 5; // Move down for next artist
+            imgHeights[i%imagesPerRow] += imgH + 5 // Move down for next artist
         }
         let artistYAdd = 0 
         for (let i = 0; i < imagesPerRow; i++) {
@@ -680,11 +676,11 @@ function info_tab_render_art_gallery(x, y, width, height) {
 }
 
 window.addEventListener('wheel', function(e) {
-    if (currInfoTab && currInfoTab.func === info_tab_render_art_gallery) {
-        galleryScroll += e.deltaY * 0.1;
+    if (currInfoTab && currInfoTab.func == info_tab_render_art_gallery) {
+        galleryScroll += e.deltaY * 0.1
         galleryScroll = clamp(galleryScroll, 0, galleryHeight)
     }
-});
+})
 
 let optionMusicVolume = localStorage.getItem("musicVolume") || 0.25
 let optionMusicSpeed = localStorage.getItem("musicSpeed") || 0.5
@@ -707,9 +703,9 @@ function info_tab_render_options(x, y, width, height) {
 let currInfoTab, prevInfoTab
 let infoTabPosX = 0
 const infoTabs = [
-    { image: "squishy-about-me.png", name: "About Me", func: info_tab_render_about_me },
-    { image: null,                   name: "Art Gallery",  func: info_tab_render_art_gallery  },
-    { image: null,                   name: "Options",  func: info_tab_render_options  },
+    { image: "squishy-about-me.png", name: "About Me",    func: info_tab_render_about_me    },
+    { image: null,                   name: "Art Gallery", func: info_tab_render_art_gallery },
+    { image: null,                   name: "Options",     func: info_tab_render_options     },
 ]
 for (let tab of infoTabs) {
     let i = infoTabs.indexOf(tab)
@@ -737,12 +733,12 @@ const recordSpeedTarget = 0x10000 / 30 / 60 * 33
 const recordSpeedUp = 10
 const recordSlowDown = 10
 const recordBrake = 40
-const recordBreakThreshold = 3500
+const recordBreakThreshold = 5500
 let recordRot = 0
 let recordDragStart = 0
 let recordHeld = false
 
-let recordBreakTimer = 0
+let recordStress = 0
 let recordBreakSpin = 0
 let recordBroken = false
 let recordPos = { x: 0, y: 0 }
@@ -807,8 +803,8 @@ function hud_render() {
             if (konami_keys_check_pass("7"))
                 TEXT_WIP = "KILLER7"
 
-            if (konami_keys_check_pass("iloveyou"))
-                window.open("https://raw.githubusercontent.com/Squishy6094/squishy6094.github.io/refs/heads/main/textures/squishy-iloveyoutoo.png", "_blank", "width=200, height=200")
+        if (konami_keys_check_pass("iloveyou") || konami_keys_check_pass("ily"))
+            window.open("https://raw.githubusercontent.com/Squishy6094/squishy6094.github.io/refs/heads/main/textures/squishy-iloveyoutoo.png", "_blank", "width=200, height=200")
 
             if (konami_keys_check_pass("shell"))
                 bgColorRaw = {r:107, g:94, b:255}
@@ -837,11 +833,12 @@ function hud_render() {
                 link.name = discordInfo
             }
 
-            link.y *= 0.85 + (link.i*0.09/socialLinks.length)
+            let i = socialLinks.indexOf(link)
+            link.y *= 0.85 + (i*0.09/socialLinks.length)
             let imgWidth = link.image.width * link.scaleAdjust
             let imgHeight = link.image.height * link.scaleAdjust
             let imgScale = link.scale * link.scaleAdjust
-            let x = (link.i - socialLinks.length*0.5)*imgWidth*socialScaleMax+2 + screenWidth*0.25
+            let x = (i - socialLinks.length*0.5)*imgWidth*socialScaleMax+2 + screenWidth*0.25
             let y = screenHeight - 30 + link.y
             djui_hud_set_color(255, 255, 255, 255)
             
@@ -951,12 +948,12 @@ function hud_render() {
             }
             recordRot += recordSpeed
 
-            if (Math.abs(recordSpeed) > recordBreakThreshold) recordBreakTimer++
-            else recordBreakTimer = 0
+            if (Math.abs(recordSpeed) > recordBreakThreshold) recordStress += (Math.abs(recordSpeed) - recordBreakThreshold) / 150
+            else recordStress = 0
 
             SOUND_MUSIC.playbackRate = recordSpeed / recordSpeedTarget
 
-            if (recordBreakTimer > 99) {
+            if (recordStress > 99) {
                 recordBroken = true
                 SOUND_MUSIC.pause()
                 SOUND_SHATTER.play()
