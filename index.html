@@ -609,7 +609,9 @@ i=0;for (let link of socialLinks) {
         let artistY = y - galleryScroll;
         for (let artist of artGalleryTable) {
             a = artGalleryTable.indexOf(artist)
-            djui_hud_render_rect(x + 10, artistY, width - 20, 1)
+            if (a != 0) {
+                djui_hud_render_rect(x + 10, artistY, width - 20, 1)
+            }
             djui_hud_print_text(artist.artist, x + 10, artistY + 5, 0.4)
 
             let imgHeights = []
