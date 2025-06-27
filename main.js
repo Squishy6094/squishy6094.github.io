@@ -524,15 +524,21 @@ async function get_art_gallery_json() {
         }
 
         // Group by artist
-        const grouped = {}
+        let grouped = {}
         for (const item of artGalleryRawData) {
             if (!grouped[item.artist]) grouped[item.artist] = []
             grouped[item.artist].push({
-                ...item,
-                url: `https://raw.githubusercontent.com/Squishy6094/squishy-site-art-gallery/refs/heads/main/${encodeURIComponent(item.artist)}/${encodeURIComponent(item.img)}`,
-                texture: null // will be loaded one at a time
+            ...item,
+            url: `https://raw.githubusercontent.com/Squishy6094/squishy-site-art-gallery/refs/heads/main/${encodeURIComponent(item.artist)}/${encodeURIComponent(item.img)}`,
+            texture: null // will be loaded one at a time
             })
         }
+
+        // Sort artists by number of arts, greatest to least
+        const sortedArtists = Object.entries(grouped)
+            .sort((a, b) => b[1].length - a[1].length)
+        const groupedSorted = Object.fromEntries(sortedArtists)
+        grouped = groupedSorted
 
         // Convert to array
         artGalleryTable = Object.entries(grouped).map(([artist, items]) => ({
@@ -634,7 +640,7 @@ function info_tab_render_art_gallery(x, y, width, height) {
         for (let i = 0; i < imagesPerRow; i++) {
             artistYAdd = Math.max(artistYAdd, imgHeights[i])
         }
-        artistY = artistY + artistYAdd + 20
+        artistY = artistY + artistYAdd + 30
     }
     
     // Focused image overlay
@@ -664,8 +670,9 @@ function info_tab_render_art_gallery(x, y, width, height) {
             focusImage = false
         }
     }
-
-    galleryHeight = artistY
+    
+    // Calculate the total height of the gallery for scrolling
+    galleryHeight = artistY + galleryScroll - height - y
 }
 
 window.addEventListener('wheel', function(e) {
