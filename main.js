@@ -756,6 +756,8 @@ function hud_render() {
     djui_hud_set_resolution(RESOLUTION_N64)
     let screenWidth = djui_hud_get_screen_width()
     let screenHeight = djui_hud_get_screen_height()
+    let mouseX = djui_hud_get_mouse_x()
+    let mouseY = djui_hud_get_mouse_y()
 
     // Set User Settings
     SOUND_MUSIC.volume = 0.2*optionMusicVolume
@@ -794,28 +796,33 @@ function hud_render() {
     let spinMath = (Math.sin((titleScaleSpin + 0.5)*Math.PI))
     djui_hud_render_texture(TEX_LOGO, screenWidth*0.25 + titleOffset - TEX_LOGO.width*logoScale*0.5 * spinMath, screenHeight*0.5 - TEX_LOGO.height*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30) - logoFallPosY, logoScale * spinMath, logoScale)
     djui_hud_set_rotation(0, 0, 0)
-    if ((djui_hud_get_mouse_buttons_pressed() || keyTitleClick) && !titleClick) {
-        // Initialize like EVERYTHING
-        titleClick = true
-        SOUND_CHECKPOINT.play()
-        SOUND_MUSIC.play()
-        logoFlash = 150
+    if (!titleClick) {
+        if ((djui_hud_get_mouse_buttons_pressed() || keyTitleClick)) {
+            // Initialize like EVERYTHING
+            titleClick = true
+            SOUND_CHECKPOINT.play()
+            SOUND_MUSIC.play()
+            logoFlash = 150
 
-        if (konami_keys_check_pass("7"))
-            TEXT_WIP = "KILLER7"
+            if (konami_keys_check_pass("7"))
+                TEXT_WIP = "KILLER7"
 
-        if (konami_keys_check_pass("iloveyou"))
-            window.open("https://raw.githubusercontent.com/Squishy6094/squishy6094.github.io/refs/heads/main/textures/squishy-iloveyoutoo.png", "_blank", "width=200, height=200")
+            if (konami_keys_check_pass("iloveyou"))
+                window.open("https://raw.githubusercontent.com/Squishy6094/squishy6094.github.io/refs/heads/main/textures/squishy-iloveyoutoo.png", "_blank", "width=200, height=200")
 
-        if (konami_keys_check_pass("shell"))
-            bgColorRaw = {r:107, g:94, b:255}
+            if (konami_keys_check_pass("shell"))
+                bgColorRaw = {r:107, g:94, b:255}
 
-        if (konami_keys_check_pass("kys"))
-            recordSpeed = recordBreakThreshold*2
+            if (konami_keys_check_pass("kys"))
+                recordSpeed = recordBreakThreshold*2
+        }
+    } else if (mouseX > screenWidth*0.25 - TEX_LOGO.width*logoScale*0.5 && mouseX < screenWidth*0.25 + TEX_LOGO.width*logoScale*0.5 &&
+               mouseY > screenHeight*0.5 - TEX_LOGO.height*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30) && mouseY < screenHeight*0.5 + TEX_LOGO.height*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30)) {
+        if (djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON) {
+            titleScaleSpin = titleScaleSpin + 2
+        }
+
     }
-
-    let mouseX = djui_hud_get_mouse_x()
-    let mouseY = djui_hud_get_mouse_y()
 
     djui_hud_set_color(0, 0, 0, 100)
     djui_hud_render_rect(screenWidth*0.25 - socialLinks.length*0.5*16*socialScaleMax+2 - 5, screenHeight - 35 + socialLinks[1].y, socialLinks.length*16*socialScaleMax+2 + 5, 28)
@@ -856,7 +863,7 @@ function hud_render() {
         }
 
         titleOffset *= 0.9
-        titleScaleSpin *= 0.9
+        titleScaleSpin *= 0.95
         logoFlash *= 0.9
         
         // Info Tabs
