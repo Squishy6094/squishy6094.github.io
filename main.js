@@ -389,6 +389,10 @@ SOUND_MUSIC.volume = 0.2
 
 console.log(`Music Track: ${currMusicTrack.name} | ${currMusicTrack.artist}`)
 
+function update_music_volume(mult) {
+    SOUND_MUSIC.volume = 0.2 * mult
+}
+
 // Sounds
 const SOUND_CHECKPOINT = new Audio('sound/checkpoint.ogg'); SOUND_CHECKPOINT.volume = 0.2
 const SOUND_WOODBLOCK_OPEN = new Audio('sound/woodblock-open.ogg')
@@ -403,6 +407,16 @@ const shatterSounds = [
     'lego',
 ]
 const SOUND_SHATTER = new Audio(`sound/shatter-${shatterSounds[Math.floor(Math.random()*shatterSounds.length)]}.ogg`); SOUND_SHATTER.volume = 0.2
+
+function update_audio_volume(mult) {
+    SOUND_CHECKPOINT.volume = 0.3 * mult
+    SOUND_WOODBLOCK_OPEN.volume = 0.5 * mult
+    SOUND_WOODBLOCK_CLOSE.volume = 0.5 * mult
+    SOUND_WOODBLOCK_SWITCH.volume = 0.5 * mult
+    SOUND_ART_OPEN.volume = 0.3 * mult
+    SOUND_ART_CLOSE.volume = 0.3 * mult
+    SOUND_SHATTER.volume = 0.2 * mult
+}
 
 const TEX_LOGO = get_texture_info("textures/wip-logo.png")
 const TEX_MUSIC_RECORD = get_texture_info("textures/record.png")
@@ -687,18 +701,28 @@ window.addEventListener('wheel', function(e) {
 })
 
 let optionMusicVolume = localStorage.getItem("musicVolume") || 0.25
+let optionAudioVolume = localStorage.getItem("audioVolume") || 0.75
 let optionMusicSpeed = localStorage.getItem("musicSpeed") || 0.5
 function info_tab_render_options(x, y, width, height) {
-    djui_hud_print_text("Music Volume: ", x + 10, y + 10, 0.4)
-    optionMusicVolume = djui_hud_render_slider(optionMusicVolume, x + 70, y + 9, 100, 10)
-    djui_hud_print_text(`${Math.round(optionMusicVolume*100)}%`, x + 180, y + 10, 0.4)
+    djui_hud_print_text("Audio Volume: ", x + 10, y + 10, 0.4)
+    optionAudioVolume = djui_hud_render_slider(optionAudioVolume, x + 70, y + 9, 100, 10)
+    djui_hud_print_text(`${Math.round(optionAudioVolume*100)}%`, x + 180, y + 10, 0.4)
+    if (globalTimer % 30 == 1) {
+        localStorage.setItem("audioVolume", optionAudioVolume)
+    }
+
+    djui_hud_render_rect(x + 10, y + 23, 200, 1)
+
+    djui_hud_print_text("Music Volume: ", x + 10, y + 30, 0.4)
+    optionMusicVolume = djui_hud_render_slider(optionMusicVolume, x + 70, y + 29, 100, 10)
+    djui_hud_print_text(`${Math.round(optionMusicVolume*100)}%`, x + 180, y + 30, 0.4)
     if (globalTimer % 30 == 1) {
         localStorage.setItem("musicVolume", optionMusicVolume)
     }
 
-    djui_hud_print_text("Music Speed: ", x + 10, y + 25, 0.4)
-    optionMusicSpeed = djui_hud_render_slider(optionMusicSpeed, x + 70, y + 24, 100, 10)
-    djui_hud_print_text(`${Math.round((0.8 + optionMusicSpeed*0.4)*100)/100}x`, x + 180, y + 25, 0.4)
+    djui_hud_print_text("Music Speed: ", x + 10, y + 45, 0.4)
+    optionMusicSpeed = djui_hud_render_slider(optionMusicSpeed, x + 70, y + 44, 100, 10)
+    djui_hud_print_text(`${Math.round((0.8 + optionMusicSpeed*0.4)*100)/100}x`, x + 180, y + 45, 0.4)
     if (globalTimer % 30 == 1) {
         localStorage.setItem("musicSpeed", optionMusicSpeed)
     }
@@ -760,7 +784,8 @@ function hud_render() {
     let mouseY = djui_hud_get_mouse_y()
 
     // Set User Settings
-    SOUND_MUSIC.volume = 0.2*optionMusicVolume
+    update_music_volume(optionMusicVolume)
+    update_audio_volume(optionAudioVolume)
 
     // Background Color
     let prevColor = (typeof bgColorRaw  == 'function' ? bgColorRaw() : bgColorRaw)
