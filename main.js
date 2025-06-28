@@ -390,17 +390,19 @@ SOUND_MUSIC.volume = 0.2
 console.log(`Music Track: ${currMusicTrack.name} | ${currMusicTrack.artist}`)
 
 // Sounds
-const SOUND_CHECKPOINT = new Audio('sound/checkpoint.ogg'); SOUND_CHECKPOINT.volume = 0.5
+const SOUND_CHECKPOINT = new Audio('sound/checkpoint.ogg'); SOUND_CHECKPOINT.volume = 0.2
 const SOUND_WOODBLOCK_OPEN = new Audio('sound/woodblock-open.ogg')
 const SOUND_WOODBLOCK_CLOSE = new Audio('sound/woodblock-close.ogg')
 const SOUND_WOODBLOCK_SWITCH = new Audio('sound/woodblock-switch.ogg')
+const SOUND_ART_OPEN = new Audio('sound/art-open.mp3'); SOUND_ART_OPEN.volume = 0.2 // Thanks Honkish
+const SOUND_ART_CLOSE = new Audio('sound/art-close.mp3'); SOUND_ART_CLOSE.volume = 0.2
 
 const shatterSounds = [
     'smw',
     'glass',
     'lego',
 ]
-const SOUND_SHATTER = new Audio(`sound/shatter-${shatterSounds[Math.floor(Math.random()*shatterSounds.length)]}.ogg`)
+const SOUND_SHATTER = new Audio(`sound/shatter-${shatterSounds[Math.floor(Math.random()*shatterSounds.length)]}.ogg`); SOUND_SHATTER.volume = 0.2
 
 const TEX_LOGO = get_texture_info("textures/wip-logo.png")
 const TEX_MUSIC_RECORD = get_texture_info("textures/record.png")
@@ -622,13 +624,14 @@ function info_tab_render_art_gallery(x, y, width, height) {
 
             // Check for click
             if (
-                !focusImage && focusImageX > width &&
+                !focusImage && focusImageX > width*1.5 &&
                 mouseX > itemX && mouseX < itemX + imgW &&
                 mouseY > itemY && mouseY < itemY + imgH &&
                 mousePressed
             ) {
                 focusImageFile = item
                 focusImage = true
+                SOUND_ART_OPEN.play()
             }
 
             djui_hud_render_texture(item.texture, itemX, itemY, scale, scale)
@@ -668,6 +671,7 @@ function info_tab_render_art_gallery(x, y, width, height) {
         // Click anywhere to close
         if (mousePressed) {
             focusImage = false
+            SOUND_ART_CLOSE.play()
         }
     }
     
@@ -814,7 +818,7 @@ function hud_render() {
         }
     } else if (mouseX > screenWidth*0.25 - TEX_LOGO.width*logoScale*0.5 && mouseX < screenWidth*0.25 + TEX_LOGO.width*logoScale*0.5 &&
                mouseY > screenHeight*0.5 - TEX_LOGO.height*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30) && mouseY < screenHeight*0.5 + TEX_LOGO.height*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30)) {
-        if (djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON) {
+        if ((djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON) && !currInfoTab) {
             titleScaleSpin = titleScaleSpin + 2
         }
 
