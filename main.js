@@ -96,7 +96,7 @@ async function send_webhook_message(message) {
         personalMessageCooldown = Date.now() + 15 * 60 * 1000
     } else if (data && data.banned) {
         // Backend returned banned, fuck you
-        personalMessageBanned = data.banned
+        personalMessageBanned = true
         djui_hud_text_input_state.success = false
     } else if (data && data.cooldown) {
         // Backend returned cooldown, set it
