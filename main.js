@@ -733,6 +733,12 @@ function info_tab_render_options(x, y, width, height) {
     if (globalTimer % 30 == 1) {
         localStorage.setItem("musicSpeed", optionMusicSpeed)
     }
+
+    djui_hud_print_text("Credits:", x + 10, y + 165, 0.4)
+    let textY = 170
+    textY = textY + 10; djui_hud_print_text("Shell_x33 - Main Website Artist", x + 13, y + textY, 0.3)
+    textY = textY + 10; djui_hud_print_text("Kaktus64 - Social Icons",         x + 13, y + textY, 0.3)
+    textY = textY + 10; djui_hud_print_text("Honkish - Art Gallery UI Sounds", x + 13, y + textY, 0.3)
 }
 
 let currInfoTab, prevInfoTab
