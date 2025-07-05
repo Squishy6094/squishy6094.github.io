@@ -465,16 +465,16 @@ let personalMessage = ""
 function info_tab_render_about_me(x, y, width, height) {
     // Profile Picture
     djui_hud_set_color(bgColor.r, bgColor.g, bgColor.b, 255)
-    djui_hud_render_rect(x + 5, y + 3, 75, 75)
+    djui_hud_render_rect(x + 3, y + 3, 75, 75)
     djui_hud_set_color(255, 255, 255, 255)
-    djui_hud_render_texture(TEX_SQUISHY_PFP, x + 7, y + 5, 71/TEX_SQUISHY_PFP.width, 71/TEX_SQUISHY_PFP.height)
+    djui_hud_render_texture(TEX_SQUISHY_PFP, x + 5, y + 5, 71/TEX_SQUISHY_PFP.width, 71/TEX_SQUISHY_PFP.height)
 
     // Description
-    let textX = x + 85, textY = y + 5
+    let textX = x + 83, textY = y + 5
     djui_hud_print_text("Haii, I'm Squishy!", textX, textY, 0.5)
     textY +=  5;
     textY += 10; djui_hud_print_text("I'm also known as Madeline, I'm a programmer who mainly",      textX, textY, 0.3)
-    textY += 10; djui_hud_print_text("works on SM64CoopDX Mods and Frontend Web Development!",       textX, textY, 0.3)
+    textY += 10; djui_hud_print_text("works on SM64CoopDX Mods and both Front/Backend Javascript!",  textX, textY, 0.3)
     textY += 10; djui_hud_print_text("I'm generally just a silly gal looking for stuff to program,", textX, textY, 0.3)
     textY += 10; djui_hud_print_text("and I'm always up to learn new Scripting Languages.",          textX, textY, 0.3)
     textY +=  5;
@@ -513,10 +513,10 @@ function info_tab_render_about_me(x, y, width, height) {
     }
 
     djui_hud_set_color(255, 255, 255, 255)
-    djui_hud_print_text(`Send me a Message!! - ${messageStatus}`, x + 10, y + 140, 0.3)
-    personalMessage = djui_hud_render_text_input(personalMessage, x + 10, y + 148, 100, 15)
+    djui_hud_print_text(`Send me a Message!! - ${messageStatus}`, x + 3, y + height - 35, 0.3)
+    personalMessage = djui_hud_render_text_input(personalMessage, x + 3, y + height - 25, 100, 15)
     djui_hud_set_color(255, 255, 255, 150)
-    djui_hud_print_text("(Messages are publicly viewable but anonymous)", x + 10, y + 165, 0.2)
+    djui_hud_print_text("(Messages are publicly viewable but anonymous)", x + 3, y + height - 7, 0.2)
 }
 
 
@@ -940,10 +940,12 @@ function hud_render() {
             djui_hud_set_color(0, 0, 0, 150)
             djui_hud_render_rect(screenWidth - infoTabPosX, 0, screenWidth, screenHeight)
             djui_hud_set_color(255, 255, 255, 255)
-            prevInfoTab.func(screenWidth - infoTabPosX, 20, Math.max(infoTabPosX, 0), Math.max(screenHeight - 20, 0))
+            prevInfoTab.func(screenWidth - infoTabPosX + 3, 20, Math.max(infoTabPosX - 3, 0), Math.max(screenHeight - 23, 0))
             djui_hud_set_color(0, 0, 0, 255)
-            djui_hud_render_rect(screenWidth - infoTabPosX, 0, screenWidth, 20)
-            djui_hud_render_rect(screenWidth - infoTabPosX, 0, 3, screenHeight)
+            djui_hud_render_rect(screenWidth - infoTabPosX, 0, screenWidth, 20) // Top
+            djui_hud_render_rect(screenWidth - infoTabPosX, 0, 3, screenHeight) // Left
+            djui_hud_render_rect(Math.max(screenWidth - 3, screenWidth - infoTabPosX), 0, 3, screenHeight) // Right
+            djui_hud_render_rect(screenWidth - infoTabPosX, screenHeight - 3, screenWidth, 3) // Bottom
             djui_hud_set_color(255, 255, 255, 255)
             djui_hud_print_text(prevInfoTab.name, screenWidth - infoTabPosX + 6, 4, 0.6)
         }
