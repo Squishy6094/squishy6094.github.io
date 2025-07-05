@@ -78,6 +78,7 @@ async function load_github_commit_rate(username, days = 30, token = null) {
 } load_github_commit_rate("Squishy6094")
 
 let personalMessageCooldown = 0
+let personalMessageBanned = false
 async function send_webhook_message(message) {
     // Always try to send, backend will enforce cooldown
     const response = await fetch("https://squishy-site-backend.vercel.app/api/send-discord", {
@@ -93,6 +94,10 @@ async function send_webhook_message(message) {
         djui_hud_text_input_state.success = true
         // Set new cooldown for 15 minutes from now
         personalMessageCooldown = Date.now() + 15 * 60 * 1000
+    } else if (data && data.banned) {
+        // Backend returned banned, fuck you
+        personalMessageBanned = data.banned
+        djui_hud_text_input_state.success = false
     } else if (data && data.cooldown) {
         // Backend returned cooldown, set it
         personalMessageCooldown = data.cooldown
@@ -490,7 +495,9 @@ function info_tab_render_about_me(x, y, width, height) {
         if (djui_hud_text_input_state.success) {
             messageStatus = "Sent!"
         } else if (djui_hud_text_input_state.success === false) {
-            if (personalMessageCooldown > Date.now()) {
+            if (personalMessageBanned) {
+                messageStatus = `Banned from Service`
+            } else if (personalMessageCooldown > Date.now()) {
                 let msLeft = personalMessageCooldown - Date.now()
                 let min = Math.floor(msLeft / 60000)
                 let sec = Math.floor((msLeft % 60000) / 1000)
