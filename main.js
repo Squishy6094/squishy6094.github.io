@@ -616,6 +616,7 @@ let galleryScroll = 0
 let focusImage = false
 let focusImageFile = null
 let focusImageX = 1000
+let focusImageDelay = 0
 let galleryHeight = 0
 function info_tab_render_art_gallery(x, y, width, height) {
     let imagesPerRow = Math.floor((djui_hud_get_screen_width() - 60) / (imageWidth + 5))
@@ -625,17 +626,24 @@ function info_tab_render_art_gallery(x, y, width, height) {
         return
     }
 
+    if (width < 5) {
+        focusImageX = 1000
+    }
+
     let mouseX = djui_hud_get_mouse_x()
     let mouseY = djui_hud_get_mouse_y()
-    let mousePressed = djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON
+    let mousePressed = djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON === 1
+
+    console.log(mousePressed)
 
     let artistY = y - galleryScroll
     for (let artist of artGalleryTable) {
         a = artGalleryTable.indexOf(artist)
         if (a != 0) {
-            djui_hud_render_rect(x + 10, artistY, width - 20, 1)
+            djui_hud_render_rect(x + 8, artistY - 5, Math.max(width - 20, 0), 1)
         }
-        djui_hud_print_text(artist.artist, x + 10, artistY + 5, 0.4)
+        const artCount = Object.keys(artist.items).length
+        djui_hud_print_text(`${artist.artist} - ${artCount} Artwork${artCount > 1 ? "s" : ""}`, x + 10, artistY + 5, 0.4)
 
         let imgHeights = []
         for (let i = 0; i < imagesPerRow; i++) {
@@ -660,18 +668,20 @@ function info_tab_render_art_gallery(x, y, width, height) {
 
             // Check for click
             if (
-                !focusImage && focusImageX > width*1.5 &&
+                !focusImage && focusImageDelay === 0 &&
                 mouseX > itemX && mouseX < itemX + imgW &&
                 mouseY > itemY && mouseY < itemY + imgH &&
                 mousePressed
             ) {
                 focusImageFile = item
                 focusImage = true
+                focusImageDelay = 3
                 SOUND_ART_OPEN.play()
             }
-
-            djui_hud_render_texture(item.texture, itemX, itemY, scale, scale)
-            //djui_hud_print_text(item.name, itemX, itemY + 70, 0.3)
+            if ((itemY + imgH + 5) > 0 && (itemY) < x + height) {
+                // Only render if on screen
+                djui_hud_render_texture(item.texture, itemX, itemY, scale, scale)
+            }
             imgHeights[i%imagesPerRow] += imgH + 5 // Move down for next artist
         }
         let artistYAdd = 0 
@@ -685,10 +695,10 @@ function info_tab_render_art_gallery(x, y, width, height) {
     if (focusImage) {
         focusImageX = lerp(focusImageX, 0, 0.15)
     } else {
-        focusImageX = lerp(focusImageX, width*2, 0.05)
+        focusImageX = lerp(focusImageX, width*1.1, 0.09)
     }
     if (focusImageX < width && focusImageFile && focusImageFile.texture) {
-        djui_hud_set_color(255, 255, 255, Math.max((width*0.5)-focusImageX, 0)/(width*0.5)*150)
+        djui_hud_set_color(bgColor.r*0.5, bgColor.g*0.5, bgColor.b*0.5, Math.max((width*0.5)-focusImageX, 0)/(width*0.5)*200)
         djui_hud_render_rect(x, y, width, height)
         djui_hud_set_color(255, 255, 255, 255)
         let scale = Math.min(
@@ -701,18 +711,22 @@ function info_tab_render_art_gallery(x, y, width, height) {
         let imgX = x + width/2 - imgW/2 + focusImageX
         let imgY = y + height/2 - imgH/2
         djui_hud_render_texture(focusImageFile.texture, imgX, imgY, scale, scale)
-        djui_hud_set_color(0, 0, 0, 255)
         const artName = focusImageFile.name + " - " + focusImageFile.artist
         djui_hud_print_text(artName, imgX + imgW*0.5 - djui_hud_measure_text(artName)*0.25, imgY - 15, 0.5)
         // Click anywhere to close
-        if (mousePressed) {
+        if (mousePressed && focusImageDelay === 0) {
             focusImage = false
+            focusImageDelay = 3
             SOUND_ART_CLOSE.play()
         }
     }
     
     // Calculate the total height of the gallery for scrolling
     galleryHeight = artistY + galleryScroll - height - y
+
+    if (focusImageDelay > 0) {
+        focusImageDelay = focusImageDelay - 1
+    }
 }
 
 window.addEventListener('wheel', function(e) {
