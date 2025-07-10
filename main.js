@@ -52,30 +52,42 @@ async function load_discord_data() {
     discordInfo = `${data.name} - ${data.presence_count} Online`
 } load_discord_data()
 
-let commitRate = "?"
+let commitRate = null
+let commitRatePromise = null
 async function load_github_commit_rate(username, days = 30, token = null) {
-    const since = new Date(Date.now() - days * 86400000).toISOString().split('T')[0]
-    const url = `https://api.github.com/search/commits?q=author:${username}+committer-date:>=${since}`
-
-    const headers = {
-        Accept: "application/vnd.github.cloak-preview" // Required for commit search
+    if (commitRate != null) {
+        return commitRate
     }
-
-    if (token) {
-        headers.Authorization = `Bearer ${token}`
+    if (commitRatePromise) {
+        return commitRatePromise
     }
+    commitRatePromise = (async () => {
+        const since = new Date(Date.now() - days * 86400000).toISOString().split('T')[0]
+        const url = `https://api.github.com/search/commits?q=author:${username}+committer-date:>=${since}`
 
-    const res = await fetch(url, { headers })
-    const data = await res.json()
+        const headers = {
+            Accept: "application/vnd.github.cloak-preview" // Required for commit search
+        }
 
-    if (!res.ok || !data.total_count) {
-        console.error(data)
-        return "Error or no commits found."
-    }
+        if (token) {
+            headers.Authorization = `Bearer ${token}`
+        }
 
-    const weeks = days / 7
-    commitRate = (data.total_count / weeks).toFixed(2) // average commits per week
-} load_github_commit_rate("Squishy6094")
+        const res = await fetch(url, { headers })
+        const data = await res.json()
+
+        if (!res.ok || !data.total_count) {
+            console.error(data)
+            commitRate = "?"
+            return "Error or no commits found."
+        }
+
+        const weeks = days / 7
+        commitRate = (data.total_count / weeks).toFixed(2) // average commits per week
+        return commitRate
+    })()
+    return commitRatePromise
+}
 
 let personalMessageCooldown = 0
 let personalMessageBanned = false
@@ -273,11 +285,12 @@ let TEXT_CLICK_ANYWHERE = "Click Anywhere"
 
 // Music
 const musicTracks = [
-    { name: "Team Fortress 2 - Upgrade Station",       artist: "Valve Inc.",              audio: 'tf2-upgrade-station' },
-    { name: "Portal - Radio Tune",                     artist: "Valve Inc.",              audio: 'portal-radio' },
-    { name: "Nintendo 3DS - Internet Settings",        artist: "Nintendo / BedrockSolid", audio: '3ds-internet-settings' },
-    { name: "sm64coopdx - Kindness Luigi",             artist: "foxwithguns2 / Gorillaz", audio: 'kindness-luigi' },
-    { name: "Sonic Unleashed - Windmill Isle (Night)", artist: "Sonic Team",              audio: 'windmill-isle-night' },
+    { name: "Team Fortress 2 - Upgrade Station",             artist: "Valve Inc.",              audio: 'tf2-upgrade-station' },
+    { name: "Portal - Radio Tune",                           artist: "Valve Inc.",              audio: 'portal-radio' },
+    { name: "Nintendo 3DS - Internet Settings",              artist: "Nintendo / BedrockSolid", audio: '3ds-internet-settings' },
+    { name: "sm64coopdx - Kindness Luigi",                   artist: "foxwithguns2 / Gorillaz", audio: 'kindness-luigi' },
+    { name: "Sonic Unleashed - Windmill Isle (Night)",       artist: "Sonic Team",              audio: 'windmill-isle-night' },
+    { name: "Kirby's Dream Land 3 - Game Over (JP Version)", artist: "Nintendo / SiIvaGunner",  audio: 'kirby-game-over' },
     // Gay People, 10 am!
     { name: "DELTARUNE - Hip Shop",                    artist: "Toby Fox",                audio: 'hip-shop' },
     { name: "UNDERTALE - Him",                         artist: "Toby Fox",                audio: 'him' },
@@ -388,7 +401,7 @@ Object.defineProperties(SOUND_MUSIC, {
 })
 
 SOUND_MUSIC.init()
-SOUND_MUSIC.load(`sound/music-${currMusicTrack.audio}.ogg`)
+SOUND_MUSIC.load(`sound/music/${currMusicTrack.audio}.ogg`)
 SOUND_MUSIC.loop = true
 SOUND_MUSIC.volume = 0.2
 
@@ -463,6 +476,8 @@ const currAge = new Date().getFullYear() - 2007 - (
 )
 let personalMessage = ""
 function info_tab_render_about_me(x, y, width, height) {
+    load_github_commit_rate("Squishy6094")
+
     // Profile Picture
     djui_hud_set_color(bgColor.r, bgColor.g, bgColor.b, 255)
     djui_hud_render_rect(x + 3, y + 3, 75, 75)
@@ -487,7 +502,7 @@ function info_tab_render_about_me(x, y, width, height) {
     textX = x + 6, textY = y + 80
                 djui_hud_print_text("She/Her - Transgender Female",  textX, textY, 0.25)
     textY += 8; djui_hud_print_text(`Age: ${currAge}`,               textX, textY, 0.25)
-    textY += 8; djui_hud_print_text(`Commit Rate: ${commitRate}/wk`, textX, textY, 0.25)
+    textY += 8; djui_hud_print_text((commitRate ? `Commit Rate: ${commitRate}/wk` : "Loading Commit Rate..."), textX, textY, 0.25)
 
     let messageStatus = `${personalMessage.length}/64`
     if (djui_hud_text_input_state.sent) {
