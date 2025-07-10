@@ -736,29 +736,82 @@ window.addEventListener('wheel', function(e) {
     }
 })
 
+
+let optionColorR = localStorage.getItem("prefColorR") || 0
+let optionColorG = localStorage.getItem("prefColorG") || (88/255)
+let optionColorB = localStorage.getItem("prefColorB") || 0
+
+let bgColorRaw = { r: optionColorR*255, g: optionColorG*255, b: optionColorB*255 }
+let bgColor = bgColorRaw
+let bgColorTimer = 0
+
+function set_background_color_to_default() {
+    bgColorRaw = { r: optionColorR*255, g: optionColorG*255, b: optionColorB*255 }
+}
+
+const musicSpeedModRange = 1
 let optionMusicVolume = localStorage.getItem("musicVolume") || 0.25
 let optionAudioVolume = localStorage.getItem("audioVolume") || 0.75
 let optionMusicSpeed = localStorage.getItem("musicSpeed") || 0.5
 function info_tab_render_options(x, y, width, height) {
-    djui_hud_print_text("Audio Volume: ", x + 10, y + 10, 0.4)
-    optionAudioVolume = djui_hud_render_slider(optionAudioVolume, x + 70, y + 9, 100, 10)
-    djui_hud_print_text(`${Math.round(optionAudioVolume*100)}%`, x + 180, y + 10, 0.4)
+    let optionY = y + 10
+    djui_hud_print_text("Color Preference: ", x + 10, optionY, 0.4)
+
+    // Color Preview
+    optionY = optionY + 12
+    djui_hud_set_color(255, 255, 255, 255)
+    djui_hud_render_rect(x + 159, optionY - 1, 34, 34)
+    djui_hud_set_color(optionColorR*127, optionColorG*127, optionColorB*127, 255)
+    djui_hud_render_rect(x + 160, optionY, 32, 32)
+    djui_hud_set_color(optionColorR*255, optionColorG*255, optionColorB*255, 255)
+    djui_hud_render_rect(x + 162, optionY + 2, 28, 28)
+
+    // Adjust Red
+    djui_hud_set_color(255, 0, 0, 255)
+    optionColorR = djui_hud_render_slider(optionColorR, x + 10, optionY - 1, 100, 10)
+    djui_hud_print_text(`${Math.round(optionColorR*255)}`, x + 120, optionY, 0.4)
+
+    // Adjust Green
+    optionY = optionY + 12
+    djui_hud_set_color(0, 255, 0, 255)
+    optionColorG = djui_hud_render_slider(optionColorG, x + 10, optionY - 1, 100, 10)
+    djui_hud_print_text(`${Math.round(optionColorG*255)}`, x + 120, optionY, 0.4)
+
+    // Adjust Blue
+    optionY = optionY + 12
+    djui_hud_set_color(0, 0, 255, 255)
+    optionColorB = djui_hud_render_slider(optionColorB, x + 10, optionY - 1, 100, 10)
+    djui_hud_print_text(`${Math.round(optionColorB*255)}`, x + 120, optionY, 0.4)
+    if (globalTimer % 30 == 1) {
+        localStorage.setItem("prefColorR", optionColorR)
+        localStorage.setItem("prefColorG", optionColorG)
+        localStorage.setItem("prefColorB", optionColorB)
+    }
+
+    djui_hud_render_rect(x + 10, optionY + 13, 200, 1)
+
+    optionY = optionY + 20
+    djui_hud_print_text("Audio Volume: ", x + 10, optionY, 0.4)
+    optionAudioVolume = djui_hud_render_slider(optionAudioVolume, x + 70, optionY - 1, 100, 10)
+    djui_hud_print_text(`${Math.round(optionAudioVolume*100)}%`, x + 180, optionY, 0.4)
     if (globalTimer % 30 == 1) {
         localStorage.setItem("audioVolume", optionAudioVolume)
     }
 
-    djui_hud_render_rect(x + 10, y + 23, 200, 1)
+    djui_hud_render_rect(x + 10, optionY + 13, 200, 1)
 
-    djui_hud_print_text("Music Volume: ", x + 10, y + 30, 0.4)
-    optionMusicVolume = djui_hud_render_slider(optionMusicVolume, x + 70, y + 29, 100, 10)
-    djui_hud_print_text(`${Math.round(optionMusicVolume*100)}%`, x + 180, y + 30, 0.4)
+    optionY = optionY + 20
+    djui_hud_print_text("Music Volume: ", x + 10, optionY, 0.4)
+    optionMusicVolume = djui_hud_render_slider(optionMusicVolume, x + 70, optionY - 1, 100, 10)
+    djui_hud_print_text(`${Math.round(optionMusicVolume*100)}%`, x + 180, optionY, 0.4)
     if (globalTimer % 30 == 1) {
         localStorage.setItem("musicVolume", optionMusicVolume)
     }
 
-    djui_hud_print_text("Music Speed: ", x + 10, y + 45, 0.4)
-    optionMusicSpeed = djui_hud_render_slider(optionMusicSpeed, x + 70, y + 44, 100, 10)
-    djui_hud_print_text(`${Math.round((0.8 + optionMusicSpeed*0.4)*100)/100}x`, x + 180, y + 45, 0.4)
+    optionY = optionY + 15
+    djui_hud_print_text("Music Speed: ", x + 10, optionY, 0.4)
+    optionMusicSpeed = djui_hud_render_slider(optionMusicSpeed, x + 70, optionY, 100, 10)
+    djui_hud_print_text(`${Math.round(((musicSpeedModRange*0.5) + optionMusicSpeed*musicSpeedModRange)*100)/100}x`, x + 180, optionY, 0.4)
     if (globalTimer % 30 == 1) {
         localStorage.setItem("musicSpeed", optionMusicSpeed)
     }
@@ -786,9 +839,6 @@ for (let tab of infoTabs) {
 
 djui_hud_set_resolution(RESOLUTION_N64)
 
-let bgColorDefault = { r: 0, g: 88, b: 0 }
-let bgColorRaw = bgColorDefault
-let bgColor = bgColorRaw
 let bgCheckerSize = 16
 let titleClick = false
 let keyTitleClick = false
@@ -829,11 +879,10 @@ function hud_render() {
     update_music_volume(optionMusicVolume)
     update_audio_volume(optionAudioVolume)
 
-    // Background Color
-    let prevColor = (typeof bgColorRaw  == 'function' ? bgColorRaw() : bgColorRaw)
-    bgColor.r = lerp(bgColor.r, prevColor.r, 0.1)
-    bgColor.g = lerp(bgColor.g, prevColor.g, 0.1)
-    bgColor.b = lerp(bgColor.b, prevColor.b, 0.1)
+    let targetColor = (typeof bgColorRaw  == 'function' ? bgColorRaw() : bgColorRaw)
+    bgColor.r = lerp(bgColor.r, targetColor.r, 0.1)
+    bgColor.g = lerp(bgColor.g, targetColor.g, 0.1)
+    bgColor.b = lerp(bgColor.b, targetColor.b, 0.1)
     djui_hud_set_color(bgColor.r, bgColor.g, bgColor.b, 255)
     djui_hud_render_rect(0, 0, screenWidth, screenHeight)
     djui_hud_set_color(bgColor.r*0.5, bgColor.g*0.5, bgColor.b*0.5, 255)
@@ -923,6 +972,7 @@ function hud_render() {
                 }
                 link.scale = Math.min(link.scale*1.05, socialScaleMax)
                 bgColorRaw = link.color
+                bgColorTimer = 0
             } else {
                 link.scale = Math.max(link.scale*0.95, socialScaleMin)
             }
@@ -988,6 +1038,7 @@ function hud_render() {
         if (currInfoTab) {
             infoTabPosX = lerp(infoTabPosX, screenWidth - 60, 0.15)
             prevInfoTab = currInfoTab
+            set_background_color_to_default()
         } else {
             infoTabPosX = lerp(infoTabPosX, 0, 0.15)
         }
@@ -995,7 +1046,7 @@ function hud_render() {
         // Music Record
         let recordRadius = TEX_MUSIC_RECORD.width * 0.25
         if (!recordBroken) {
-            let userSpeedTarget = SOUND_MUSIC.playing ? (recordSpeedTarget * (0.8 + optionMusicSpeed*0.4)) : 0
+            let userSpeedTarget = SOUND_MUSIC.playing ? (recordSpeedTarget * ((musicSpeedModRange*0.5) + optionMusicSpeed*musicSpeedModRange)) : 0
             let distFromRecord = Math.hypot((screenWidth - 15) - mouseX, (screenHeight - 15 + titleOffset) - mouseY)
             let angleToRecord = Math.atan2((screenHeight - 15 + titleOffset) - mouseY, (screenWidth - 15) - mouseX) * 0x8000 / Math.PI + 0x8000
             
