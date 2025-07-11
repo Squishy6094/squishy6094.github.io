@@ -106,6 +106,8 @@ async function send_webhook_message(message) {
         djui_hud_text_input_state.success = true
         // Set new cooldown for 15 minutes from now
         personalMessageCooldown = Date.now() + 15 * 60 * 1000
+        squishyAssistantState = 1
+        squishyAssistantFrame = 0
     } else if (data && data.banned) {
         // Backend returned banned, fuck you
         personalMessageBanned = true
@@ -474,6 +476,9 @@ for (let link of socialLinks) {
 const currAge = new Date().getFullYear() - 2007 - (
     new Date() < new Date(new Date().getFullYear(), 3, 3) ? 1 : 0
 )
+const TEX_SQUISHY_ASSISTANT = get_texture_info("textures/squishy-assistant.png")
+let squishyAssistantState = 0
+let squishyAssistantFrame = 0
 let personalMessage = ""
 function info_tab_render_about_me(x, y, width, height) {
     load_github_commit_rate("Squishy6094")
@@ -517,12 +522,12 @@ function info_tab_render_about_me(x, y, width, height) {
                 let min = Math.floor(msLeft / 60000)
                 let sec = Math.floor((msLeft % 60000) / 1000)
                 let secStr = sec < 10 ? "0" + sec : sec
-                messageStatus = `Cooldown ${min}:${secStr}`
+                messageStatus = `${min}:${secStr}`
                 if (msLeft < 1000) {
                     djui_hud_text_input_state.sent = false
                 }
             } else {
-                messageStatus = "Failed to Send"
+                messageStatus = "Failed!"
             }
         }
     }
@@ -532,6 +537,17 @@ function info_tab_render_about_me(x, y, width, height) {
     personalMessage = djui_hud_render_text_input(personalMessage, x + 3, y + height - 25, 100, 15)
     djui_hud_set_color(255, 255, 255, 150)
     djui_hud_print_text("(Messages are publicly viewable but anonymous)", x + 3, y + height - 7, 0.2)
+
+        // Message Assistant
+    if (squishyAssistantState == 1) {
+        squishyAssistantRender = Math.min(Math.floor(squishyAssistantFrame/5), 7) * 160
+    } else {
+        squishyAssistantRender = Math.floor(squishyAssistantFrame/30)%2 * 160
+    }
+    squishyAssistantFrame = squishyAssistantFrame + 1
+
+    djui_hud_set_color(255, 255, 255, 255)
+    djui_hud_render_texture_tile(TEX_SQUISHY_ASSISTANT, x - 3 + Math.max(100, djui_hud_measure_text(personalMessage) * 0.3 + 8), y + height - 65, 0.3, 0.3, squishyAssistantRender, 0, 160, 288)
 }
 
 
