@@ -1153,9 +1153,11 @@ function hud_render() {
         if (globalTimer > 150) {
             djui_hud_set_color(255, 255, 255, Math.abs(Math.sin((globalTimer - 150)*0.05)/Math.PI)*255)
             djui_hud_print_text(TEXT_CLICK_ANYWHERE, screenWidth*0.5 - djui_hud_measure_text(TEXT_CLICK_ANYWHERE)*0.25, screenHeight - 30, 0.5)
-            djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_print_text(konamiKeys.toString().replace(/,/g, ''), screenWidth*0.5 - djui_hud_measure_text(konamiKeys.join(""))*0.25, 30, 0.5)
         }
+
+        // Shhhh secretss
+        djui_hud_set_color(255, 255, 255, 255)
+        djui_hud_print_text(konamiKeys.toString().replace(/,/g, ''), screenWidth*0.5 - djui_hud_measure_text(konamiKeys.join(""))*0.25, 30, 0.5)
     }
 
     // if ('getBattery' in navigator) {
