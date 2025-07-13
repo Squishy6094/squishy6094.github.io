@@ -92,6 +92,9 @@ async function load_github_commit_rate(username, days = 30, token = null) {
 let personalMessageCooldown = 0
 let personalMessageBanned = false
 async function send_webhook_message(message) {
+    if (message.toLowerCase() === "gaster")
+        location.reload()
+
     // Always try to send, backend will enforce cooldown
     const response = await fetch("https://squishy-site-backend.vercel.app/api/send-discord", {
         method: "POST",
@@ -439,6 +442,9 @@ function update_audio_volume(mult) {
 }
 
 const TEX_LOGO = get_texture_info("textures/wip-logo.png")
+const TEX_LOGO_WAIT = get_texture_info("textures/wip-logo.png")
+const TEX_LOGO_PEACE = get_texture_info("textures/wip-logo-2.png")
+const TEX_LOGO_SPIN = get_texture_info("textures/wip-logo-3.png")
 const TEX_MUSIC_RECORD = get_texture_info("textures/record.png")
 const TEX_SQUISHY_PFP = get_texture_info("https://avatars.githubusercontent.com/u/74333752")
 const logoScale = 1.5
@@ -859,10 +865,11 @@ let bgCheckerSize = 16
 let titleClick = false
 let keyTitleClick = false
 let titleOffset = djui_hud_get_screen_width()*0.25
-let titleScaleSpin = 2
+let titleScaleSpin = 3
 let logoFallPosY = djui_hud_get_screen_height()
 let logoFallVelY = 0
 let logoFlash = 0
+let logoSquishyFlung = false
 
 let recordSpeed = 0x10 // fullrev   fps  s/m  rpm
 const recordSpeedTarget = 0x10000 / 30 / 60 * 33
@@ -926,7 +933,19 @@ function hud_render() {
     djui_hud_set_color(255, 255, 255, 255)
     djui_hud_set_rotation(logoTilt, 0.5, 0.5)
     let spinMath = (Math.sin((titleScaleSpin + 0.5)*Math.PI))
-    djui_hud_render_texture(TEX_LOGO, screenWidth*0.25 + titleOffset - TEX_LOGO.width*logoScale*0.5 * spinMath, screenHeight*0.5 - TEX_LOGO.height*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30) - logoFallPosY, logoScale * spinMath, logoScale)
+
+    let logoTexture = TEX_LOGO
+    if (!logoSquishyFlung) {
+        if (titleScaleSpin > 3.5 && titleClick) {
+            logoTexture = TEX_LOGO_SPIN
+        } else if (spinMath > 0) {
+            logoTexture = TEX_LOGO_PEACE
+        } else {
+            logoTexture = TEX_LOGO_WAIT
+        }
+    }
+
+    djui_hud_render_texture(logoTexture, screenWidth*0.25 + titleOffset - logoTexture.width*logoScale*0.5 * spinMath, screenHeight*0.5 - logoTexture.height*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30) - logoFallPosY, logoScale * spinMath, logoScale)
     djui_hud_set_rotation(0, 0, 0)
     if (!titleClick) {
         if ((djui_hud_get_mouse_buttons_pressed() || keyTitleClick)) {
@@ -939,11 +958,14 @@ function hud_render() {
             if (konami_keys_check_pass("7"))
                 TEXT_WIP = "KILLER7"
 
-        if (konami_keys_check_pass("iloveyou") || konami_keys_check_pass("ily"))
-            window.open("https://raw.githubusercontent.com/Squishy6094/squishy6094.github.io/refs/heads/main/textures/squishy-iloveyoutoo.png", "_blank", "width=200, height=200")
+            if (konami_keys_check_pass("iloveyou") || konami_keys_check_pass("ily"))
+                window.open("https://raw.githubusercontent.com/Squishy6094/squishy6094.github.io/refs/heads/main/textures/squishy-iloveyoutoo.png", "_blank", "width=200, height=200")
 
             if (konami_keys_check_pass("shell"))
                 bgColorRaw = {r:107, g:94, b:255}
+
+            if (konami_keys_check_pass("gaster"))
+                location.reload()
 
             if (konami_keys_check_pass("kys"))
                 recordSpeed = recordBreakThreshold*2
