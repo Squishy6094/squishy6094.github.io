@@ -170,7 +170,7 @@ function djui_hud_render_text_input(textValue, x, y, width, height) {
 
     // Draw text
     djui_hud_set_color(0, 0, 0, 255)
-    let textY = y + (height/2) - 3
+    let textY = y + (height/2) - 5
     djui_hud_print_text(textValue, x + 4, textY, 0.3)
 
     // Handle focus
@@ -542,7 +542,7 @@ function info_tab_render_about_me(x, y, width, height) {
     djui_hud_print_text(`Send me a Message!! - ${messageStatus}`, x + 3, y + height - 35, 0.3)
     personalMessage = djui_hud_render_text_input(personalMessage, x + 3, y + height - 25, 100, 15)
     djui_hud_set_color(255, 255, 255, 150)
-    djui_hud_print_text("(Messages are publicly viewable but anonymous)", x + 3, y + height - 7, 0.2)
+    djui_hud_print_text("(Messages are publicly viewable but anonymous)", x + 3, y + height - 8, 0.2)
 
         // Message Assistant
     if (squishyAssistantState == 1) {
@@ -556,6 +556,25 @@ function info_tab_render_about_me(x, y, width, height) {
     djui_hud_render_texture_tile(TEX_SQUISHY_ASSISTANT, x - 3 + Math.max(100, djui_hud_measure_text(personalMessage) * 0.3 + 8), y + height - 65, 0.3, 0.3, squishyAssistantRender, 0, 160, 288)
 }
 
+const squishyProjects = [
+    { name: "Character Select Coop - Creator", link: "https://github.com/Squishy6094/character-select-coop", image: get_texture_info("https://raw.githubusercontent.com/Squishy6094/character-select-coop/main/images/menu-preview.png")},
+]
+
+function info_tab_render_projects(x, y, width, height) {
+    let projectY = 10 + y
+    for (let project of squishyProjects) {
+        djui_hud_set_color(bgColor.r, bgColor.g, bgColor.b, 100)
+        djui_hud_render_rect(x + 10, projectY, width - 20, 50)
+        djui_hud_set_color(255, 255, 255, 255)
+        let imageScale = 46/project.image.height
+        djui_hud_render_texture(project.image, x + 12, projectY + 2, imageScale, imageScale)
+        djui_hud_set_color(0, 0, 0, 100)
+        djui_hud_render_rect(x + 14 + imageScale*project.image.width, projectY + 2, Math.max(width - 26 - imageScale*project.image.width, 0), 46)
+        djui_hud_set_color(255, 255, 255, 255)
+        djui_hud_print_text(project.name, x + 17 + imageScale*project.image.width, projectY + 4, 0.4)
+        projectY = projectY + 35
+    }
+}
 
 // Art Gallery Data Table
 let artGalleryTable = []
@@ -665,7 +684,7 @@ function info_tab_render_art_gallery(x, y, width, height) {
             djui_hud_render_rect(x + 8, artistY - 5, Math.max(width - 20, 0), 1)
         }
         const artCount = Object.keys(artist.items).length
-        djui_hud_print_text(`${artist.artist} - ${artCount} Artwork${artCount > 1 ? "s" : ""}`, x + 10, artistY + 5, 0.4)
+        djui_hud_print_text(`${artist.artist} - ${artCount} Artwork${artCount > 1 ? "s" : ""}`, x + 10, artistY + 4, 0.4)
 
         let imgHeights = []
         for (let i = 0; i < imagesPerRow; i++) {
@@ -734,7 +753,7 @@ function info_tab_render_art_gallery(x, y, width, height) {
         let imgY = y + height/2 - imgH/2
         djui_hud_render_texture(focusImageFile.texture, imgX, imgY, scale, scale)
         const artName = focusImageFile.name + " - " + focusImageFile.artist
-        djui_hud_print_text(artName, imgX + imgW*0.5 - djui_hud_measure_text(artName)*0.25, imgY - 15, 0.5)
+        djui_hud_print_text(artName, imgX + imgW*0.5 - djui_hud_measure_text(artName)*0.25, imgY - 17, 0.5)
         // Click anywhere to close
         if (mousePressed && focusImageDelay === 0) {
             focusImage = false
@@ -777,7 +796,7 @@ let optionAudioVolume = localStorage.getItem("audioVolume") || 0.75
 let optionMusicSpeed = localStorage.getItem("musicSpeed") || 0.5
 function info_tab_render_options(x, y, width, height) {
     let optionY = y + 10
-    djui_hud_print_text("Color Preference: ", x + 10, optionY, 0.4)
+    djui_hud_print_text("Color Preference: ", x + 10, optionY - 3, 0.4)
 
     // Color Preview
     optionY = optionY + 12
@@ -791,19 +810,19 @@ function info_tab_render_options(x, y, width, height) {
     // Adjust Red
     djui_hud_set_color(255, 0, 0, 255)
     optionColorR = djui_hud_render_slider(optionColorR, x + 10, optionY - 1, 100, 10)
-    djui_hud_print_text(`${Math.round(optionColorR*255)}`, x + 120, optionY, 0.4)
+    djui_hud_print_text(`${Math.round(optionColorR*255)}`, x + 120, optionY - 3, 0.4)
 
     // Adjust Green
     optionY = optionY + 12
     djui_hud_set_color(0, 255, 0, 255)
     optionColorG = djui_hud_render_slider(optionColorG, x + 10, optionY - 1, 100, 10)
-    djui_hud_print_text(`${Math.round(optionColorG*255)}`, x + 120, optionY, 0.4)
+    djui_hud_print_text(`${Math.round(optionColorG*255)}`, x + 120, optionY - 3, 0.4)
 
     // Adjust Blue
     optionY = optionY + 12
     djui_hud_set_color(0, 0, 255, 255)
     optionColorB = djui_hud_render_slider(optionColorB, x + 10, optionY - 1, 100, 10)
-    djui_hud_print_text(`${Math.round(optionColorB*255)}`, x + 120, optionY, 0.4)
+    djui_hud_print_text(`${Math.round(optionColorB*255)}`, x + 120, optionY - 3, 0.4)
     if (globalTimer % 30 == 1) {
         localStorage.setItem("prefColorR", optionColorR)
         localStorage.setItem("prefColorG", optionColorG)
@@ -813,9 +832,9 @@ function info_tab_render_options(x, y, width, height) {
     djui_hud_render_rect(x + 10, optionY + 13, 200, 1)
 
     optionY = optionY + 20
-    djui_hud_print_text("Audio Volume: ", x + 10, optionY, 0.4)
+    djui_hud_print_text("Audio Volume: ", x + 10, optionY - 3, 0.4)
     optionAudioVolume = djui_hud_render_slider(optionAudioVolume, x + 70, optionY - 1, 100, 10)
-    djui_hud_print_text(`${Math.round(optionAudioVolume*100)}%`, x + 180, optionY, 0.4)
+    djui_hud_print_text(`${Math.round(optionAudioVolume*100)}%`, x + 180, optionY - 3, 0.4)
     if (globalTimer % 30 == 1) {
         localStorage.setItem("audioVolume", optionAudioVolume)
     }
@@ -823,16 +842,16 @@ function info_tab_render_options(x, y, width, height) {
     djui_hud_render_rect(x + 10, optionY + 13, 200, 1)
 
     optionY = optionY + 20
-    djui_hud_print_text("Music Volume: ", x + 10, optionY, 0.4)
+    djui_hud_print_text("Music Volume: ", x + 10, optionY - 3, 0.4)
     optionMusicVolume = djui_hud_render_slider(optionMusicVolume, x + 70, optionY - 1, 100, 10)
-    djui_hud_print_text(`${Math.round(optionMusicVolume*100)}%`, x + 180, optionY, 0.4)
+    djui_hud_print_text(`${Math.round(optionMusicVolume*100)}%`, x + 180, optionY - 3, 0.4)
     if (globalTimer % 30 == 1) {
         localStorage.setItem("musicVolume", optionMusicVolume)
     }
 
     optionY = optionY + 15
-    djui_hud_print_text("Music Speed: ", x + 10, optionY, 0.4)
-    optionMusicSpeed = djui_hud_render_slider(optionMusicSpeed, x + 70, optionY, 100, 10)
+    djui_hud_print_text("Music Speed: ", x + 10, optionY - 3, 0.4)
+    optionMusicSpeed = djui_hud_render_slider(optionMusicSpeed, x + 70, optionY - 3, 100, 10)
     djui_hud_print_text(`${Math.round(((musicSpeedModRange*0.5) + optionMusicSpeed*musicSpeedModRange)*100)/100}x`, x + 180, optionY, 0.4)
     if (globalTimer % 30 == 1) {
         localStorage.setItem("musicSpeed", optionMusicSpeed)
@@ -849,6 +868,7 @@ let currInfoTab, prevInfoTab
 let infoTabPosX = 0
 const infoTabs = [
     { image: "squishy-about-me.png", name: "About Me",    func: info_tab_render_about_me    },
+    { image: null,                   name: "Projects",    func: info_tab_render_projects    },
     { image: null,                   name: "Art Gallery", func: info_tab_render_art_gallery },
     { image: null,                   name: "Options",     func: info_tab_render_options     },
 ]
@@ -1015,7 +1035,7 @@ function hud_render() {
                 link.scale = Math.max(link.scale*0.95, socialScaleMin)
             }
             djui_hud_set_color(255, 255, 255, (link.scale-socialScaleMin)/(socialScaleMax-socialScaleMin)*255)
-            djui_hud_print_text(link.name, (x + imgWidth*socialScaleMin*0.5) - djui_hud_measure_text(link.name)*0.15, y - 10, 0.3)
+            djui_hud_print_text(link.name, (x + imgWidth*socialScaleMin*0.5) - djui_hud_measure_text(link.name)*0.15, y - 14, 0.3)
         }
 
         titleOffset *= 0.9
@@ -1035,7 +1055,7 @@ function hud_render() {
             if (tab.image) {
                 djui_hud_render_texture(tab.image, x + 2, y + 2, 46/tab.image.width, 46/tab.image.width)
             }
-            djui_hud_print_text(tab.name, x + 25 - djui_hud_measure_text(tab.name)*0.15, y + tabHeight - 10, 0.3)
+            djui_hud_print_text(tab.name, x + 25 - djui_hud_measure_text(tab.name)*0.15, y + tabHeight - 12, 0.3)
             tabY = tabY + tabHeight + 5
             
             if ((mouseX > x && mouseX < x + 50 + tab.x) && (mouseY > y && mouseY < y + tabHeight)) {
@@ -1070,7 +1090,7 @@ function hud_render() {
             djui_hud_render_rect(Math.max(screenWidth - 3, screenWidth - infoTabPosX), 0, 3, screenHeight) // Right
             djui_hud_render_rect(screenWidth - infoTabPosX, screenHeight - 3, screenWidth, 3) // Bottom
             djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_print_text(prevInfoTab.name, screenWidth - infoTabPosX + 6, 4, 0.6)
+            djui_hud_print_text(prevInfoTab.name, screenWidth - infoTabPosX + 6, 0, 0.6)
         }
 
         if (currInfoTab) {
@@ -1143,8 +1163,8 @@ function hud_render() {
         }
 
         djui_hud_set_color(255, 255, 255, 255)
-        djui_hud_print_text(currMusicTrack.artist, screenWidth - (djui_hud_measure_text(currMusicTrack.artist)*0.3 + 50) * (1 - (titleOffset / (screenWidth * 0.25))) + musicArtistPos.x, screenHeight - 20 + musicArtistPos.y, 0.3)
-        djui_hud_print_text(currMusicTrack.name, screenWidth - (djui_hud_measure_text(currMusicTrack.name)*0.3 + 50) * (1 - (titleOffset / (screenWidth * 0.25))) + musicTitlePos.x, screenHeight - 10 + musicTitlePos.y, 0.3)
+        djui_hud_print_text(currMusicTrack.artist, screenWidth - (djui_hud_measure_text(currMusicTrack.artist)*0.3 + 50) * (1 - (titleOffset / (screenWidth * 0.25))) + musicArtistPos.x, screenHeight - 22 + musicArtistPos.y, 0.3)
+        djui_hud_print_text(currMusicTrack.name, screenWidth - (djui_hud_measure_text(currMusicTrack.name)*0.3 + 50) * (1 - (titleOffset / (screenWidth * 0.25))) + musicTitlePos.x, screenHeight - 12 + musicTitlePos.y, 0.3)
         djui_hud_set_rotation(recordRot, 0.5, 0.5)
         djui_hud_render_texture(TEX_MUSIC_RECORD, screenWidth - recordRadius * Math.cos(recordBreakSpin) - 15 + recordPos.x + titleOffset, screenHeight - recordRadius - 15 + recordPos.y + titleOffset, 0.5 * Math.cos(recordBreakSpin), 0.5)
         djui_hud_set_rotation(0, 0, 0)
@@ -1172,7 +1192,7 @@ function hud_render() {
     // Show Time in Corner
     djui_hud_set_color(255, 255, 255, 255)
     const timeString = get_current_time_string()
-    djui_hud_print_text(timeString, screenWidth - 3 - djui_hud_measure_text(timeString)*0.4, 3, 0.4)
+    djui_hud_print_text(timeString, screenWidth - 2 - djui_hud_measure_text(timeString)*0.4, 1, 0.4)
 
     // Work In Progress Text
     // let headerScrollX = -Math.tan(globalTimer*0.02 - 1.1)*screenWidth/3 + screenWidth*0.5
@@ -1180,6 +1200,17 @@ function hud_render() {
     // djui_hud_render_rect(0, 10, screenWidth, 16)
     // djui_hud_set_color(255, 255, 255, 255)
     // djui_hud_print_text(TEXT_WIP, 20 + headerScrollX, 13, 0.5)
+
+    // Font Rework Test
+    // djui_hud_set_font(FONT_NORMAL)
+    // djui_hud_set_color(255, 0, 0, 255)
+    // djui_hud_render_rect(0, 0, 100, 31)
+    // djui_hud_set_color(0, 0, 255, 255)
+    // djui_hud_render_rect(0, 0, 100, 7)
+    // djui_hud_set_color(255, 0, 255, 255)
+    // djui_hud_render_rect(0, 32 - 5, 100, 5)
+    // djui_hud_set_color(0, 255, 0, 255)
+    // djui_hud_print_text("The quick brown fox jumped over the lazy dog", 0, 0, 1)
 
     // Global Site Timer
     globalTimer = globalTimer + 1
