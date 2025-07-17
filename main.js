@@ -1004,21 +1004,22 @@ function hud_render() {
             SOUND_MUSIC.play()
             logoFlash = 150
 
-            if (konami_keys_check_pass("7"))
+            if (konami_keys_check_pass("7")) {
                 TEXT_WIP = "KILLER7"
-
-            if (konami_keys_check_pass("iloveyou") || konami_keys_check_pass("ily"))
+}
+            if (konami_keys_check_pass("iloveyou") || konami_keys_check_pass("ily")) {
                 window.open("https://raw.githubusercontent.com/Squishy6094/squishy6094.github.io/refs/heads/main/textures/squishy-iloveyoutoo.png", "_blank", "width=200, height=200")
-
-            if (konami_keys_check_pass("shell"))
+}
+            if (konami_keys_check_pass("shell")) {
                 bgColorRaw = {r:107, g:94, b:255}
-
-            if (konami_keys_check_pass("gaster"))
+            }
+            if (konami_keys_check_pass("gaster")) {
                 location.reload()
-
-            if (konami_keys_check_pass("kys"))
+            }
+            if (konami_keys_check_pass("kys")) {
                 titleScaleSpin = 12
                 recordSpeed = recordBreakThreshold*2
+            }
         }
     } else if (mouseX > screenWidth*0.25 - TEX_LOGO.width*logoScale*0.5 && mouseX < screenWidth*0.25 + TEX_LOGO.width*logoScale*0.5 &&
                mouseY > screenHeight*0.5 - TEX_LOGO.height*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30) && mouseY < screenHeight*0.5 + TEX_LOGO.height*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30)) {
