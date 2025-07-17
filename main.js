@@ -423,6 +423,7 @@ const SOUND_WOODBLOCK_CLOSE = new Audio('sound/woodblock-close.ogg')
 const SOUND_WOODBLOCK_SWITCH = new Audio('sound/woodblock-switch.ogg')
 const SOUND_ART_OPEN = new Audio('sound/art-open.mp3'); SOUND_ART_OPEN.volume = 0.2 // Thanks Honkish
 const SOUND_ART_CLOSE = new Audio('sound/art-close.mp3'); SOUND_ART_CLOSE.volume = 0.2
+const SOUND_LOGO_FLING = new Audio('sound/logo-fling.mp3'); SOUND_LOGO_FLING.volume = 0.2
 
 const shatterSounds = [
     'smw',
@@ -439,15 +440,14 @@ function update_audio_volume(mult) {
     SOUND_ART_OPEN.volume = 0.3 * mult
     SOUND_ART_CLOSE.volume = 0.3 * mult
     SOUND_SHATTER.volume = 0.2 * mult
+    SOUND_LOGO_FLING.volume = 0.2 * mult
 }
 
-const TEX_LOGO = get_texture_info("textures/wip-logo.png")
-const TEX_LOGO_WAIT = get_texture_info("textures/wip-logo.png")
-const TEX_LOGO_PEACE = get_texture_info("textures/wip-logo-2.png")
-const TEX_LOGO_SPIN = get_texture_info("textures/wip-logo-3.png")
+const TEX_LOGO = get_texture_info("textures/squishy-logo.png")
+const TEX_LOGO_SQUISHY_FLING = get_texture_info("textures/squishy-logo-fling.png")
 const TEX_MUSIC_RECORD = get_texture_info("textures/record.png")
 const TEX_SQUISHY_PFP = get_texture_info("https://avatars.githubusercontent.com/u/74333752")
-const logoScale = 1.5
+const logoScale = 0.4
 
 let konamiKeys = []
 
@@ -891,6 +891,11 @@ let logoFallVelY = 0
 let logoFlash = 0
 let logoSquishyFlung = false
 
+let logoFlingPosX = 0
+let logoFlingPosY = 0
+let logoFlingVelX = 0
+let logoFlingVelY = 0
+
 let recordSpeed = 0x10 // fullrev   fps  s/m  rpm
 const recordSpeedTarget = 0x10000 / 30 / 60 * 33
 const recordSpeedUp = 10
@@ -954,18 +959,42 @@ function hud_render() {
     djui_hud_set_rotation(logoTilt, 0.5, 0.5)
     let spinMath = (Math.sin((titleScaleSpin + 0.5)*Math.PI))
 
-    let logoTexture = TEX_LOGO
+    let animState = 0
+    let animFrame = 0
     if (!logoSquishyFlung) {
         if (titleScaleSpin > 3.5 && titleClick) {
-            logoTexture = TEX_LOGO_SPIN
+            animState = 3 // Spin Hold
+            animFrame = Math.floor(globalTimer/10)%2
         } else if (spinMath > 0) {
-            logoTexture = TEX_LOGO_PEACE
+            animState = 2 // Peace
+            animFrame = Math.floor(globalTimer/15)%2
         } else {
-            logoTexture = TEX_LOGO_WAIT
+            animState = 1 // Wait
+            animFrame = Math.floor(globalTimer/30)%2
         }
     }
 
-    djui_hud_render_texture(logoTexture, screenWidth*0.25 + titleOffset - logoTexture.width*logoScale*0.5 * spinMath, screenHeight*0.5 - logoTexture.height*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30) - logoFallPosY, logoScale * spinMath, logoScale)
+    // Main Logo
+    djui_hud_render_texture_tile(TEX_LOGO, screenWidth*0.25 + titleOffset - 352*logoScale*0.5 * spinMath, screenHeight*0.5 - 352*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30) - logoFallPosY, logoScale * spinMath, logoScale, animFrame*352, animState*352, 352, 352)
+
+    if (!logoSquishyFlung && titleScaleSpin > 10) {
+        logoFlingPosX = screenWidth*0.25 + titleOffset - TEX_LOGO_SQUISHY_FLING.width*logoScale*0.25 * spinMath
+        logoFlingPosY = screenHeight*0.5 - TEX_LOGO_SQUISHY_FLING.height*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30) - logoFallPosY
+        logoFlingVelX = 10*spinMath
+        logoFlingVelY = 10
+        logoSquishyFlung = true
+        SOUND_LOGO_FLING.play()
+    }
+
+    // Flung Squishy
+    if (logoSquishyFlung) {
+        logoFlingPosX = logoFlingPosX + logoFlingVelX
+        logoFlingPosY = logoFlingPosY - logoFlingVelY
+        logoFlingVelY = logoFlingVelY - 0.5
+        djui_hud_set_rotation(globalTimer*logoFlingVelX*0x300, 0.5, 0.5)
+        djui_hud_render_texture_tile(TEX_LOGO_SQUISHY_FLING, logoFlingPosX, logoFlingPosY, logoScale, logoScale, (Math.floor(globalTimer/10)%2)*224, 0, 224, 320)
+    }
+
     djui_hud_set_rotation(0, 0, 0)
     if (!titleClick) {
         if ((djui_hud_get_mouse_buttons_pressed() || keyTitleClick)) {
@@ -988,6 +1017,7 @@ function hud_render() {
                 location.reload()
 
             if (konami_keys_check_pass("kys"))
+                titleScaleSpin = 12
                 recordSpeed = recordBreakThreshold*2
         }
     } else if (mouseX > screenWidth*0.25 - TEX_LOGO.width*logoScale*0.5 && mouseX < screenWidth*0.25 + TEX_LOGO.width*logoScale*0.5 &&
