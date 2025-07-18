@@ -1161,18 +1161,19 @@ function hud_render() {
             if (Math.abs(recordSpeed) > recordBreakThreshold) recordStress += (Math.abs(recordSpeed) - recordBreakThreshold) / 150
             else recordStress = 0
 
-            SOUND_MUSIC.playbackRate = recordSpeed / recordSpeedTarget
-
             if (recordStress > 99) {
                 recordBroken = true
                 SOUND_MUSIC.pause()
                 SOUND_SHATTER.play()
+                SOUND_MUSIC.playbackRate = 0
                 recordVel.x = random(-5, 1)
                 recordVel.y = random(-7, -1)
                 musicTitleVel.x = random(-5, 1)
                 musicTitleVel.y = random(-7, -1)
                 musicArtistVel.x = random(-5, 2)
                 musicArtistVel.y = random(-7, -1)
+            } else {
+                SOUND_MUSIC.playbackRate = recordSpeed / recordSpeedTarget
             }
         } else {
             recordPos.x += recordVel.x
