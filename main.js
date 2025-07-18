@@ -449,16 +449,13 @@ const TEX_MUSIC_RECORD = get_texture_info("textures/record.png")
 const TEX_SQUISHY_PFP = get_texture_info("https://avatars.githubusercontent.com/u/74333752")
 const logoScale = 0.4
 
-let konamiKeys = []
+let konamiKeys = ""
 
 function konami_keys_check_pass(string) {
-    let stringArray = Array.from(string)
-    for (let i = 0; i < stringArray.length; i++) {
-        if (stringArray[i] != konamiKeys[konamiKeys.length - stringArray.length + i]) {
-            return false
-        }
+    if (konamiKeys.includes(string)) {
+        return true
     }
-    return true
+    return false
 }
 
 const socialScaleMin = 0.3*4
@@ -991,7 +988,7 @@ function hud_render() {
         logoFlingPosX = logoFlingPosX + logoFlingVelX
         logoFlingPosY = logoFlingPosY - logoFlingVelY
         logoFlingVelY = logoFlingVelY - 0.5
-        djui_hud_set_rotation(globalTimer*logoFlingVelX*0x300, 0.5, 0.5)
+        djui_hud_set_rotation(globalTimer*0x1000, 0.5, 0.5)
         djui_hud_render_texture_tile(TEX_LOGO_SQUISHY_FLING, logoFlingPosX, logoFlingPosY, logoScale, logoScale, (Math.floor(globalTimer/10)%2)*224, 0, 224, 320)
     }
 
@@ -1208,7 +1205,7 @@ function hud_render() {
 
         // Shhhh secretss
         djui_hud_set_color(255, 255, 255, 255)
-        djui_hud_print_text(konamiKeys.toString().replace(/,/g, ''), screenWidth*0.5 - djui_hud_measure_text(konamiKeys.join(""))*0.25, 30, 0.5)
+        djui_hud_print_text(konamiKeys, screenWidth*0.5 - djui_hud_measure_text(konamiKeys)*0.25, 30, 0.5)
     }
 
     // if ('getBattery' in navigator) {
@@ -1249,11 +1246,16 @@ function hud_render() {
 
 // Secrets
 window.addEventListener('keypress', (e) => {
-    if (e.key == "Enter") {
+    if (e.key == "Backspace") {
+        konamiKeys = konamiKeys.slice(0, konamiKeys.length - 1);
+        return
+    } else if (e.key == "Enter") {
         keyTitleClick = true
         return
+    } else if (e.key == " ") {
+        return
     }
-    konamiKeys.push(e.key)
+    konamiKeys = konamiKeys + (e.key.toLowerCase())
 })
 
 hook_event(hud_render)
