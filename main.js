@@ -290,6 +290,7 @@ let TEXT_CLICK_ANYWHERE = "Click Anywhere"
 
 // Music
 const musicTracks = [
+    { name: "Character Select - In-Game Theme",              artist: "Trashcam",                audio: 'char-select-menu-theme' },
     { name: "Team Fortress 2 - Upgrade Station",             artist: "Valve Inc.",              audio: 'tf2-upgrade-station' },
     { name: "Portal - Radio Tune",                           artist: "Valve Inc.",              audio: 'portal-radio' },
     { name: "Nintendo 3DS - Internet Settings",              artist: "Nintendo / BedrockSolid", audio: '3ds-internet-settings' },
