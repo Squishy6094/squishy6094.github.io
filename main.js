@@ -17,28 +17,37 @@ function random(a, b) {
 
 // Grab External Data
 function get_current_time_string() {
-    const now = new Date()
+    const now = new Date();
 
-    const isOddSecond = now.getSeconds() % 2 === 1
-    const separator = isOddSecond ? ' ' : ':' // space on odd seconds, colon on even
+    const separator = now.getSeconds() % 2 === 1 ? ' ' : ':'; // space on odd seconds, colon on even
 
-    // Get hours and minutes for PST
+    // Get date/time parts in PST
     const pstOptions = {
         timeZone: 'America/Los_Angeles',
-        hour: '2-digit',
+        hour: 'numeric',   // single-digit allowed
         minute: '2-digit',
-        hour12: false
-    }
-    const pstParts = new Intl.DateTimeFormat('en-US', pstOptions).formatToParts(now)
-    const hour = pstParts.find(p => p.type === 'hour').value
-    const minute = pstParts.find(p => p.type === 'minute').value
+        month: 'long',
+        day: 'numeric',
+        hour12: true       // AM/PM
+    };
 
-    const formattedPST = `${hour}${separator}${minute}`
+    const pstParts = new Intl.DateTimeFormat('en-US', pstOptions).formatToParts(now);
 
-    const month = String(now.getMonth() + 1).padStart(2, '0')
-    const day = String(now.getDate()).padStart(2, '0')
+    const hour = pstParts.find(p => p.type === 'hour').value;
+    const minute = pstParts.find(p => p.type === 'minute').value;
+    const day = pstParts.find(p => p.type === 'day').value;
+    const month = pstParts.find(p => p.type === 'month').value;
+    const dayNum = parseInt(day, 10);
 
-    return `${month}/${day} - ${formattedPST} PST`
+    const suffix =
+        dayNum % 10 === 1 && dayNum !== 11 ? 'st' :
+        dayNum % 10 === 2 && dayNum !== 12 ? 'nd' :
+        dayNum % 10 === 3 && dayNum !== 13 ? 'rd' : 'th';
+
+    const ampm = pstParts.find(p => p.type === 'dayPeriod').value; // AM or PM
+    const formattedPST = `${hour}${separator}${minute} ${ampm}`;
+
+    return `${formattedPST} - ${month} ${dayNum}${suffix} PST`;
 }
 
 let discordInfo = "Discord"
@@ -582,10 +591,7 @@ let artGalleryLoading = false
 let artGalleryRawData = null
 
 async function get_art_gallery_json() {
-    // Already loaded and grouped
     if (artGalleryLoaded) return true
-
-    // If loading is in progress, return false until done
     if (artGalleryLoading) return false
 
     artGalleryLoading = true
@@ -593,29 +599,29 @@ async function get_art_gallery_json() {
     try {
         // Fetch JSON only once
         if (!artGalleryRawData) {
-            const response = await fetch('https://raw.githubusercontent.com/Squishy6094/squishy-site-art-gallery/refs/heads/main/art-list.json')
+            const response = await fetch(
+                'https://raw.githubusercontent.com/Squishy6094/squishy-site-art-gallery/refs/heads/main/art-list.json'
+            )
             artGalleryRawData = await response.json()
         }
 
         // Group by artist
         let grouped = {}
         for (const item of artGalleryRawData) {
-            // Remove file extension from img name
             let nameWithoutExt = item.img.replace(/\.[^/.]+$/, "")
             if (!grouped[item.artist]) grouped[item.artist] = []
             grouped[item.artist].push({
-            ...item,
-            name: nameWithoutExt,
-            url: `https://raw.githubusercontent.com/Squishy6094/squishy-site-art-gallery/refs/heads/main/${encodeURIComponent(item.artist)}/${encodeURIComponent(item.img)}`,
-            texture: null // will be loaded one at a time
+                ...item,
+                name: nameWithoutExt,
+                url: `https://raw.githubusercontent.com/Squishy6094/squishy-site-art-gallery/refs/heads/main/${encodeURIComponent(item.artist)}/${encodeURIComponent(item.img)}`,
+                texture: null
             })
         }
 
-        // Sort artists by number of arts, greatest to least
+        // Sort artists by number of arts
         const sortedArtists = Object.entries(grouped)
             .sort((a, b) => b[1].length - a[1].length)
-        const groupedSorted = Object.fromEntries(sortedArtists)
-        grouped = groupedSorted
+        grouped = Object.fromEntries(sortedArtists)
 
         // Convert to array
         artGalleryTable = Object.entries(grouped).map(([artist, items]) => ({
@@ -623,18 +629,28 @@ async function get_art_gallery_json() {
             items
         }))
 
-        // Start loading images one at a time, per artist, per item
+        // --- Scheduler setup ---
+        function scheduleNext(fn) {
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(fn, { timeout: 100 })
+            } else {
+                requestAnimationFrame(fn) // fallback for smoothness
+            }
+        }
+
         async function loadNextImage() {
             for (const artist of artGalleryTable) {
                 for (const item of artist.items) {
                     if (!item.texture) {
                         item.texture = get_texture_info(item.url)
-                        // Wait for the image to load if get_texture_info is async, otherwise remove this await
+
+                        // If it’s async-like, wait
                         if (item.texture && item.texture.then) {
                             await item.texture
                         }
-                        // Load one image per event loop tick
-                        setTimeout(loadNextImage, 0)
+
+                        // Schedule the next load, don’t block render
+                        scheduleNext(loadNextImage)
                         return
                     }
                 }
@@ -642,7 +658,9 @@ async function get_art_gallery_json() {
             // All images loaded
             artGalleryLoaded = true
         }
-        loadNextImage()
+
+        // Start loading
+        scheduleNext(loadNextImage)
     } catch (error) {
         console.error('Error loading JSON:', error)
         artGalleryLoading = false
@@ -651,6 +669,14 @@ async function get_art_gallery_json() {
 
     return false
 }
+
+let artGalleryInit = false
+async function init_art_gallery() {
+    if (artGalleryInit) return
+    artGalleryInit = true
+    await get_art_gallery_json()
+}
+
 const imageWidth = 60
 let galleryScroll = 0
 let focusImage = false
@@ -661,8 +687,9 @@ let galleryHeight = 0
 function info_tab_render_art_gallery(x, y, width, height) {
     let imagesPerRow = Math.floor((djui_hud_get_screen_width() - 60) / (imageWidth + 5))
     // Only render if data is loaded
-    if (!get_art_gallery_json()) {
-        djui_hud_print_text("Loading art gallery...", x + height*0.5, y + height*0.5 - 5, 0.4)
+    if (!artGalleryLoaded || !artGalleryInit) {
+        init_art_gallery()
+        djui_hud_print_text("Loading art gallery...", x + width*0.5 - djui_hud_measure_text("Loading art gallery...")*0.2, y + height*0.5 - 5, 0.4)
         return
     }
 
@@ -718,7 +745,7 @@ function info_tab_render_art_gallery(x, y, width, height) {
                 focusImageDelay = 3
                 SOUND_ART_OPEN.play()
             }
-            if ((itemY + imgH + 5) > 0 && (itemY) < x + height) {
+            if (true) { //((itemY + imgH + 5) > 0 && (itemY) < x + height) {
                 // Only render if on screen
                 djui_hud_render_texture(item.texture, itemX, itemY, scale, scale)
             }
@@ -894,6 +921,8 @@ let logoFlingPosX = 0
 let logoFlingPosY = 0
 let logoFlingVelX = 0
 let logoFlingVelY = 0
+
+let timeY = -50
 
 let recordSpeed = 0x10 // fullrev   fps  s/m  rpm
 const recordSpeedTarget = 0x10000 / 30 / 60 * 33
@@ -1201,8 +1230,8 @@ function hud_render() {
         djui_hud_set_rotation(0, 0, 0)
     } else {
         titleOffset = screenWidth*0.25
-        if (globalTimer > 150) {
-            djui_hud_set_color(255, 255, 255, Math.abs(Math.sin((globalTimer - 150)*0.05)/Math.PI)*255)
+        if (globalTimer > 300) {
+            djui_hud_set_color(255, 255, 255, Math.abs(Math.sin((globalTimer - 300)*0.025)/Math.PI)*255)
             djui_hud_print_text(TEXT_CLICK_ANYWHERE, screenWidth*0.5 - djui_hud_measure_text(TEXT_CLICK_ANYWHERE)*0.25, screenHeight - 30, 0.5)
         }
 
@@ -1223,7 +1252,8 @@ function hud_render() {
     // Show Time in Corner
     djui_hud_set_color(255, 255, 255, 255)
     const timeString = get_current_time_string()
-    djui_hud_print_text(timeString, screenWidth - 2 - djui_hud_measure_text(timeString)*0.4, 1, 0.4)
+    timeY = lerp(timeY, (!titleClick || currInfoTab) ? -20 : 1, 0.2)
+    djui_hud_print_text(timeString, screenWidth*0.5 - djui_hud_measure_text(timeString)*0.25, timeY, 0.5)
 
     // Work In Progress Text
     // let headerScrollX = -Math.tan(globalTimer*0.02 - 1.1)*screenWidth/3 + screenWidth*0.5
