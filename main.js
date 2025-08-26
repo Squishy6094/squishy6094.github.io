@@ -468,6 +468,7 @@ const socialLinks = [
     { image: "twitter",    name: "Twitter", color: { r:  30, g:  30, b:  30 }, link: "https://x.com/squishy6094"                      },
     { image: "youtube",    name: "Youtube", color: { r: 200, g:   0, b:   0 }, link: "https://www.youtube.com/@Squishy6094"           },
     { image: "romhacking", name: "Romhacking.com", color: rainbow_color,       link: "https://romhacking.com/user/SQUISHY"            },
+    { image: "kofi",       name: "Ko-Fi",   color: { r: 87,  g:  40, b:  10 }, link: "https://ko-fi.com/squishy6094"                  },
 ]
 for (let link of socialLinks) {
     link.image = get_texture_info(`textures/social-${link.image}.png`)
