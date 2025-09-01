@@ -462,10 +462,7 @@ const logoScale = 0.4
 let konamiKeys = ""
 
 function konami_keys_check_pass(string) {
-    if (konamiKeys.includes(string)) {
-        return true
-    }
-    return false
+    return konamiKeys.includes(string)
 }
 
 const socialScaleMin = 0.3*4
@@ -911,7 +908,7 @@ let bgCheckerSize = 16
 let titleClick = false
 let keyTitleClick = false
 let titleOffset = djui_hud_get_screen_width()*0.25
-let titleScaleSpin = 3
+let titleScaleSpin = 0
 let logoFallPosY = djui_hud_get_screen_height()
 let logoFallVelY = 0
 let logoFlash = 0
@@ -944,6 +941,14 @@ let musicTitleVel = { x: 0, y: 0 }
 let musicArtistPos = { x: 0, y: 0 }
 let musicArtistVel = { x: 0, y: 0 }
 
+function soft_reload() {
+    globalTimer = 0
+    konamiKeys = ""
+    
+    logoFallPosY = djui_hud_get_screen_height()
+    logoFallVelY = 0
+}
+
 function hud_render() {
     djui_hud_set_resolution(RESOLUTION_N64)
     let screenWidth = djui_hud_get_screen_width()
@@ -964,13 +969,10 @@ function hud_render() {
     djui_hud_set_color(bgColor.r*0.5, bgColor.g*0.5, bgColor.b*0.5, 255)
     let checkerWidth = Math.ceil(screenWidth / bgCheckerSize)
     let checkerHeight = Math.ceil(screenHeight / bgCheckerSize)
-    for (let w = 0; w < checkerWidth; w++) {
-        for (let h = 0; h < checkerHeight; h++) {
-            if ((w+h) % 2) {
+    for (let w = 0; w < checkerWidth; w++)
+        for (let h = 0; h < checkerHeight; h++)
+            if ((w+h) % 2)
                 djui_hud_render_rect(w * bgCheckerSize, h * bgCheckerSize, bgCheckerSize, bgCheckerSize)
-            }
-        }
-    }
     
     djui_hud_set_color(0, 0, 0, logoFlash)
     djui_hud_render_rect(0, 0, screenWidth, screenHeight)
@@ -986,6 +988,7 @@ function hud_render() {
     djui_hud_set_color(255, 255, 255, 255)
     djui_hud_set_rotation(logoTilt, 0.5, 0.5)
     let spinMath = (Math.sin((titleScaleSpin + 0.5)*Math.PI))
+    let spinMathNext = (Math.sin((titleScaleSpin*0.95 + 0.5)*Math.PI))
 
     let animState = 0
     let animFrame = 0
@@ -993,17 +996,24 @@ function hud_render() {
         if (titleScaleSpin > 3.5 && titleClick) {
             animState = 3 // Spin Hold
             animFrame = Math.floor(globalTimer/10)%2
+        } else if (!titleClick || spinMath < 0) {
+            animState = 1 // Wait
+            animFrame = Math.floor(globalTimer/30)%2
         } else if (spinMath > 0) {
             animState = 2 // Peace
             animFrame = Math.floor(globalTimer/15)%2
-        } else {
-            animState = 1 // Wait
-            animFrame = Math.floor(globalTimer/30)%2
         }
     }
 
-    // Main Logo
-    djui_hud_render_texture_tile(TEX_LOGO, screenWidth*0.25 + titleOffset - 352*logoScale*0.5 * spinMath, screenHeight*0.5 - 352*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30) - logoFallPosY, logoScale * spinMath, logoScale, animFrame*352, animState*352, 352, 352)
+    let blurCount = 100
+    for (let i = 1; i <= blurCount; i++) {
+        let spinMathLerp = lerp(spinMath, spinMathNext, i/blurCount)
+        djui_hud_set_color(255, 255, 255, 255 / (i == blurCount/2 ? 1 + titleScaleSpin*.1 : blurCount))
+        djui_hud_render_texture_tile(TEX_LOGO,
+            screenWidth*0.25 + titleOffset - 352*logoScale*0.5 * spinMathLerp, screenHeight*0.5 - 352*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30) - logoFallPosY,
+            logoScale * spinMathLerp, logoScale, animFrame*352, animState*352, 352, 352)
+    }
+    djui_hud_set_color(255, 255, 255, 255)
 
     if (!logoSquishyFlung && titleScaleSpin > 10) {
         logoFlingPosX = screenWidth*0.25 + titleOffset - TEX_LOGO_SQUISHY_FLING.width*logoScale*0.25 * spinMath
@@ -1031,19 +1041,17 @@ function hud_render() {
             SOUND_CHECKPOINT.play()
             SOUND_MUSIC.play()
             logoFlash = 150
+            titleScaleSpin = 3
 
-            if (konami_keys_check_pass("7")) {
+            if (konami_keys_check_pass("7"))
                 TEXT_WIP = "KILLER7"
-}
-            if (konami_keys_check_pass("iloveyou") || konami_keys_check_pass("ily")) {
+
+            if (konami_keys_check_pass("iloveyou") || konami_keys_check_pass("ily"))
                 window.open("https://raw.githubusercontent.com/Squishy6094/squishy6094.github.io/refs/heads/main/textures/squishy-iloveyoutoo.png", "_blank", "width=200, height=200")
-}
-            if (konami_keys_check_pass("shell")) {
+
+            if (konami_keys_check_pass("shell"))
                 bgColorRaw = {r:107, g:94, b:255}
-            }
-            if (konami_keys_check_pass("gaster")) {
-                location.reload()
-            }
+
             if (konami_keys_check_pass("kys")) {
                 titleScaleSpin = 12
                 recordSpeed = recordBreakThreshold*2
@@ -1054,7 +1062,6 @@ function hud_render() {
         if ((djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON) && !currInfoTab) {
             titleScaleSpin = titleScaleSpin + 2
         }
-
     }
 
     djui_hud_set_color(0, 0, 0, 100)
@@ -1274,7 +1281,7 @@ function hud_render() {
     // djui_hud_print_text("The quick brown fox jumped over the lazy dog", 0, 0, 1)
 
     // Global Site Timer
-    globalTimer = globalTimer + 1
+    globalTimer++
 }
 
 // Secrets
@@ -1289,6 +1296,8 @@ window.addEventListener('keypress', (e) => {
         return
     }
     konamiKeys = konamiKeys + (e.key.toLowerCase())
+
+    if (konamiKeys == "gaster") soft_reload()
 })
 
 hook_event(hud_render)
