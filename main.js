@@ -199,21 +199,17 @@ function djui_hud_render_text_input(textValue, x, y, width, height) {
             djui_hud_set_color(0, 0, 0, 255)
             djui_hud_print_text("|", cursorX, textY, 0.3)
         }
-
-        // Only attach event once per frame
-        if (!djui_hud_text_input_state.lastFrameActive) {
-            window.addEventListener('keydown', djui_hud_text_input_keydown)
-        }
-    } else {
-        if (djui_hud_text_input_state.lastFrameActive) {
-            window.removeEventListener('keydown', djui_hud_text_input_keydown)
-        }
     }
     djui_hud_text_input_state.lastFrameActive = djui_hud_text_input_state.active
 
     // Return the possibly updated value
     return djui_hud_text_input_state.active ? djui_hud_text_input_state.value : textValue
 }
+
+window.addEventListener("keydown", e => {
+    if (!djui_hud_text_input_state.active) return;
+    djui_hud_text_input_keydown(e);
+});
 
 function djui_hud_text_input_keydown(e) {
     if (!djui_hud_text_input_state.active) return
@@ -1005,14 +1001,8 @@ function hud_render() {
         }
     }
 
-    let blurCount = 100
-    for (let i = 1; i <= blurCount; i++) {
-        let spinMathLerp = lerp(spinMath, spinMathNext, i/blurCount)
-        djui_hud_set_color(255, 255, 255, 255 / (i == blurCount/2 ? 1 + titleScaleSpin*.1 : blurCount))
-        djui_hud_render_texture_tile(TEX_LOGO,
-            screenWidth*0.25 + titleOffset - 352*logoScale*0.5 * spinMathLerp, screenHeight*0.5 - 352*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30) - logoFallPosY,
-            logoScale * spinMathLerp, logoScale, animFrame*352, animState*352, 352, 352)
-    }
+    // Main Logo
+    djui_hud_render_texture_tile(TEX_LOGO, screenWidth*0.25 + titleOffset - 352*logoScale*0.5 * spinMath, screenHeight*0.5 - 352*logoScale*0.5 - (Math.sin((titleOffset/(screenWidth*0.25))*Math.PI)*30) - logoFallPosY, logoScale * spinMath, logoScale, animFrame*352, animState*352, 352, 352)
     djui_hud_set_color(255, 255, 255, 255)
 
     if (!logoSquishyFlung && titleScaleSpin > 10) {
