@@ -16,7 +16,7 @@ function random(a, b) {
 }
 
 function is_client_mobile() { // Assume client is mobile from SAFE_N64 being active
-    djui_hud_get_screen_height()/240
+    return djui_hud_get_screen_height()/240
 }
 
 // Grab External Data
