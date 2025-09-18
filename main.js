@@ -15,6 +15,10 @@ function random(a, b) {
     return remap(0, 1, a, b, Math.random())
 }
 
+function is_client_mobile() { // Assume client is mobile from SAFE_N64 being active
+    djui_hud_get_screen_height()/240
+}
+
 // Grab External Data
 function get_current_time_string() {
     const now = new Date();
@@ -677,7 +681,7 @@ let focusImageFile = null
 let focusImageX = 1000
 let focusImageDelay = 0
 let galleryHeight = 0
-const scrollbarWidth = 8
+let scrollbarWidth = 8
 function info_tab_render_art_gallery(x, y, width, height) {
     let imagesPerRow = Math.floor((width - scrollbarWidth - 7) / (imageWidth + 5))
     // Only render if data is loaded
@@ -789,6 +793,7 @@ function info_tab_render_art_gallery(x, y, width, height) {
     }
 
     // On Screen Scrollbar
+    scrollbarWidth = 8*(is_client_mobile() > 1 ? 2 : 1)
     let scrollProgress = ((galleryScroll)/(galleryHeight + height + y))
     let insideBarHeight = (height - 4)*(height/(galleryHeight + height + y))
     let barX = x + width - scrollbarWidth - 4
