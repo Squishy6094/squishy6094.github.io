@@ -677,8 +677,9 @@ let focusImageFile = null
 let focusImageX = 1000
 let focusImageDelay = 0
 let galleryHeight = 0
+const scrollbarWidth = 8
 function info_tab_render_art_gallery(x, y, width, height) {
-    let imagesPerRow = Math.floor((djui_hud_get_screen_width() - 60) / (imageWidth + 5))
+    let imagesPerRow = Math.floor((width - scrollbarWidth - 7) / (imageWidth + 5))
     // Only render if data is loaded
     if (!artGalleryLoaded || !artGalleryInit) {
         init_art_gallery()
@@ -692,9 +693,8 @@ function info_tab_render_art_gallery(x, y, width, height) {
 
     let mouseX = djui_hud_get_mouse_x()
     let mouseY = djui_hud_get_mouse_y()
+    let mouseDown = djui_hud_get_mouse_buttons_down() & L_MOUSE_BUTTON === 1
     let mousePressed = djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON === 1
-
-    console.log(mousePressed)
 
     let artistY = y - galleryScroll
     for (let artist of artGalleryTable) {
@@ -786,6 +786,26 @@ function info_tab_render_art_gallery(x, y, width, height) {
 
     if (focusImageDelay > 0) {
         focusImageDelay = focusImageDelay - 1
+    }
+
+    // On Screen Scrollbar
+    let scrollProgress = ((galleryScroll)/(galleryHeight + height + y))
+    let insideBarHeight = (height - 4)*(height/(galleryHeight + height + y))
+    let barX = x + width - scrollbarWidth - 4
+    let barY = y + 1
+    let barHeight = height - 2
+    djui_hud_set_color(0, 0, 0, 150)
+    djui_hud_render_rect(barX, barY, scrollbarWidth, barHeight)
+    djui_hud_set_color(255, 255, 255, 255)
+    djui_hud_render_rect(barX + 2, barY + 2 + (barHeight - 2)*scrollProgress, scrollbarWidth - 4, insideBarHeight)
+
+    // Check for hand scroll
+    if (
+        mouseX > barX && mouseX < barX + scrollbarWidth &&
+        mouseY > barY && mouseY < barY + barHeight &&
+        mouseDown
+    ) {
+        galleryScroll = clamp((mouseY - barY - insideBarHeight*0.5)/(barHeight - insideBarHeight)*galleryHeight, 0, galleryHeight)
     }
 }
 
