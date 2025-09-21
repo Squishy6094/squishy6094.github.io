@@ -15,9 +15,15 @@ function random(a, b) {
     return remap(0, 1, a, b, Math.random())
 }
 
+function is_client_firefox() {
+    return navigator.userAgent.toLowerCase().indexOf('firefox') >= 0;  
+}
+
 function is_client_mobile() { // Assume client is mobile from SAFE_N64 being active
     return djui_hud_get_screen_height()/240
 }
+
+if (is_client_firefox()) djui_hud_popup_create("Warning!!\nSquishy Site has been\nreportedly Unstable on\nFirefox based Clients!", 4)
 
 // Grab External Data
 function get_current_time_string() {
@@ -118,7 +124,7 @@ async function send_webhook_message(message) {
     const data = await response.json()
 
     if (response.ok && !data.error) {
-        console.log("Message sent!")
+        djui_hud_popup_create("Squishy Site Messages:\nMessage sent!", 2)
         djui_hud_text_input_state.success = true
         // Set new cooldown for 15 minutes from now
         personalMessageCooldown = Date.now() + 15 * 60 * 1000
@@ -132,8 +138,9 @@ async function send_webhook_message(message) {
         // Backend returned cooldown, set it
         personalMessageCooldown = data.cooldown
         djui_hud_text_input_state.success = false
-        console.log("Cooldown active, cannot send message until:", new Date(personalMessageCooldown).toLocaleTimeString())
+        djui_hud_popup_create(`Squishy Site Messages:\nCooldown active, cannot\nsend message until:\n${new Date(personalMessageCooldown).toLocaleTimeString()}`, 4)
     } else {
+        djui_hud_popup_create("Squishy Site Messages:\nFailed to send message!\nError Info has been logged\nin the console!", 4)
         console.error("Failed to send:", data && data.error ? data.error : await response.text())
         djui_hud_text_input_state.success = false
     }
@@ -199,7 +206,7 @@ function djui_hud_render_text_input(textValue, x, y, width, height) {
     if (djui_hud_text_input_state.active) {
         // Draw cursor
         let cursorX = x + 4 + djui_hud_measure_text(textValue.substring(0, djui_hud_text_input_state.cursor)) * 0.3
-        if ((globalTimer % 60) < 30) {
+        if ((get_global_timer() % 60) < 30) {
             djui_hud_set_color(0, 0, 0, 255)
             djui_hud_print_text("|", cursorX, textY, 0.3)
         }
@@ -291,8 +298,6 @@ function rainbow_color() {
 }
 
 // Website
-let globalTimer = 0
-
 let TEXT_WEBSITE_NAME = "Squishy Site"
 let TEXT_WIP = "Nastywerkkk in Progress!!"
 let TEXT_CLICK_ANYWHERE = "Click Anywhere"
@@ -867,7 +872,7 @@ function info_tab_render_options(x, y, width, height) {
     djui_hud_set_color(0, 0, 255, 255)
     optionColorB = djui_hud_render_slider(optionColorB, x + 10, optionY - 1, 100, 10)
     djui_hud_print_text(`${Math.round(optionColorB*255)}`, x + 120, optionY - 3, 0.4)
-    if (globalTimer % 30 == 1) {
+    if (get_global_timer() % 30 == 1) {
         localStorage.setItem("prefColorR", optionColorR)
         localStorage.setItem("prefColorG", optionColorG)
         localStorage.setItem("prefColorB", optionColorB)
@@ -879,7 +884,7 @@ function info_tab_render_options(x, y, width, height) {
     djui_hud_print_text("Audio Volume: ", x + 10, optionY - 3, 0.4)
     optionAudioVolume = djui_hud_render_slider(optionAudioVolume, x + 70, optionY - 1, 100, 10)
     djui_hud_print_text(`${Math.round(optionAudioVolume*100)}%`, x + 180, optionY - 3, 0.4)
-    if (globalTimer % 30 == 1) {
+    if (get_global_timer() % 30 == 1) {
         localStorage.setItem("audioVolume", optionAudioVolume)
     }
 
@@ -889,7 +894,7 @@ function info_tab_render_options(x, y, width, height) {
     djui_hud_print_text("Music Volume: ", x + 10, optionY - 3, 0.4)
     optionMusicVolume = djui_hud_render_slider(optionMusicVolume, x + 70, optionY - 1, 100, 10)
     djui_hud_print_text(`${Math.round(optionMusicVolume*100)}%`, x + 180, optionY - 3, 0.4)
-    if (globalTimer % 30 == 1) {
+    if (get_global_timer() % 30 == 1) {
         localStorage.setItem("musicVolume", optionMusicVolume)
     }
 
@@ -897,7 +902,7 @@ function info_tab_render_options(x, y, width, height) {
     djui_hud_print_text("Music Speed: ", x + 10, optionY - 3, 0.4)
     optionMusicSpeed = djui_hud_render_slider(optionMusicSpeed, x + 70, optionY - 3, 100, 10)
     djui_hud_print_text(`${Math.round(((musicSpeedModRange*0.5) + optionMusicSpeed*musicSpeedModRange)*100)/100}x`, x + 180, optionY, 0.4)
-    if (globalTimer % 30 == 1) {
+    if (get_global_timer() % 30 == 1) {
         localStorage.setItem("musicSpeed", optionMusicSpeed)
     }
 
@@ -963,7 +968,6 @@ let musicArtistPos = { x: 0, y: 0 }
 let musicArtistVel = { x: 0, y: 0 }
 
 function soft_reload() {
-    globalTimer = 0
     konamiKeys = ""
     
     logoFallPosY = djui_hud_get_screen_height()
@@ -1005,7 +1009,7 @@ function hud_render() {
         logoFallVelY = -logoFallVelY*0.5
         logoFallPosY = 0
     }
-    let logoTilt = Math.sin(globalTimer*0.1)/Math.PI*0x800
+    let logoTilt = Math.sin(get_global_timer()*0.1)/Math.PI*0x800
     djui_hud_set_color(255, 255, 255, 255)
     djui_hud_set_rotation(logoTilt, 0.5, 0.5)
     let spinMath = (Math.sin((titleScaleSpin + 0.5)*Math.PI))
@@ -1016,13 +1020,13 @@ function hud_render() {
     if (!logoSquishyFlung) {
         if (titleScaleSpin > 3.5 && titleClick) {
             animState = 3 // Spin Hold
-            animFrame = Math.floor(globalTimer/10)%2
+            animFrame = Math.floor(get_global_timer()/10)%2
         } else if (!titleClick || spinMath < 0) {
             animState = 1 // Wait
-            animFrame = Math.floor(globalTimer/30)%2
+            animFrame = Math.floor(get_global_timer()/30)%2
         } else if (spinMath > 0) {
             animState = 2 // Peace
-            animFrame = Math.floor(globalTimer/15)%2
+            animFrame = Math.floor(get_global_timer()/15)%2
         }
     }
 
@@ -1044,13 +1048,13 @@ function hud_render() {
         logoFlingPosX = logoFlingPosX + logoFlingVelX
         logoFlingPosY = logoFlingPosY - logoFlingVelY
         logoFlingVelY = logoFlingVelY - 0.5
-        djui_hud_set_rotation(globalTimer*0x1000, 0.5, 0.5)
-        djui_hud_render_texture_tile(TEX_LOGO_SQUISHY_FLING, logoFlingPosX, logoFlingPosY, logoScale, logoScale, (Math.floor(globalTimer/10)%2)*224, 0, 224, 320)
+        djui_hud_set_rotation(get_global_timer()*0x1000, 0.5, 0.5)
+        djui_hud_render_texture_tile(TEX_LOGO_SQUISHY_FLING, logoFlingPosX, logoFlingPosY, logoScale, logoScale, (Math.floor(get_global_timer()/10)%2)*224, 0, 224, 320)
     }
 
     djui_hud_set_rotation(0, 0, 0)
     if (!titleClick) {
-        if ((djui_hud_get_mouse_buttons_pressed() || keyTitleClick)) {
+        if ((djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON === 1 || keyTitleClick)) {
             // Initialize like EVERYTHING
             titleClick = true
             SOUND_CHECKPOINT.play()
@@ -1067,9 +1071,10 @@ function hud_render() {
             if (konami_keys_check_pass("shell"))
                 bgColorRaw = {r:107, g:94, b:255}
 
-            if (konami_keys_check_pass("kys")) {
+            if (konami_keys_check_pass("kys") || konami_keys_check_pass("die") || konami_keys_check_pass("killyourself")) {
                 titleScaleSpin = 12
                 recordSpeed = recordBreakThreshold*2
+                djui_hud_popup_create("AAAAAAAAAAAAAAAAAAA", 1)
             }
         }
     } else if (mouseX > screenWidth*0.25 - TEX_LOGO.width*logoScale*0.5 && mouseX < screenWidth*0.25 + TEX_LOGO.width*logoScale*0.5 &&
@@ -1252,8 +1257,8 @@ function hud_render() {
         djui_hud_set_rotation(0, 0, 0)
     } else {
         titleOffset = screenWidth*0.25
-        if (globalTimer > 300) {
-            djui_hud_set_color(255, 255, 255, Math.abs(Math.sin((globalTimer - 300)*0.025)/Math.PI)*255)
+        if (get_global_timer() > 300) {
+            djui_hud_set_color(255, 255, 255, Math.abs(Math.sin((get_global_timer() - 300)*0.025)/Math.PI)*255)
             djui_hud_print_text(TEXT_CLICK_ANYWHERE, screenWidth*0.5 - djui_hud_measure_text(TEXT_CLICK_ANYWHERE)*0.25, screenHeight - 30, 0.5)
         }
 
@@ -1271,14 +1276,14 @@ function hud_render() {
     //     console.log('Battery Status API not supported')
     // }
 
-    // Show Time in Corner
+    // Show Time
     djui_hud_set_color(255, 255, 255, 255)
     const timeString = get_current_time_string()
     timeY = lerp(timeY, (!titleClick || currInfoTab) ? -20 : 1, 0.2)
     djui_hud_print_text(timeString, screenWidth*0.5 - djui_hud_measure_text(timeString)*0.25, timeY, 0.5)
 
     // Work In Progress Text
-    // let headerScrollX = -Math.tan(globalTimer*0.02 - 1.1)*screenWidth/3 + screenWidth*0.5
+    // let headerScrollX = -Math.tan(get_global_timer()*0.02 - 1.1)*screenWidth/3 + screenWidth*0.5
     // djui_hud_set_color(0, 0, 0, 100)
     // djui_hud_render_rect(0, 10, screenWidth, 16)
     // djui_hud_set_color(255, 255, 255, 255)
@@ -1294,9 +1299,6 @@ function hud_render() {
     // djui_hud_render_rect(0, 32 - 5, 100, 5)
     // djui_hud_set_color(0, 255, 0, 255)
     // djui_hud_print_text("The quick brown fox jumped over the lazy dog", 0, 0, 1)
-
-    // Global Site Timer
-    globalTimer++
 }
 
 // Secrets
