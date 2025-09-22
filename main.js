@@ -827,9 +827,9 @@ window.addEventListener('wheel', function(e) {
 })
 
 
-let optionColorR = localStorage.getItem("prefColorR") || 0
-let optionColorG = localStorage.getItem("prefColorG") || (88/255)
-let optionColorB = localStorage.getItem("prefColorB") || 0
+let optionColorR = (localStorage.getItem("prefColorR") || 0       ) * 0.25
+let optionColorG = (localStorage.getItem("prefColorG") || (88/255)) * 0.25
+let optionColorB = (localStorage.getItem("prefColorB") || 0       ) * 0.25
 
 let bgColorRaw = { r: optionColorR*255, g: optionColorG*255, b: optionColorB*255 }
 let bgColor = bgColorRaw
@@ -932,6 +932,7 @@ djui_hud_set_resolution(RESOLUTION_N64)
 
 let bgCheckerSize = 16
 let titleClick = false
+let titleClickTime = 0
 let keyTitleClick = false
 let titleOffset = djui_hud_get_screen_width()*0.25
 let titleScaleSpin = 0
@@ -991,13 +992,15 @@ function hud_render() {
     bgColor.b = lerp(bgColor.b, targetColor.b, 0.1)
     djui_hud_set_color(bgColor.r, bgColor.g, bgColor.b, 255)
     djui_hud_render_rect(0, 0, screenWidth, screenHeight)
-    djui_hud_set_color(bgColor.r*0.5, bgColor.g*0.5, bgColor.b*0.5, 255)
     let checkerWidth = Math.ceil(screenWidth / bgCheckerSize)
     let checkerHeight = Math.ceil(screenHeight / bgCheckerSize)
     for (let w = 0; w < checkerWidth; w++)
         for (let h = 0; h < checkerHeight; h++)
-            if ((w+h) % 2)
+            if ((w+h) % 2){
+                let glow = titleClickTime > 0 ? Math.sin(clamp((get_global_timer() - titleClickTime - (w+h)*0.3)*0.2, 0, Math.PI))*100 : 0
+                djui_hud_set_color(bgColor.r*0.5 + glow, bgColor.g*0.5 + glow, bgColor.b*0.5 + glow, 255)
                 djui_hud_render_rect(w * bgCheckerSize, h * bgCheckerSize, bgCheckerSize, bgCheckerSize)
+            }
     
     djui_hud_set_color(0, 0, 0, logoFlash)
     djui_hud_render_rect(0, 0, screenWidth, screenHeight)
@@ -1057,10 +1060,17 @@ function hud_render() {
         if ((djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON === 1 || keyTitleClick)) {
             // Initialize like EVERYTHING
             titleClick = true
+            titleClickTime = get_global_timer()
             SOUND_CHECKPOINT.play()
             SOUND_MUSIC.play()
             logoFlash = 150
             titleScaleSpin = 3
+
+            // Revert darkness effect from site boot
+            optionColorR = localStorage.getItem("prefColorR")
+            optionColorG = localStorage.getItem("prefColorG")
+            optionColorB = localStorage.getItem("prefColorB")
+            set_background_color_to_default()
 
             if (konami_keys_check_pass("7"))
                 TEXT_WIP = "KILLER7"
@@ -1126,7 +1136,7 @@ function hud_render() {
 
         titleOffset *= 0.9
         titleScaleSpin *= 0.95
-        logoFlash *= 0.9
+        logoFlash *= 0.93
         
         // Info Tabs
         let tabY = 15
