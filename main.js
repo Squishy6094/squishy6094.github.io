@@ -487,6 +487,20 @@ for (let link of socialLinks) {
     link.scale = socialScaleMin
 }
 
+// Allow links to be accessed via hash
+function handleHashChange() {
+    const hash = window.location.hash.substring(1)
+    
+    for (let link of socialLinks) {
+        if (hash.toLowerCase() == link.name.toLowerCase()) {
+            window.location.href = link.link
+        }
+    }
+}
+
+handleHashChange();
+window.addEventListener("hashchange", handleHashChange);
+
 // Info Tabs Info??
 
 const currAge = new Date().getFullYear() - 2007 - (
