@@ -842,8 +842,8 @@ window.addEventListener('wheel', function(e) {
 
 
 let optionColorR = (localStorage.getItem("prefColorR") || 0       ) * 0.25
-let optionColorG = (localStorage.getItem("prefColorG") || (88/255)) * 0.25
-let optionColorB = (localStorage.getItem("prefColorB") || 0       ) * 0.25
+let optionColorG = (localStorage.getItem("prefColorG") || (80/255)) * 0.25
+let optionColorB = (localStorage.getItem("prefColorB") || (30/255)) * 0.25
 
 let bgColorRaw = { r: optionColorR*255, g: optionColorG*255, b: optionColorB*255 }
 let bgColor = bgColorRaw
