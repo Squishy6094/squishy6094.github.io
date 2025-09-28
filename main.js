@@ -1081,9 +1081,9 @@ function hud_render() {
             titleScaleSpin = 3
 
             // Revert darkness effect from site boot
-            optionColorR = localStorage.getItem("prefColorR")
-            optionColorG = localStorage.getItem("prefColorG")
-            optionColorB = localStorage.getItem("prefColorB")
+            optionColorR = (localStorage.getItem("prefColorR") || 0       ) * 0.25
+            optionColorG = (localStorage.getItem("prefColorG") || (80/255)) * 0.25
+            optionColorB = (localStorage.getItem("prefColorB") || (30/255)) * 0.25
             set_background_color_to_default()
 
             if (konami_keys_check_pass("7"))
