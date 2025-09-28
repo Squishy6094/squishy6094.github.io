@@ -848,9 +848,9 @@ if (localStorage.getItem("prefColorG") == null)
 if (localStorage.getItem("prefColorB") == null)
     localStorage.setItem("prefColorB", 30/255)
 
-let optionColorR = localStorage.getItem("prefColorR") * 0.25
-let optionColorG = localStorage.getItem("prefColorG") * 0.25
-let optionColorB = localStorage.getItem("prefColorB") * 0.25
+let optionColorR = localStorage.getItem("prefColorR") * 0.4
+let optionColorG = localStorage.getItem("prefColorG") * 0.4
+let optionColorB = localStorage.getItem("prefColorB") * 0.4
 
 let bgColorRaw = { r: optionColorR*255, g: optionColorG*255, b: optionColorB*255 }
 let bgColor = bgColorRaw
