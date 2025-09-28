@@ -840,10 +840,17 @@ window.addEventListener('wheel', function(e) {
     }
 })
 
+// Sanity check saved colors
+if (localStorage.getItem("prefColorR") == null)
+    localStorage.setItem("prefColorR", 0)
+if (localStorage.getItem("prefColorG") == null)
+    localStorage.setItem("prefColorG", 80/255)
+if (localStorage.getItem("prefColorB") == null)
+    localStorage.setItem("prefColorB", 30/255)
 
-let optionColorR = (localStorage.getItem("prefColorR") || 0       ) * 0.25
-let optionColorG = (localStorage.getItem("prefColorG") || (80/255)) * 0.25
-let optionColorB = (localStorage.getItem("prefColorB") || (30/255)) * 0.25
+let optionColorR = localStorage.getItem("prefColorR") * 0.25
+let optionColorG = localStorage.getItem("prefColorG") * 0.25
+let optionColorB = localStorage.getItem("prefColorB") * 0.25
 
 let bgColorRaw = { r: optionColorR*255, g: optionColorG*255, b: optionColorB*255 }
 let bgColor = bgColorRaw
@@ -1081,9 +1088,9 @@ function hud_render() {
             titleScaleSpin = 3
 
             // Revert darkness effect from site boot
-            optionColorR = (localStorage.getItem("prefColorR") || 0       ) * 0.25
-            optionColorG = (localStorage.getItem("prefColorG") || (80/255)) * 0.25
-            optionColorB = (localStorage.getItem("prefColorB") || (30/255)) * 0.25
+            optionColorR = localStorage.getItem("prefColorR")
+            optionColorG = localStorage.getItem("prefColorG")
+            optionColorB = localStorage.getItem("prefColorB")
             set_background_color_to_default()
 
             if (konami_keys_check_pass("7"))
