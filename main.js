@@ -302,6 +302,39 @@ let TEXT_WEBSITE_NAME = "Squishy Site"
 let TEXT_WIP = "Nastywerkkk in Progress!!"
 let TEXT_CLICK_ANYWHERE = "Click Anywhere"
 
+const TEX_DOG_HOLE_PATH = get_texture_info("textures/doghole-path.png")
+const TEX_DOG_HOLE_MAIN_PATH = get_texture_info("textures/doghole-main-path.png")
+const dogholeLayers = 3
+function doghole_render() {
+    let width = djui_hud_get_screen_width()
+    let height = djui_hud_get_screen_height()
+    const dogholeSize = 240
+    
+    djui_hud_set_color(0, 0, 0, Math.min(get_global_timer()/90, 1)*255)
+    djui_hud_render_rect(0, 0, width, height)
+    let scale = 0
+    if (titleClick) {
+        for (let i = 1; i < dogholeLayers; i++) {
+            scale = i/dogholeLayers
+            djui_hud_set_color(255, 255, 255, 255)
+            let dogholeWidth = Math.ceil(width/dogholeSize/scale)
+            let dogholeHeight = Math.ceil(height/dogholeSize/scale)
+            for (let w = 0; w <= dogholeWidth; w++) {
+                for (let h = 0; h <= dogholeHeight; h++) {
+                    let x = width*0.5 - dogholeSize*0.5*scale - (Math.ceil(dogholeWidth*0.5) - w)*dogholeSize*scale + Math.floor(((get_global_timer()*Math.abs(i - dogholeLayers)/dogholeLayers*0.05)%(dogholeSize*scale))/scale)*scale
+                    let y = height*0.5 - dogholeSize*0.5*scale - (Math.ceil(dogholeHeight*0.5) - h)*dogholeSize*scale + Math.floor(((get_global_timer()*Math.abs(i - dogholeLayers)/dogholeLayers*0.05)%(dogholeSize*scale))/scale)*scale
+                    djui_hud_render_texture(TEX_DOG_HOLE_PATH, x, y, scale, scale)
+                }
+            }
+            djui_hud_set_color(0, 0, 0, 150 + (1 - clamp((get_global_timer() - titleClickTime - 90)/90, 0, 1))*105)
+            djui_hud_render_rect(0, 0, width, height)
+        }
+
+        djui_hud_set_color(255, 255, 255, 255*Math.min((get_global_timer() - titleClickTime)/60, 1))
+        djui_hud_render_texture(TEX_DOG_HOLE_MAIN_PATH, width*0.5 - TEX_DOG_HOLE_MAIN_PATH.width*0.5, height*0.5 - TEX_DOG_HOLE_MAIN_PATH.height*0.5 - 24, 1, 1)
+    }
+}
+
 // Music
 const musicTracks = [
     { name: "Character Select - In-Game Theme",              artist: "Trashcam",                audio: 'char-select-menu-theme' },
@@ -312,8 +345,9 @@ const musicTracks = [
     { name: "Sonic Unleashed - Windmill Isle (Night)",       artist: "Sonic Team",              audio: 'windmill-isle-night' },
     { name: "Kirby's Dream Land 3 - Game Over (JP Version)", artist: "Nintendo / SiIvaGunner",  audio: 'kirby-game-over' },
     // Gay People, 10 am!
-    { name: "DELTARUNE - Hip Shop",                    artist: "Toby Fox",                audio: 'hip-shop' },
-    { name: "UNDERTALE - Him",                         artist: "Toby Fox",                audio: 'him' },
+    { name: "DELTARUNE - Hip Shop",                          artist: "Toby Fox",                audio: 'hip-shop' },
+    { name: "UNDERTALE - Him",                               artist: "Toby Fox",                audio: 'him' },
+    { name: "UNDERTALE 10th - Dog Hole",                     artist: "Toby Fox",                audio: 'dog-hole' , background: doghole_render},
 ]
 const currMusicTrack = musicTracks[Math.floor(Math.random()*musicTracks.length)]
 
@@ -1022,6 +1056,10 @@ function hud_render() {
                 djui_hud_set_color(bgColor.r*0.5 + glow, bgColor.g*0.5 + glow, bgColor.b*0.5 + glow, 255)
                 djui_hud_render_rect(w * bgCheckerSize, h * bgCheckerSize, bgCheckerSize, bgCheckerSize)
             }
+    
+    if (currMusicTrack.background != null) {
+        currMusicTrack.background()
+    }
     
     djui_hud_set_color(0, 0, 0, logoFlash)
     djui_hud_render_rect(0, 0, screenWidth, screenHeight)
