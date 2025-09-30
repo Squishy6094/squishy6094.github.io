@@ -630,7 +630,15 @@ function info_tab_render_about_me(x, y, width, height) {
     djui_hud_set_color(255, 255, 255, 150)
     djui_hud_print_text("(Messages are publicly viewable but anonymous)", x + 3, y + height - 8, 0.2)
 
-        // Message Assistant
+    djui_hud_set_color(255, 255, 255, 255)
+    if (djui_hud_render_button("Send", x + 3 + Math.max(100, djui_hud_measure_text(personalMessage) * 0.3 + 8), y + height - 25, 30, 15)) {
+        if (personalMessageCooldown - Date.now() > 0) return
+        djui_hud_text_input_state.active = false
+        send_webhook_message(djui_hud_text_input_state.value)
+        djui_hud_text_input_state.sent = true
+    }
+
+    // Message Assistant
     if (squishyAssistantState == 1) {
         squishyAssistantRender = Math.min(Math.floor(squishyAssistantFrame/5), 7) * 160
     } else {
@@ -639,15 +647,7 @@ function info_tab_render_about_me(x, y, width, height) {
     squishyAssistantFrame = squishyAssistantFrame + 1
 
     djui_hud_set_color(255, 255, 255, 255)
-    djui_hud_render_texture_tile(TEX_SQUISHY_ASSISTANT, x - 3 + Math.max(100, djui_hud_measure_text(personalMessage) * 0.3 + 8), y + height - 65, 0.3, 0.3, squishyAssistantRender, 0, 160, 288)
-
-    djui_hud_set_color(255, 255, 255, 255)
-    if (djui_hud_render_button("Send", x + Math.max(100, djui_hud_measure_text(personalMessage) * 0.3 + 8), y + height - 25, 30, 15)) {
-        if (personalMessageCooldown - Date.now() > 0) return
-        djui_hud_text_input_state.active = false
-        send_webhook_message(djui_hud_text_input_state.value)
-        djui_hud_text_input_state.sent = true
-    }
+    djui_hud_render_texture_tile(TEX_SQUISHY_ASSISTANT, x + 28 + Math.max(100, djui_hud_measure_text(personalMessage) * 0.3 + 8), y + height - 65, 0.3, 0.3, squishyAssistantRender, 0, 160, 288)
 }
 
 const squishyProjects = [
