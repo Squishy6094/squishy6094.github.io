@@ -196,7 +196,9 @@ function djui_hud_render_text_input(textValue, x, y, width, height) {
     // Handle focus
     if (isInside && djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON) {
         djui_hud_text_input_state.active = true
-        djui_hud_text_input_state.value = textValue
+        // Temp way for mobile users to send messages
+        if (is_client_mobile()) textValue = prompt("Send me a Message!!", textValue)
+        djui_hud_text_input_state.value = textValue.slice(0, 64)
         djui_hud_text_input_state.cursor = textValue.length
     } else if (!isInside && djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON) {
         djui_hud_text_input_state.active = false
@@ -215,6 +217,32 @@ function djui_hud_render_text_input(textValue, x, y, width, height) {
 
     // Return the possibly updated value
     return djui_hud_text_input_state.active ? djui_hud_text_input_state.value : textValue
+}
+
+function djui_hud_render_button(textValue, x, y, width, height) {
+    let mouseX = djui_hud_get_mouse_x()
+    let mouseY = djui_hud_get_mouse_y()
+    let isInside = (mouseX > x && mouseX < x + width) && (mouseY > y && mouseY < y + height)
+    let wasPressed = false
+
+    // Draw box
+    djui_hud_set_color(255, 255, 255, 255)
+    djui_hud_render_rect(x, y, width, 1)
+    djui_hud_render_rect(x, y + height - 1, width, 1)
+    djui_hud_render_rect(x, y, 1, height)
+    djui_hud_render_rect(x + width - 1, y, 1, height)
+
+    // Draw text
+    djui_hud_set_color(255, 255, 255, 255)
+    let textX = x + (width/2) - 5 // TO-DO: Math to set X Position
+    let textY = y + (height/2) - 5
+    djui_hud_print_text(textValue, textX, textY, 0.3)
+
+    // Handle Press
+    if (isInside && djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON) {
+        wasPressed = true
+    }
+    return wasPressed
 }
 
 window.addEventListener("keydown", e => {
@@ -612,6 +640,14 @@ function info_tab_render_about_me(x, y, width, height) {
 
     djui_hud_set_color(255, 255, 255, 255)
     djui_hud_render_texture_tile(TEX_SQUISHY_ASSISTANT, x - 3 + Math.max(100, djui_hud_measure_text(personalMessage) * 0.3 + 8), y + height - 65, 0.3, 0.3, squishyAssistantRender, 0, 160, 288)
+
+    djui_hud_set_color(255, 255, 255, 255)
+    if (djui_hud_render_button("Send", x + Math.max(100, djui_hud_measure_text(personalMessage) * 0.3 + 8), y + height - 25, 30, 15)) {
+        if (personalMessageCooldown - Date.now() > 0) return
+        djui_hud_text_input_state.active = false
+        send_webhook_message(djui_hud_text_input_state.value)
+        djui_hud_text_input_state.sent = true
+    }
 }
 
 const squishyProjects = [
