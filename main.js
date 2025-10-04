@@ -108,6 +108,7 @@ async function load_github_commit_rate(username, days = 30, token = null) {
     return commitRatePromise
 }
 
+let isSendingMessage = false
 let personalMessageCooldown = 0
 let personalMessageBanned = false
 async function send_webhook_message(message) {
@@ -144,6 +145,8 @@ async function send_webhook_message(message) {
         console.error("Failed to send:", data && data.error ? data.error : await response.text())
         djui_hud_text_input_state.success = false
     }
+
+    isSendingMessage = false
 }
 
 // Helper Functions
@@ -269,7 +272,8 @@ function djui_hud_text_input_keydown(e) {
     } else if (e.key == "ArrowRight" && cur < val.length) {
         cur++
     } else if (e.key == "Enter") {
-        if (personalMessageCooldown - Date.now() > 0) return
+        if (isSendingMessage || personalMessageCooldown - Date.now() > 0) return
+        isSendingMessage = true
         djui_hud_text_input_state.active = false
         send_webhook_message(djui_hud_text_input_state.value)
         djui_hud_text_input_state.sent = true
@@ -632,10 +636,12 @@ function info_tab_render_about_me(x, y, width, height) {
 
     djui_hud_set_color(255, 255, 255, 255)
     if (djui_hud_render_button("Send", x + 3 + Math.max(100, djui_hud_measure_text(personalMessage) * 0.3 + 8), y + height - 25, 30, 15)) {
-        if (personalMessageCooldown - Date.now() > 0) return
-        djui_hud_text_input_state.active = false
-        send_webhook_message(djui_hud_text_input_state.value)
-        djui_hud_text_input_state.sent = true
+        if (!isSendingMessage && personalMessageCooldown - Date.now() <= 0) {
+            isSendingMessage = true
+            djui_hud_text_input_state.active = false
+            send_webhook_message(djui_hud_text_input_state.value)
+            djui_hud_text_input_state.sent = true
+        }
     }
 
     // Message Assistant
