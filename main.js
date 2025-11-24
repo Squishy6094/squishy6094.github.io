@@ -20,7 +20,7 @@ function is_client_firefox() {
 }
 
 function is_client_mobile() { // Assume client is mobile from SAFE_N64 being active
-    return djui_hud_get_screen_height()/240
+    return djui_hud_get_screen_height() > 240
 }
 
 if (is_client_firefox()) djui_hud_popup_create("Warning!!\nSquishy Site has been\nreportedly Unstable on\nFirefox based Clients!", 4)
