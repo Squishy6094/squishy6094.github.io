@@ -23,7 +23,8 @@ function is_client_mobile() { // Assume client is mobile from SAFE_N64 being act
     return djui_hud_get_screen_height() > 240
 }
 
-if (is_client_firefox()) djui_hud_popup_create("Warning!!\nSquishy Site has been\nreportedly Unstable on\nFirefox based Clients!", 4)
+// Warn Firefox Users Instability
+//if (is_client_firefox()) djui_hud_popup_create("Warning!!\nSquishy Site has been\nreportedly Unstable on\nFirefox based Clients!", 4)
 
 // Grab External Data
 function get_current_time_string() {
@@ -681,7 +682,7 @@ let artGalleryTable = []
 let artGalleryLoaded = false
 let artGalleryLoading = false
 let artGalleryRawData = null
-
+const rawRepoLink = 'https://raw.githubusercontent.com/Squishy6094/squishy-site-art-gallery/refs/heads/main'
 async function get_art_gallery_json() {
     if (artGalleryLoaded) return true
     if (artGalleryLoading) return false
@@ -692,7 +693,7 @@ async function get_art_gallery_json() {
         // Fetch JSON only once
         if (!artGalleryRawData) {
             const response = await fetch(
-                'https://raw.githubusercontent.com/Squishy6094/squishy-site-art-gallery/refs/heads/main/art-list.json'
+                `${rawRepoLink}/art-list.json`
             )
             artGalleryRawData = await response.json()
         }
@@ -705,7 +706,7 @@ async function get_art_gallery_json() {
             grouped[item.artist].push({
                 ...item,
                 name: nameWithoutExt,
-                url: `https://raw.githubusercontent.com/Squishy6094/squishy-site-art-gallery/refs/heads/main/${encodeURIComponent(item.artist)}/${encodeURIComponent(item.img)}`,
+                url: `${rawRepoLink}/${encodeURIComponent(item.artist)}/low-quality/${encodeURIComponent(item.img)}`,
                 texture: null
             })
         }
@@ -832,13 +833,19 @@ function info_tab_render_art_gallery(x, y, width, height) {
                 mouseY > itemY && mouseY < itemY + imgH &&
                 mousePressed
             ) {
-                focusImageFile = item
+                // Make a copy so we don’t overwrite the low-quality thumbnail item
+                focusImageFile = { ...item }
                 focusImage = true
                 focusImageDelay = 3
                 SOUND_ART_OPEN.play()
+
+                // Load full-resolution image instead of low-quality
+                const fullResUrl = `${rawRepoLink}/${encodeURIComponent(item.artist)}/${encodeURIComponent(item.img)}`
+                focusImageFile.texture = get_texture_info(fullResUrl)
             }
-            if (true) { //((itemY + imgH + 5) > 0 && (itemY) < x + height) {
-                // Only render if on screen
+
+            // Only render if on screen
+            if ((itemY + imgH + 5) > 0 && (itemY) < x + height) {
                 djui_hud_render_texture(item.texture, itemX, itemY, scale, scale)
             }
             imgHeights[i%imagesPerRow] += imgH + 5 // Move down for next artist
@@ -872,6 +879,9 @@ function info_tab_render_art_gallery(x, y, width, height) {
         djui_hud_render_texture(focusImageFile.texture, imgX, imgY, scale, scale)
         const artName = focusImageFile.name + " - " + focusImageFile.artist
         djui_hud_print_text(artName, imgX + imgW*0.5 - djui_hud_measure_text(artName)*0.25, imgY - 17, 0.5)
+        if (imgH == 0) {
+            djui_hud_print_text("Loading Full Quality Art...", imgX + imgW*0.5 - djui_hud_measure_text("Loading Full Quality Art...")*0.25, imgY + imgH + 1, 0.5)
+        }
         // Click anywhere to close
         if (mousePressed && focusImageDelay === 0) {
             focusImage = false
