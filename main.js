@@ -109,13 +109,20 @@ async function load_github_commit_rate(username, days = 30, token = null) {
     return commitRatePromise
 }
 
-let isSendingMessage = false
+let isMessageSending = false
+let isMessageSent = false
 let personalMessageCooldown = 0
 let personalMessageBanned = false
+let personalMessageFailed = false
 async function send_webhook_message(message) {
+    if (isMessageSending || personalMessageCooldown - Date.now() > 0) return;
+
+    if (message === "")
+        return
     if (message.toLowerCase() === "gaster")
         location.reload()
 
+    isMessageSending = true;
     // Always try to send, backend will enforce cooldown
     const response = await fetch("https://squishy-site-backend.vercel.app/api/send-discord", {
         method: "POST",
@@ -124,10 +131,9 @@ async function send_webhook_message(message) {
     })
 
     const data = await response.json()
-
     if (response.ok && !data.error) {
         djui_hud_popup_create("Squishy Site Messages:\nMessage sent!", 2)
-        djui_hud_text_input_state.success = true
+        isMessageSent = true
         // Set new cooldown for 15 minutes from now
         personalMessageCooldown = Date.now() + 15 * 60 * 1000
         squishyAssistantState = 1
@@ -135,19 +141,20 @@ async function send_webhook_message(message) {
     } else if (data && data.banned) {
         // Backend returned banned, fuck you
         personalMessageBanned = true
-        djui_hud_text_input_state.success = false
+        isMessageSent = false
     } else if (data && data.cooldown) {
         // Backend returned cooldown, set it
         personalMessageCooldown = data.cooldown
-        djui_hud_text_input_state.success = false
+        isMessageSent = false
         djui_hud_popup_create(`Squishy Site Messages:\nCooldown active, cannot\nsend message until:\n${new Date(personalMessageCooldown).toLocaleTimeString()}`, 4)
     } else {
         djui_hud_popup_create("Squishy Site Messages:\nFailed to send message!\nError Info has been logged\nin the console!", 4)
         console.error("Failed to send:", data && data.error ? data.error : await response.text())
-        djui_hud_text_input_state.success = false
+        personalMessageFailed = true
+        isMessageSent = false
     }
 
-    isSendingMessage = false
+    isMessageSending = false
 }
 
 // Helper Functions
@@ -172,56 +179,119 @@ function djui_hud_render_slider(sliderPos, x, y, width, height) {
     return sliderPos
 }
 
-// Simple text input field for djui_hud
-let djui_hud_text_input_state = {
-    active: false,
-    value: "",
-    cursor: 0,
-    sent: false,
-    success: null,
-    lastFrameActive: false
+// Textbox Handler/Renderer
+let textInputStates = {}
+function djui_hud_get_text_input_state(textboxID) {
+    if (textInputStates[textboxID] == null) {
+        textInputStates[textboxID] = {
+            active: false,
+            value: "",
+            cursor: 0,
+            restrict: false,
+            function: null,
+        }
+    }
+    return textInputStates[textboxID]
 }
 
-function djui_hud_render_text_input(textValue, x, y, width, height) {
+function djui_hud_render_text_input(textboxID, x, y, width, height) {
+    let t = djui_hud_get_text_input_state(textboxID)
     let mouseX = djui_hud_get_mouse_x()
     let mouseY = djui_hud_get_mouse_y()
     let isInside = (mouseX > x && mouseX < x + width) && (mouseY > y && mouseY < y + height)
 
     // Draw box
-    width = Math.max(width, djui_hud_measure_text(textValue) * 0.3 + 8)
+    width = Math.max(width, djui_hud_measure_text(t.value) * 0.3 + 8)
     djui_hud_set_color(255, 255, 255, 255)
     djui_hud_render_rect(x, y, width, height)
 
     // Draw text
     djui_hud_set_color(0, 0, 0, 255)
     let textY = y + (height/2) - 5
-    djui_hud_print_text(textValue, x + 4, textY, 0.3)
+    djui_hud_print_text(t.value, x + 4, textY, 0.3)
 
     // Handle focus
     if (isInside && djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON) {
-        djui_hud_text_input_state.active = true
+        t.active = true
         // Temp way for mobile users to send messages
-        if (is_client_mobile()) textValue = prompt("Send me a Message!!", textValue)
-        djui_hud_text_input_state.value = textValue.slice(0, 64)
-        djui_hud_text_input_state.cursor = textValue.length
+        if (is_client_mobile()) {
+            let mobileInput = prompt("Input", t.value)
+            if (mobileInput != null)
+                t.value = mobileInput
+        } 
+        t.value = t.value.slice(0, 64)
+        t.cursor = t.value.length
     } else if (!isInside && djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON) {
-        djui_hud_text_input_state.active = false
+        t.active = false
     }
 
     // Handle input
-    if (djui_hud_text_input_state.active) {
+    if (t.active) {
         // Draw cursor
-        let cursorX = x + 4 + djui_hud_measure_text(textValue.substring(0, djui_hud_text_input_state.cursor)) * 0.3
+        let cursorX = x + 4 + djui_hud_measure_text(t.value.substring(0, t.cursor)) * 0.3
         if ((get_global_timer() % 60) < 30) {
             djui_hud_set_color(0, 0, 0, 255)
             djui_hud_print_text("|", cursorX, textY, 0.3)
         }
     }
-    djui_hud_text_input_state.lastFrameActive = djui_hud_text_input_state.active
 
     // Return the possibly updated value
-    return djui_hud_text_input_state.active ? djui_hud_text_input_state.value : textValue
+    return t.active ? t.value : t.value
 }
+
+// listener for textboxes
+function djui_hud_text_input_keydown(textboxID, e) {
+    let t = djui_hud_get_text_input_state(textboxID);
+    if (!t.active || t.restrict) return;
+
+    let val = t.value;
+    let cur = t.cursor;
+
+    // Typing
+    if (e.key.length === 1 && val.length < 64) {
+        val = val.slice(0, cur) + e.key + val.slice(cur);
+        cur++;
+
+    } else if (e.key === "Backspace" && cur > 0) {
+        val = val.slice(0, cur - 1) + val.slice(cur);
+        cur--;
+
+    } else if (e.key === "Delete" && cur < val.length) {
+        val = val.slice(0, cur) + val.slice(cur + 1);
+
+    } else if (e.key === "ArrowLeft" && cur > 0) {
+        cur--;
+
+    } else if (e.key === "ArrowRight" && cur < val.length) {
+        cur++;
+
+    } else if (e.key === "Enter") {
+        if (t.function != null)
+            t.function(t.value);
+        t.active = false;
+    } else if (e.key === "Escape") {
+        t.active = false;
+    }
+
+    t.value = val;
+    t.cursor = cur;
+
+    e.preventDefault();
+}
+
+window.addEventListener("keydown", e => {
+    // Find the active textbox, if any
+    let activeID = null;
+    for (const id in textInputStates) {
+        if (textInputStates[id]?.active) {
+            activeID = id;
+            break;
+        }
+    }
+    if (!activeID) return;
+
+    djui_hud_text_input_keydown(activeID, e);
+});
 
 function djui_hud_render_button(textValue, x, y, width, height) {
     let mouseX = djui_hud_get_mouse_x()
@@ -247,44 +317,6 @@ function djui_hud_render_button(textValue, x, y, width, height) {
         wasPressed = true
     }
     return wasPressed
-}
-
-window.addEventListener("keydown", e => {
-    if (!djui_hud_text_input_state.active) return;
-    djui_hud_text_input_keydown(e);
-});
-
-function djui_hud_text_input_keydown(e) {
-    if (!djui_hud_text_input_state.active) return
-    // Prevent input if message was sent (value is empty and not active)
-
-    let val = djui_hud_text_input_state.value
-    let cur = djui_hud_text_input_state.cursor
-    if (e.key.length == 1 && val.length < 64) {
-        val = val.slice(0, cur) + e.key + val.slice(cur)
-        cur++
-    } else if (e.key == "Backspace" && cur > 0) {
-        val = val.slice(0, cur - 1) + val.slice(cur)
-        cur--
-    } else if (e.key == "Delete" && cur < val.length) {
-        val = val.slice(0, cur) + val.slice(cur + 1)
-    } else if (e.key == "ArrowLeft" && cur > 0) {
-        cur--
-    } else if (e.key == "ArrowRight" && cur < val.length) {
-        cur++
-    } else if (e.key == "Enter") {
-        if (isSendingMessage || personalMessageCooldown - Date.now() > 0) return
-        isSendingMessage = true
-        djui_hud_text_input_state.active = false
-        send_webhook_message(djui_hud_text_input_state.value)
-        djui_hud_text_input_state.sent = true
-    } else if (e.key == "Escape") {
-        djui_hud_text_input_state.active = false
-        djui_hud_text_input_state.sent = false
-    }
-    djui_hud_text_input_state.value = val
-    djui_hud_text_input_state.cursor = cur
-    e.preventDefault()
 }
 
 let rainbowColor = { r: 255, g: 0, b: 0 }
@@ -606,12 +638,16 @@ function info_tab_render_about_me(x, y, width, height) {
     textY += 8; djui_hud_print_text(`Age: ${currAge}`,               textX, textY, 0.25)
     textY += 8; djui_hud_print_text((commitRate ? `Commit Rate: ${commitRate}/wk` : "Loading Commit Rate..."), textX, textY, 0.25)
 
+    let t = djui_hud_get_text_input_state("personalMessage")
+    if (t.function == null)
+        t.function = send_webhook_message
+
     let messageStatus = `${personalMessage.length}/64`
-    if (djui_hud_text_input_state.sent) {
+    if (isMessageSending) {
         messageStatus = "Sending..."
-        if (djui_hud_text_input_state.success) {
+        if (isMessageSent) {
             messageStatus = "Sent!"
-        } else if (djui_hud_text_input_state.success === false) {
+        } else {
             if (personalMessageBanned) {
                 messageStatus = `Banned from Service`
             } else if (personalMessageCooldown > Date.now()) {
@@ -621,9 +657,9 @@ function info_tab_render_about_me(x, y, width, height) {
                 let secStr = sec < 10 ? "0" + sec : sec
                 messageStatus = `${min}:${secStr}`
                 if (msLeft < 1000) {
-                    djui_hud_text_input_state.sent = false
+                    isMessageSending = false
                 }
-            } else {
+            } else if (personalMessageFailed) {
                 messageStatus = "Failed!"
             }
         }
@@ -631,17 +667,15 @@ function info_tab_render_about_me(x, y, width, height) {
 
     djui_hud_set_color(255, 255, 255, 255)
     djui_hud_print_text(`Send me a Message!! - ${messageStatus}`, x + 3, y + height - 35, 0.3)
-    personalMessage = djui_hud_render_text_input(personalMessage, x + 3, y + height - 25, 100, 15)
+    personalMessage = djui_hud_render_text_input("personalMessage", x + 3, y + height - 25, 100, 15)
     djui_hud_set_color(255, 255, 255, 150)
     djui_hud_print_text("(Messages are publicly viewable but anonymous)", x + 3, y + height - 8, 0.2)
 
     djui_hud_set_color(255, 255, 255, 255)
     if (djui_hud_render_button("Send", x + 3 + Math.max(100, djui_hud_measure_text(personalMessage) * 0.3 + 8), y + height - 25, 30, 15)) {
-        if (!isSendingMessage && personalMessageCooldown - Date.now() <= 0) {
-            isSendingMessage = true
-            djui_hud_text_input_state.active = false
-            send_webhook_message(djui_hud_text_input_state.value)
-            djui_hud_text_input_state.sent = true
+        if (!isMessageSending && personalMessageCooldown - Date.now() <= 0) {
+            let t = djui_hud_get_text_input_state("personalMessage")
+            t.function(t.value)
         }
     }
 
