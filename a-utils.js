@@ -174,7 +174,7 @@ function djui_hud_render_button(textValue, x, y, width, height) {
 
     // Draw text
     djui_hud_set_color(255, 255, 255, 255)
-    let textX = x + (width/2) - 5 // TO-DO: Math to set X Position
+    let textX = x + (width/2) - djui_hud_measure_text(textValue)*0.5*0.3
     let textY = y + (height/2) - 5
     djui_hud_print_text(textValue, textX, textY, 0.3)
 

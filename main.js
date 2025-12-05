@@ -685,6 +685,7 @@ function info_tab_render_art_gallery(x, y, width, height) {
 
                 // Load full-resolution image instead of low-quality
                 const fullResUrl = `${rawRepoLink}/${encodeURIComponent(item.artist)}/${encodeURIComponent(item.img)}`
+                focusImageFile.url = fullResUrl
                 focusImageFile.texture = get_texture_info(fullResUrl)
             }
 
@@ -726,8 +727,10 @@ function info_tab_render_art_gallery(x, y, width, height) {
         if (imgH == 0) {
             djui_hud_print_text("Loading Full Quality Art...", imgX + imgW*0.5 - djui_hud_measure_text("Loading Full Quality Art...")*0.25, imgY + imgH + 1, 0.5)
         }
-        // Click anywhere to close
-        if (mousePressed && focusImageDelay === 0) {
+        if (djui_hud_render_button("Open Raw", x + 3, y + height - 18 + focusImageX*0.2, 40, 15)) {
+            window.open(focusImageFile.url)
+        } else if (mousePressed && focusImageDelay === 0) {
+            // Click anywhere to close
             focusImage = false
             focusImageDelay = 3
             SOUND_ART_CLOSE.play()
