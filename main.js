@@ -98,9 +98,12 @@ async function send_webhook_message(message) {
     // Always try to send, backend will enforce cooldown
     const response = await fetch("https://squishy-site-backend.vercel.app/api/send-discord", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        credentials: "include", // sends userID cookie automatically
+        headers: {
+            "Content-Type": "application/json"
+        },
         body: JSON.stringify({ message })
-    })
+    });
 
     const data = await response.json()
     if (response.ok && !data.error) {
