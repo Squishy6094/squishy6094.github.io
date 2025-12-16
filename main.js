@@ -1,3 +1,29 @@
+// Initialize User ID
+async function bootstrapUserID() {
+    let userID = localStorage.getItem('userID');
+    if (!userID) {
+        try {
+            const res = await fetch("https://squishy-site-backend.vercel.app/api/user-id", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" }
+            });
+
+            if (!res.ok) {
+                console.error("Failed to Initialize UserID:", res.status);
+                return null;
+            }
+
+            // Backend returns plain text UUID
+            userID = await res.text();
+            localStorage.setItem('userID', userID);
+        } catch (err) {
+            console.error("Failed to Initialize UserID:", err);
+            return null;
+        }
+    }
+    return userID;
+}
+
 // Grab External Data
 function get_current_time_string() {
     const now = new Date();
@@ -87,6 +113,9 @@ let personalMessageCooldown = 0
 let personalMessageBanned = false
 let personalMessageFailed = false
 async function send_webhook_message(message) {
+    const userID = await bootstrapUserID();
+    if (!userID) return false;
+    
     if (isMessageSending || personalMessageCooldown - Date.now() > 0) return;
 
     if (message === "")
@@ -98,11 +127,8 @@ async function send_webhook_message(message) {
     // Always try to send, backend will enforce cooldown
     const response = await fetch("https://squishy-site-backend.vercel.app/api/send-discord", {
         method: "POST",
-        credentials: "include", // sends userID cookie automatically
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ message })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, userID })
     });
 
     const data = await response.json()
