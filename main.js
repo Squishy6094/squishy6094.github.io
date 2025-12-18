@@ -481,7 +481,7 @@ function info_tab_render_about_me(x, y, width, height) {
     if (t.function == null)
         t.function = send_webhook_message
 
-    let messageStatus = `${personalMessage.length}/64`
+    let messageStatus = `${personalMessage.length}/128`
     if (isMessageSending) {
         messageStatus = "Sending..."
         if (isMessageSent) {
