@@ -85,7 +85,7 @@ function djui_hud_render_text_input(textboxID, x, y, width, height) {
             if (mobileInput != null)
                 t.value = mobileInput
         } 
-        t.value = t.value.slice(0, 64)
+        t.value = t.value.slice(0, 128)
         t.cursor = t.value.length
     } else if (!isInside && djui_hud_get_mouse_buttons_pressed() & L_MOUSE_BUTTON) {
         t.active = false
@@ -114,7 +114,7 @@ function djui_hud_text_input_keydown(textboxID, e) {
     let cur = t.cursor;
 
     // Typing
-    if (e.key.length === 1 && val.length < 64) {
+    if (e.key.length === 1 && val.length < 128) {
         val = val.slice(0, cur) + e.key + val.slice(cur);
         cur++;
 
